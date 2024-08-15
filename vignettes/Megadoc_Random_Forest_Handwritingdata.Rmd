@@ -1,0 +1,148 @@
+---
+title: "Random Forest with Mega document data"
+author: "Mattie Johnson"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gtools)
+library(randomForest)
+source("calc_dist.R")
+source("kde_slr_functions.R")
+```
+
+This code uses the same methods as before with the seperate three documents, however, each of the three documents from the first session and repetition are combined into one "megadocument". This document will serve as a template for each writer and provide more information about writer patterns of each writer compared to each of the documents alone. It would be expected that the random forest performs better at discerning same vs. different source with the longest documents.
+
+```{r}
+#source("handwriting_reformat2.R")
+#processed_list1 <- readRDS("handwriting_data/csafe_session1_1_10.rds")
+#processed_list2 <- readRDS("handwriting_data/csafe_session1_11_20.rds")
+#processed_list3 <- readRDS("handwriting_data/csafe_session1_21_30.rds")
+#processed_list4 <- readRDS("handwriting_data/csafe_session1_31_40.rds")
+#processed_list5 <- readRDS("handwriting_data/csafe_session1_41_50.rds")
+#processed_list6 <- readRDS("handwriting_data/csafe_session1_51_60.rds")
+#processed_list7 <- readRDS("handwriting_data/csafe_session1_61_70.rds")
+#processed_list8 <- readRDS("handwriting_data/csafe_session1_71_80.rds")
+#processed_list9 <- readRDS("handwriting_data/csafe_session1_81_90.rds")
+
+#p_1<-handwriting_reformat2(processed_list1)
+#p_2<-handwriting_reformat2(processed_list2)
+#p_3<-handwriting_reformat2(processed_list3)
+#p_4<-handwriting_reformat2(processed_list4)
+#p_5<-handwriting_reformat2(processed_list5)
+#p_6<-handwriting_reformat2(processed_list6)
+#p_7<-handwriting_reformat2(processed_list7)
+#p_8<-handwriting_reformat2(processed_list8)
+#p_9<-handwriting_reformat2(processed_list9)
+
+#combine into one dataset
+#d_mega<-rbind(p_1,p_2,p_3,p_4,p_5,p_6,p_7,p_8,p_9)
+#saveRDS(d_mega,"d_mega")
+
+#creating the mega document
+d_mega <-readRDS("d_mega.Rdata")
+
+m<-d_mega
+
+#90 total writers
+#dim(m %>% select(writer) %>% unique())
+```
+
+
+
+```{r}
+#sample of 80% of the writers
+#same as the down sampling method used with the London Letter, Wizard of Oz, and Prompt but now applied to the megadocuments
+
+n_writers<-n_distinct(m$writer)
+
+#randomly select 80% of the total writers
+samp_writers <- m %>% dplyr::select(writer) %>% unique() %>%
+  sample_n(ceiling(.8*n_writers))
+
+#dataset with the documents from only the sampled writers
+m_writers <- m %>% filter(writer %in% samp_writers$writer)
+
+#all document combinations of size of the sampled dataset
+pairs_writers <- combinations(nrow(m_writers),2)
+#write.csv(pairs_writers, "pairs_writers_mega.csv", row.names = TRUE)
+pairs_writers_df <- as.data.frame(combinations(nrow(m_writers),2)) %>%
+  rename(row1=V1,row2=V2) %>% mutate(row1=as.numeric(row1), row2=as.numeric(row2))
+
+#count number of combinations from same and different writers
+row_writer<-as.data.frame(cbind(c(1:dim(m_writers)[1]),m_writers$writer)) %>%
+  rename(row=V1,writer=V2) %>% mutate(row=as.numeric(levels(row))[row])
+
+writers_combo<-left_join(pairs_writers_df,row_writer, by=c("row1"="row")) %>% 
+  left_join(row_writer, by=c("row2"="row"))
+same_number<-writers_combo %>% filter(writer.x==writer.y) %>% summarise(n())
+
+#random sample of the same number of different sources
+diff_sources<-writers_combo %>% filter(!writer.x==writer.y) %>% sample_n(same_number[[1]])
+
+#create training set with equal number of different source and same source
+train_writers<-writers_combo %>% filter(writer.x==writer.y) %>% rbind(diff_sources)
+
+#pairs to compare based on rows in sampled dataset
+pairs_writers<-train_writers  %>% dplyr::select(c("row1","row2")) %>% as.matrix()
+
+#distance measures 
+#train_writers_mega<-calc_dist(m_writers,pairs_writers)
+#write.csv(train_writers_mega, "train_writers_mega.csv", row.names = TRUE)
+train_writers_mega<-read.csv("train_writers_mega.csv")
+```
+
+```{r}
+#random forest
+forest_writers_mega <- randomForest(
+  as.formula(paste("y ~ ", paste(c(paste("c",c(1:40),sep=""),'euch_dist'),collapse= "+"))),
+             data=train_writers_mega, ntree=200)
+forest_writers_mega
+importance(forest_writers_mega)
+plot(forest_writers_mega)
+#saveRDS(forest_writers_mega, file = "forest_writers_mega.rds")
+```
+
+```{r}
+#create a testing dataset
+#samp_test_writers <- anti_join(m,samp_writers)
+#pairs_test_writers <- combinations(dim(samp_test_writers)[1],2)
+#test_writers_mega<-calc_dist(samp_test_writers,pairs_test_writers)
+#write.csv(test_writers_mega, "test_writers_mega.csv", row.names = TRUE)
+test_writers_m<-read.csv("test_writers_mega.csv")
+```
+
+```{r}
+prediction_writers_m<-predict(forest_writers_mega, newdata = subset(test_writers_m, select=-c(y)))
+table(test_writers_m[, "y"], prediction_writers_m)
+varimportanceplot_mega<-varImpPlot(forest_writers_mega, main="Variable Importance in Random Forest");varimportanceplot_mega
+
+#png(file="varimportanceplot_mega.png",
+#width=600, height=500)
+#varImpPlot(forest_writers_mega, main="Variable Importance in Combined Documents Random Forest")
+#dev.off()
+```
+
+```{r}
+kde_data_mega<-plot_kdes(test_writers_m,forest_writers_mega)+
+  ggtitle("KDEs for Combined Documents");kde_data_mega
+#ggsave("kde_data_mega.png",path="")
+```
+
+```{r}
+slrs_writers_mega<-loo_slr(test_writers_m,forest_writers_mega)
+#saveRDS(slrs_writers_mega,"slrs_writers_mega.rds")
+#slrs_writers_mega <- readRDS("~/Handwriting/slrs_writers_mega.rds")
+slr_data_mega<-plot_slr(slrs_writers_mega)+
+  ggtitle("SLRs for Combined Documents");slr_data_mega
+#ggsave("slr_data_mega.png",path="")
+logslr_data_mega<-plot_logslr(slrs_writers_mega)+
+  ggtitle("SLRs for Combined Documents");logslr_data_mega
+#ggsave("logslr_data_mega.png",path="")
+logslr2_data_mega<-plot_logslr2(slrs_writers_mega)+
+  ggtitle("SLRs for Combined Documents");logslr2_data_mega
+#ggsave("logslr2_data_mega.png",path="")
+```

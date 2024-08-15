@@ -1,0 +1,144 @@
+---
+title: "Random Forests with Handwriting Data"
+author: "Mattie Johnson"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gtools)
+library(randomForest)
+```
+
+```{r}
+d1<-readRDS("d1.Rdata")
+
+#extract just the london letter documents
+d<-d1 %>% filter(prompt=="LND")
+```
+--The dataset `d` contains 90 total writers and just the London Letter prompt. There are three repetitions per writer, with a total of 261 documents. However, not all writers wrote the London Letter 3 times. 
+
+Start with 80% of all writers but then downcounting the number of different source comparisons to equal that of the same source by randomly selecting out of the sample
+
+#Method 1
+The first step is to randomly select 80% of the *documents* in the data to use as the training dataset for the random forest. All pairwise distance measures will be computed which includes the absolute difference for each cluster and the euclidean distance.
+
+```{r}
+#function to create a dataset with distance measures and if measures were from the same writer or different
+calc_dist<- function(data,combinations){
+  #parameters
+  samp<-data
+  pairs<-combinations  
+  #empty dataset to add to 
+  train<-NULL
+  #loop that for each combination pair calculates the distance measures of interest
+  for(i in c(1:dim(pairs)[1])){
+  y<-ifelse(samp[pairs[i,1],"writer"]==samp[pairs[i,2],"writer"],'s','d');
+  ab_diffs<-abs(samp[pairs[i,1],as.character(c(1:40))]-samp[pairs[i,2],as.character(c(1:40))]);
+  euch_dist<-dist(rbind(samp[pairs[i,1],as.character(c(1:40))],
+                         samp[pairs[i,2],as.character(c(1:40))]));
+  train<-rbind(train,cbind(ab_diffs, euch_dist[1], y))
+  }
+  train <- train %>% rename("euch_dist"="euch_dist[1]") %>% 
+    rename_at(vars(c(1:40)), ~paste("c",c(1:40),sep=""))
+  return(train)
+}
+```
+
+
+```{r}
+#sample of 80% of the writers
+#same as in Method 2 but a new random sample
+
+#randomly select 80% of the total writers
+samp_writers2 <- as.data.frame(d) %>% dplyr::select(writer) %>% unique() %>%
+  sample_n(ceiling(.8*n_writers))
+
+#dataset with the documents from only the sampled writers
+d_writers2 <- d %>% filter(writer %in% samp_writers2$writer)
+
+#all document combinations of size of the sampled dataset
+pairs_writers2 <- combinations(nrow(d_writers2),2)
+pairs_writers2_df <- as.data.frame(combinations(nrow(d_writers2),2)) %>%
+  rename(row1=V1,row2=V2) %>% mutate(row1=as.numeric(row1), row2=as.numeric(row2))
+
+#count number of combinations from same and different writers
+row_writer<-as.data.frame(cbind(c(1:dim(d_writers2)[1]),d_writers2$writer)) %>%
+  rename(row=V1,writer=V2) %>% mutate(row=as.numeric(levels(row))[row])
+
+writers_combo<-left_join(pairs_writers2_df,row_writer, by=c("row1"="row")) %>% 
+  left_join(row_writer, by=c("row2"="row"))
+same_number<-writers_combo %>% filter(writer.x==writer.y) %>% summarise(n())
+
+#random sample of the same number of different sources
+diff_sources<-writers_combo %>% filter(!writer.x==writer.y) %>% sample_n(same_number[[1]])
+
+#create training set with equal number of different source and same source
+train_writers2<-writers_combo %>% filter(writer.x==writer.y) %>% rbind(diff_sources)
+
+#pairs to compare based on rows in sampled dataset
+pairs_writers2<-train_writers2 %>% dplyr::select(c("row1","row2")) %>% as.matrix()
+
+#distance measures 
+#train_writers_all<-calc_dist(d_writers2,pairs_writers2)
+#write.csv(train_writers_all, "train_writers_all.csv", row.names = TRUE)
+train_writers_all<-read.csv("train_writers_all.csv")
+```
+
+```{r}
+#random forest
+forest_writers_all <- randomForest(
+  as.formula(paste("y ~ ", paste(c(paste("c",c(1:40),sep=""),'euch_dist'),collapse= "+"))),
+             data=train_writers_all, ntree=200)
+forest_writers_all
+importance(forest_writers_all)
+plot(forest_writers_all)
+#write random forest
+#saveRDS(forest_writers_all , "forest_writers_all.RDS")
+#line to load the trained random forest
+#readRDS("forest_writers_all.RDS")
+```
+
+```{r}
+#create a testing dataset
+#samp_test_writers2 <- anti_join(d,samp_writers2)
+#pairs_test_writers2 <- combinations(dim(samp_test_writers2)[1],2)
+#test_writers2<-calc_dist(samp_test_writers2,pairs_test_writers2)
+#write.csv(test_writers2, "test_writers2.csv", row.names = TRUE)
+test_writers2<-read.csv("test_writers2.csv")
+```
+
+```{r}
+prediction_writers2<-predict(forest_writers_all, newdata = subset(test_writers2, select=-c(y)))
+table(test_writers2[, "y"], prediction_writers2)
+varimportanceplot<-varImpPlot(forest_writers_all, main="Variable Importance in Random Forest");varimportanceplot
+
+#write.csv(prediction_writers2, "prediction_writers2.csv", row.names = TRUE)
+#png(file="varimportanceplot.png",
+#width=600, height=500)
+#varImpPlot(forest_writers_all, main="Variable Importance in London Letter Random Forest")
+#dev.off()
+```
+
+```{r}
+kde_data<-plot_kdes(test_writers2,forest_writers_all)+
+  ggtitle("KDEs in London Letter Prompt");kde_data
+#ggsave("kde_data.png")
+```
+
+```{r}
+slrs_writers2<-loo_slr(test_writers2,forest_writers_all)
+#saveRDS(slrs_writers2,"slrs_writers2.rds")
+#slrs_writers2<-readRDS("slrs_writers2.rds")
+slr_data<-plot_slr(slrs_writers2)+
+  ggtitle("SLRs in London Letter Prompt");slr_data
+#ggsave("slr_data.png")
+logslr_data<-plot_logslr(slrs_writers2)+
+  ggtitle("SLRs in London Letter Prompt");logslr_data
+#ggsave("logslr_data.png")
+logslr2_data<-plot_logslr2(slrs_writers2)+
+  ggtitle("SLRs in London Letter Prompt");logslr2_data
+#ggsave("logslr2_data.png")
+```
