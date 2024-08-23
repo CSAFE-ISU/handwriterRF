@@ -36,14 +36,6 @@ sort_by_session <- function(path){
   }
 }
 
-expand_docnames <- function(df){
-  df <- df %>% tidyr::separate_wider_delim(docname,
-                                           delim = "_",
-                                           names = c("writer", "session", "prompt", "rep"),
-                                           cols_remove = FALSE)
-  return(df)
-}
-
 get_combined_cfc <- function(all_clusters){
   # get cluster fill counts
   df <- handwriter::get_cluster_fill_counts(all_clusters)
@@ -62,27 +54,10 @@ get_combined_cfc <- function(all_clusters){
   # add to master df
   df <- rbind(df, CMB)
 
+  # delete extra labels
+  df <- df %>% dplyr::select(-writer, -session, -prompt, -rep)
+
   return(df)
-}
-
-get_cluster_fill_rates <- function(cfc){
-  # drop label columns and calculate cluster fill rates: each row sums to 1.
-  cfc_clusters_only <- as.matrix(cfc[-seq(1,5)])
-  total_graphs <- rowSums(cfc_clusters_only)
-  cfr <- diag(1/total_graphs) %*% cfc_clusters_only
-
-  # add "cluster" to column names
-  colnames(cfr) <- paste0("cluster", colnames(cfr))
-
-  # check all rows sum to 1 (within machine precision)
-  if (!all.equal(rep(1, nrow(cfr)), rowSums(cfr), tolerance = sqrt(.Machine$double.eps))){
-    stop("One or more rows does not sum to 1 (within machine precision).")
-  }
-
-  # add label columns and total_graphs column
-  cfr <- cbind(cfc[seq(1,5)], data.frame(total_graphs = total_graphs), cfr)
-
-  return(cfr)
 }
 
 
@@ -124,5 +99,6 @@ cfc <- get_combined_cfc(all_clusters)
 
 cfr <- get_cluster_fill_rates(cfc = cfc)
 
+usethis::use_data(cfc, overwrite = TRUE)
 usethis::use_data(cfr, overwrite = TRUE)
 
