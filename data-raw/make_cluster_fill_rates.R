@@ -36,20 +36,51 @@ sort_by_session <- function(path){
   }
 }
 
-get_cluster_fill_rates <- function(all_clusters_path){
-  clusters <- readRDS(all_clusters_path)
-  cfc <- handwriter::get_cluster_fill_counts(clusters)
+expand_docnames <- function(df){
+  df <- df %>% tidyr::separate_wider_delim(docname,
+                                           delim = "_",
+                                           names = c("writer", "session", "prompt", "rep"),
+                                           cols_remove = FALSE)
+  return(df)
+}
 
+get_combined_cfc <- function(all_clusters){
+  # get cluster fill counts
+  df <- handwriter::get_cluster_fill_counts(all_clusters)
+
+  # get combined doc cluster fill counts
+  df <- df %>% ungroup() %>% select(-writer, -doc)
+  df <- expand_docnames(df)
+  CMB <- df %>%
+    group_by(writer, rep) %>%
+    summarise(across(where(is.numeric), list(sum = sum)))
+  colnames(CMB) <- c("writer", "rep", seq(1,40))
+  CMB$session <- "s01"
+  CMB$prompt <- "pCMB"
+  CMB <- CMB %>% dplyr::mutate(docname = paste(writer, session, prompt, rep, sep = "_"))
+
+  # add to master df
+  df <- rbind(df, CMB)
+
+  return(df)
+}
+
+get_cluster_fill_rates <- function(cfc){
   # drop label columns and calculate cluster fill rates: each row sums to 1.
-  cfc_clusters_only <- as.matrix(cfc[-c(1,2,3)])
+  cfc_clusters_only <- as.matrix(cfc[-seq(1,5)])
   total_graphs <- rowSums(cfc_clusters_only)
   cfr <- diag(1/total_graphs) %*% cfc_clusters_only
 
   # add "cluster" to column names
   colnames(cfr) <- paste0("cluster", colnames(cfr))
 
+  # check all rows sum to 1 (within machine precision)
+  if (!all.equal(rep(1, nrow(cfr)), rowSums(cfr), tolerance = sqrt(.Machine$double.eps))){
+    stop("One or more rows does not sum to 1 (within machine precision).")
+  }
+
   # add label columns and total_graphs column
-  cfr <- cbind(cfc[c(1,2,3)], data.frame(total_graphs = total_graphs), cfr)
+  cfr <- cbind(cfc[seq(1,5)], data.frame(total_graphs = total_graphs), cfr)
 
   return(cfr)
 }
@@ -66,22 +97,32 @@ get_cluster_fill_rates <- function(all_clusters_path){
 
 # Graphs ------------------------------------------------------------------
 
-# handwriter::process_batch_dir(input_dir = "data-raw/CSAFE_handwriting_db/docs/LND/s01",
-#                               output_dir = "data-raw/CSAFE_handwriting_db/graphs/LND/s01")
+handwriter::process_batch_dir(input_dir = "data-raw/CSAFE_handwriting_db/docs/PHR/s01",
+                              output_dir = "data-raw/CSAFE_handwriting_db/graphs/PHR/s01")
 
 
 # Clusters ----------------------------------------------------------------
 template <- readRDS("data-raw/template.rds")
-# handwriter::get_clusters_batch(template = template,
-#                                input_dir = "data-raw/CSAFE_handwriting_db/graphs/LND/s01",
-#                                output_dir = "data-raw/CSAFE_handwriting_db/clusters/LND/s01",
-#                                writer_indices = c(2, 5),
-#                                doc_indices = c(7, 18),
-#                                num_cores = 4)
+handwriter::get_clusters_batch(template = template,
+                               input_dir = "data-raw/CSAFE_handwriting_db/graphs/PHR/s01",
+                               output_dir = "data-raw/CSAFE_handwriting_db/clusters/PHR/s01",
+                               writer_indices = c(2, 5),
+                               doc_indices = c(7, 18),
+                               num_cores = 4,
+                               save_master_file = TRUE)
 
-all_clusters_path <- "data-raw/CSAFE_handwriting_db/clusters/LND/s01/all_clusters.rds"
 
-cfr <- get_cluster_fill_rates(all_clusters_path = all_clusters_path)
+# Cluster Fill Rates ------------------------------------------------------
 
-usethis::use_data(cfr)
+# load clusters
+LND <- readRDS("data-raw/CSAFE_handwriting_db/clusters/LND/s01/all_clusters.rds")
+WOZ <- readRDS("data-raw/CSAFE_handwriting_db/clusters/WOZ/s01/all_clusters.rds")
+PHR <- readRDS("data-raw/CSAFE_handwriting_db/clusters/PHR/s01/all_clusters.rds")
+all_clusters <- rbind(LND, WOZ, PHR)
+
+cfc <- get_combined_cfc(all_clusters)
+
+cfr <- get_cluster_fill_rates(cfc = cfc)
+
+usethis::use_data(cfr, overwrite = TRUE)
 
