@@ -4,22 +4,26 @@
 \alias{get_distances}
 \title{Get Distances}
 \usage{
-get_distances(cfr, distance = "euclidean")
+get_distances(df, distances)
 }
 \arguments{
-\item{cfr}{A data frame of cluster fill rates created with
+\item{df}{A data frame of cluster fill rates created with
 `get_cluster_fill_rates`}
 
-\item{distance}{A distance method used by 'stats::dist'}
+\item{distances}{A vector of distance measures. Use "absolute" to calculate
+the absolute difference between cluster fill rates of two documents. The
+output distance will be a vector the length of the number of clusters. Use
+distance measures accepted by 'stats::dist': "euclidean", "maximum",
+"manhattan", "canberra", "binary", or "minkowski".}
 }
 \value{
 A data frame of distances
 }
 \description{
 Calculate distances using 'stats::dist' between all pairs of cluster fill
-rates.
+rates using one or more distance measures
 }
 \examples{
-distances <- get_distances(cfr, "euclidean")
+distances <- get_distances(df = cfr, distances = c("manhattan", "euclidean")
 
 }
