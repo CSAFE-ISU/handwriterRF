@@ -83,3 +83,35 @@ update_log <- function(new_log) {
   }
   write.csv(exlog, file.path("experiments", "experiments_log.csv"), row.names = FALSE)
 }
+
+plot_mean_errors_barchart <- function(log_path) {
+  exlog <- read_csv(log_path)
+
+  stats <- exlog %>%
+    dplyr::group_by(train_prompt, test_prompt) %>%
+    dplyr::summarize(min_fpr = min(fpr),
+                     max_fpr = max(fpr),
+                     mean_fpr = mean(fpr),
+                     min_fnr = min(fnr),
+                     max_fnr = max(fnr),
+                     mean_fnr = mean(fnr))
+
+  plots <- list()
+  plots[[1]] <- stats %>% ggplot(aes(x=test_prompt, y=mean_fpr)) +
+    geom_bar(stat="identity", color="black",
+             position=position_dodge()) +
+    geom_errorbar(aes(ymin=min_fpr, ymax=max_fpr), width=.2,
+                  position=position_dodge(.9)) +
+    facet_wrap(~train_prompt) +
+    theme_bw()
+
+  plots[[2]] <- stats %>% ggplot(aes(x=test_prompt, y=mean_fnr)) +
+    geom_bar(stat="identity", color="black",
+             position=position_dodge()) +
+    geom_errorbar(aes(ymin=min_fnr, ymax=max_fnr), width=.2,
+                  position=position_dodge(.9)) +
+    facet_wrap(~train_prompt) +
+    theme_bw()
+
+  return(plots)
+}
