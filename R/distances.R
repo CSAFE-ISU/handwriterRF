@@ -40,8 +40,6 @@ get_distances <- function(df, distances) {
   # combine data frames
   dists <- purrr::reduce(dists, dplyr::left_join, by = c("docname1"="docname1", "docname2"="docname2"))
 
-  dists <- expand_docnames(dists, "docname1", "1")
-  dists <- expand_docnames(dists, "docname2", "2")
   dists <- label_same_different_writer(dists)
 
   return(dists)
@@ -69,7 +67,7 @@ get_single_method_distances <- function(df, distance = "euclidean", dist_col_lab
   docname <- docname1 <- docname2 <- writer1 <- writer2 <- NULL
 
   # drop all columns except clusters
-  clusters <- df %>% dplyr::select(-docname, -total_graphs)
+  clusters <- df %>% dplyr::select(-docname)
 
   # calculate distances between all pairs of docs
   dists <- as.data.frame(as.matrix(stats::dist(x = clusters, method = distance)))
@@ -92,7 +90,7 @@ get_single_method_distances <- function(df, distance = "euclidean", dist_col_lab
 
 get_abs_dists <- function(df) {
   abs_dist_for_single_cluster <- function(df, k){
-    df <- df %>% dplyr::select(docname, total_graphs, paste0("cluster", k))
+    df <- df %>% dplyr::select(docname, paste0("cluster", k))
     dists <- get_single_method_distances(df = df, distance = "manhattan", dist_col_label = paste0("cluster", k))
     return(dists)
   }
@@ -115,16 +113,16 @@ label_same_different_writer <- function(dists){
   # prevent note "no visible binding for global variable"
   writer1 <- writer2 <- NULL
 
-  same <- dists %>% dplyr::filter(writer1 == writer2)
-  same$match <- "same"
+  dists <- expand_docnames(dists, "docname1", "1")
+  dists <- expand_docnames(dists, "docname2", "2")
 
-  diff <- dists %>% dplyr::filter(writer1 != writer2)
-  diff$match <- "different"
-
-  dists <- rbind(same, diff)
+  dists <- dists %>% dplyr::mutate(match = ifelse(writer1 == writer2, "same", "different"))
 
   # make match a factor
   dists$match <- as.factor(dists$match)
+
+  # drop columns in prep for rf
+  dists <- dists %>% dplyr::select(-writer1, -session1, -prompt1, -rep1, -writer2, -session2, -prompt2, -rep2)
 
   return(dists)
 }

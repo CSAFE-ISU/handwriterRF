@@ -15,29 +15,20 @@
 #' @examples
 #' dists <- get_distances(df = cfr, distances = c("euclidean"))
 #' sets <- get_train_test_sets(dists, 70)
-get_train_test_sets <- function(dists, train_n, downsample = TRUE) {
-  writers <- get_train_test_writers(dists = dists, train_n = train_n)
+get_train_test_sets <- function(df, train_prompt_code, test_prompt_code, train_n) {
+  writers <- get_train_test_writers(df = df, train_n = train_n)
 
   # build train set
-  train_w_doc_info <- dists %>%
-    dplyr::filter(writer1 %in% writers$train, writer2 %in% writers$train)
-
-  if (downsample){
-    train_w_doc_info <- downsample_diff_pairs(train_w_doc_info)
-  }
-
-  # drop columns with doc info in prep for the random forest
-  train <- train_w_doc_info %>%
-    dplyr::select(-writer1, -session1, -prompt1, -rep1, -docname1, -writer2, -session2, -prompt2, -rep2, -docname2)
+  train <- df %>%
+    dplyr::filter(writer %in% writers$train, prompt == train_prompt_code) %>%
+    dplyr::select(-writer, -session, -prompt, -rep, -total_graphs)
 
   # build test set
-  test_w_doc_info <- dists %>%
-    dplyr::filter(writer1 %in% writers$test, writer2 %in% writers$test)
+  test <- df %>%
+    dplyr::filter(writer %in% writers$test, prompt == test_prompt_code) %>%
+    dplyr::select(-writer, -session, -prompt, -rep, -total_graphs)
 
-  test <- test_w_doc_info %>%
-    dplyr::select(-writer1, -session1, -prompt1, -rep1, -docname1, -writer2, -session2, -prompt2, -rep2, -docname2)
-
-  return(list("train" = train, "test" = test, "train_w_doc_info" = train_w_doc_info, "test_w_doc_info" = test_w_doc_info))
+  return(list("train" = train, "test" = test, "writers" = writers))
 }
 
 
@@ -74,8 +65,8 @@ downsample_diff_pairs <- function(df){
 #' dists <- get_distances(df = cfr, distances = c("euclidean"))
 #' writers <- get_train_test_writers(dists, 70)
 #'
-get_train_test_writers <- function(dists, train_n) {
-  writers <- unique(dists$writer1)
+get_train_test_writers <- function(df, train_n) {
+  writers <- unique(df$writer)
   train <- sample(writers, train_n)
   test <- setdiff(writers, train)
   return(list("train" = train, "test" = test))

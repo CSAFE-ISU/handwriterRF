@@ -1,19 +1,19 @@
-get_votes <- function(rf, sets){
+get_votes <- function(rf, dists){
   train_votes <- as.data.frame(rf$votes)['same']
   # add labels from train data frame
-  train_votes$match <- sets$train$match
+  train_votes$match <- dists$train$match
   colnames(train_votes) <- c("votes", "match")
 
-  test_votes <- as.data.frame(predict(rf, sets$test, type="prob"))['same']
+  test_votes <- as.data.frame(predict(rf, subset(dists$test, select = -c(docname1, docname2)), type="prob"))['same']
   # add labels from test data frame
-  test_votes$match <- sets$test$match
+  test_votes$match <- dists$test$match
   colnames(test_votes) <- c("votes", "match")
 
   return(list("train" = train_votes, "test" = test_votes))
 }
 
-get_scores <- function(rf, sets) {
-  votes <- get_votes(rf, sets)
+get_scores <- function(rf, dists) {
+  votes <- get_votes(rf, dists)
 
   scores <- list()
   scores$train_same_writer <- votes$train %>% dplyr::filter(match == "same") %>% dplyr::pull(votes)
