@@ -1,6 +1,7 @@
-run_experiment <- function(df, train_prompt_code, test_prompt_code, train_n, dataset_name, distances, ntrees, run_number) {
+run_experiment <- function(df, train_prompt_code, test_prompt_code, train_n,
+                           dataset_name, distances, ntrees, run_number, downsample = TRUE) {
   set.seed(run_number)
-
+  browser()
   # Log ---------------------------------------------------------------------
   # start new log entry (data frame with 1 row)
   new_log <- data.frame("dataset" = dataset_name,
@@ -14,6 +15,8 @@ run_experiment <- function(df, train_prompt_code, test_prompt_code, train_n, dat
 
   # Get Train and Test Sets -------------------------------------------------
   df <- expand_docnames(df)
+  # train: n writers * 3 docs each = 3n docs
+  # test: m writers * 3 docs each = 3m docs
   sets <- get_train_test_sets(df, train_prompt_code, test_prompt_code, train_n)
   new_log$test_n <- length(sets$writers$test)
 
@@ -23,6 +26,10 @@ run_experiment <- function(df, train_prompt_code, test_prompt_code, train_n, dat
   dists$train <- get_distances(df = sets$train, distances = distances)
   dists$test <- get_distances(df = sets$test, distances = distances)
 
+  if (downsample){
+    dists$train <- downsample_diff_pairs(dists$train)
+    dists$test <- downsample_diff_pairs(dists$test)
+  }
 
   # Random Forest with Ranger Package ---------------------------------------
 
@@ -43,7 +50,7 @@ run_experiment <- function(df, train_prompt_code, test_prompt_code, train_n, dat
   # }
 
   # Random Forests ----------------------------------------------------------
-  dists$train <- downsample_diff_pairs(dists$train)
+
   rf <- randomForest::randomForest(match ~ ., data = subset(dists$train, select = -c(docname1, docname2)), ntree = ntrees)
 
 
@@ -62,12 +69,14 @@ run_experiment <- function(df, train_prompt_code, test_prompt_code, train_n, dat
   roc <- PRROC::roc.curve(scores.class0 = slrs$same_writer, scores.class1 = slrs$diff_writer)
   new_log$auc <- roc$auc
 
-  # Save Log ----------------------------------------------------------------
+  # Save --------------------------------------------------------------------
+  saveRDS(rf, "rf.rds")
   update_log(new_log)
 
 
-  return(list("slrs" = slrs, "errors" = errors))
+  return(list("rf"= rf, "slrs" = slrs, "errors" = errors))
 }
+
 
 update_log <- function(new_log) {
   # sort log columns
@@ -84,8 +93,37 @@ update_log <- function(new_log) {
   write.csv(exlog, file.path("experiments", "experiments_log.csv"), row.names = FALSE)
 }
 
+
+make_auc_table <- function(log_path){
+  exlog <- read.csv(log_path)
+
+  stats <- exlog %>%
+    dplyr::group_by(train_prompt, test_prompt) %>%
+    dplyr::summarize(mean_auc = mean(auc)) %>%
+    tidyr::pivot_wider(names_from = "test_prompt", values_from = "mean_auc")
+
+  write.csv(stats, file.path(dirname(log_path), "mean_auc_table.csv"))
+
+  return(stats)
+}
+
+
+make_error_table <- function(log_path){
+  exlog <- read.csv(log_path)
+
+  stats <- exlog %>%
+    dplyr::group_by(train_prompt, test_prompt) %>%
+    dplyr::summarize(mean_error = 0.5*(mean(fpr) + mean(fnr))) %>%
+    tidyr::pivot_wider(names_from = "test_prompt", values_from = "mean_error")
+
+  write.csv(stats, file.path(dirname(log_path), "mean_error_table.csv"))
+
+  return(stats)
+}
+
+
 plot_mean_errors_barchart <- function(log_path) {
-  exlog <- read_csv(log_path)
+  exlog <- read.csv(log_path)
 
   stats <- exlog %>%
     dplyr::group_by(train_prompt, test_prompt) %>%
@@ -103,6 +141,7 @@ plot_mean_errors_barchart <- function(log_path) {
     geom_errorbar(aes(ymin=min_fpr, ymax=max_fpr), width=.2,
                   position=position_dodge(.9)) +
     facet_wrap(~train_prompt) +
+    ylim(0,1) +
     theme_bw()
 
   plots[[2]] <- stats %>% ggplot(aes(x=test_prompt, y=mean_fnr)) +
@@ -111,6 +150,7 @@ plot_mean_errors_barchart <- function(log_path) {
     geom_errorbar(aes(ymin=min_fnr, ymax=max_fnr), width=.2,
                   position=position_dodge(.9)) +
     facet_wrap(~train_prompt) +
+    ylim(0,1) +
     theme_bw()
 
   return(plots)
