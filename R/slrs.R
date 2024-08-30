@@ -1,3 +1,22 @@
+get_slrs <- function(scores, zero_correction = 1e-10){
+
+  pdfs <- get_densities(scores)
+
+  test_same_writer_evals <- eval_density_at_point(density = pdfs, x = scores$test_same_writer)
+  test_same_writer_evals <- correct_NAs(evals = test_same_writer_evals, zero_correction = zero_correction)
+  test_same_writer_evals <- correct_zeros(evals = test_same_writer_evals, zero_correction = zero_correction)
+
+  test_diff_writer_evals <- eval_density_at_point(density = pdfs, x = scores$test_diff_writer)
+  test_diff_writer_evals <- correct_NAs(evals = test_diff_writer_evals, zero_correction = zero_correction)
+  test_diff_writer_evals <- correct_zeros(evals = test_diff_writer_evals, zero_correction = zero_correction)
+
+  slrs <- list()
+  slrs$same_writer <- test_same_writer_evals$numerators / test_same_writer_evals$denominators
+  slrs$diff_writer <- test_diff_writer_evals$numerators / test_diff_writer_evals$denominators
+
+  return(slrs)
+}
+
 get_densities <- function(scores){
   pdfs <- list()
   pdfs$same_writer <- density(scores$train_same_writer, kernel = "gaussian", n=10000)
@@ -5,30 +24,22 @@ get_densities <- function(scores){
   return(pdfs)
 }
 
-get_slrs <- function(scores){
-  pdfs <- get_densities(scores)
+eval_density_at_point <- function(density, x){
+  evals <- list()
+  evals$numerators <- approx(density$same_writer$x, density$same_writer$y, xout = x, n=10000)$y
+  evals$denominators <- approx(density$diff_writer$x, density$diff_writer$y, xout = x, n=10000)$y
+  return(evals)
+}
 
-  slrs <- list()
+correct_NAs <- function(evals, zero_correction){
+  evals$numerators[is.na(evals$numerators)] <- 0
+  evals$denominators[is.na(evals$denominators)] <- zero_correction
+  return(evals)
+}
 
-  # slrs for same writer scores
-  numerators_same_writer <- approx(pdfs$same_writer$x, pdfs$same_writer$y, xout = scores$test_same_writer, n=10000)$y
-  denominators_same_writer <- approx(pdfs$diff_writer$x, pdfs$diff_writer$y, xout = scores$test_same_writer, n=10000)$y
-  # replace NA's with 0 in numers
-  numerators_same_writer[is.na(numerators_same_writer)] <- 0
-  # replace NA's with Inf in denoms
-  denominators_same_writer[is.na(denominators_same_writer)] <- 0.01
-  slrs$same_writer <- numerators_same_writer / denominators_same_writer
-
-  # slrs for different writer scores
-  numerators_diff_writer <- approx(pdfs$same_writer$x, pdfs$same_writer$y, xout = scores$test_diff_writer, n=10000)$y
-  denominators_diff_writer <- approx(pdfs$diff_writer$x, pdfs$diff_writer$y, xout = scores$test_diff_writer, n=10000)$y
-  # replace NA's with 0 in numers
-  numerators_diff_writer[is.na(numerators_diff_writer)] <- 0
-  # replace NA's with Inf in denoms
-  denominators_diff_writer[is.na(denominators_diff_writer)] <- 0.01
-  slrs$diff_writer <- numerators_diff_writer / denominators_diff_writer
-
-  return(slrs)
+correct_zeros <- function(evals, zero_correction){
+  evals$denominators[which(evals$denominators == 0)] <- zero_correction
+  return(evals)
 }
 
 calculate_error_rates <- function(slrs) {

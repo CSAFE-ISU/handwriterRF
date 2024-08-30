@@ -19,21 +19,21 @@
 #' @export
 #'
 #' @examples
-#' distances <- get_distances(df = cfr, distances = c("manhattan", "euclidean")
+#' distances <- get_distances(df = cfr, distances = c("man", "euc")
 #'
 get_distances <- function(df, distances) {
+
   dists <- list()
-  if ("absolute" %in% distances){
+  if ("abs" %in% distances){
     abs <- get_abs_dists(df)
     dists[["abs"]] <- abs
 
     # delete absolute from distances list
-    distances <- distances[which(distances != "absolute")]
+    distances <- distances[which(distances != "abs")]
   }
 
   for (method in distances){
-    new_dists <- get_single_method_distances(df, distance = method)
-    colnames(new_dists)[colnames(new_dists) == "dist"] <- method
+    new_dists <- get_single_method_distances(df, distance = method, dist_col_label = method)
     dists[[method]] <- new_dists
   }
 
@@ -62,7 +62,7 @@ get_distances <- function(df, distances) {
 #' @examples
 #' distances <- get_single_method_distances(df = cfr, distance = "euclidean", dist_col_label = "dist")
 #'
-get_single_method_distances <- function(df, distance = "euclidean", dist_col_label = "dist"){
+get_single_method_distances <- function(df, distance = "euc", dist_col_label = "dist"){
   # prevent note "no visible binding for global variable"
   docname <- docname1 <- docname2 <- writer1 <- writer2 <- NULL
 
@@ -70,20 +70,39 @@ get_single_method_distances <- function(df, distance = "euclidean", dist_col_lab
   clusters <- df %>% dplyr::select(-docname)
 
   # calculate distances between all pairs of docs
-  dists <- as.data.frame(as.matrix(stats::dist(x = clusters, method = distance)))
+  if (distance == "man"){
+    dists <- manhattan_dist(clusters)
+  } else if (distance == "euc"){
+    dists <- euclidean_dist(clusters)
+  } else if (distance == "max"){
+    dists <- maximum_dist(clusters)
+  } else if (distance == "cos"){
+    dists <- cosine_dist(clusters)
+  } else {
+    stop("That distance has not been defined. Use 'man', 'euc', 'max', or 'cos'.")
+  }
 
-  # set column names
+  # set lower triangle as NA because they are duplicates of upper triangle
+  dists[lower.tri(dists)] <- NA
+  # set diagonal entries to NA because each is the distance between a document
+  # and itself. We don't want to use these distances in our distributions.
+  diag(dists) <- NA
+
+  # format data frame
+  dists <- as.data.frame(dists)
   colnames(dists) <- df$docname
-
-  # make docname the first column
   dists$docname <- df$docname
   dists <- dists %>% dplyr::select(docname, tidyselect::everything())
 
+  # reshape matrix to three columns (docname1, docname2, distance name) and drop
+  # NAs
   colnames(dists)[colnames(dists) == "docname"] <- "docname1"
-  dists <- reshape2::melt(dists, id.vars = "docname1", variable.name = "docname2", value.name = dist_col_label)
+  dists <- reshape2::melt(dists, id.vars = "docname1", variable.name = "docname2", value.name = dist_col_label, na.rm = TRUE)
 
-  # delete distances between same doc
-  dists <- dists %>% dplyr::filter(docname1 != docname2)
+  # check number of rows
+  if (nrow(dists) != choose(nrow(df), 2)){
+    stop(paste("There should be", choose(nrow(df), 2), "distances, but there are", nrow(dists)))
+  }
 
   return(dists)
 }
@@ -91,7 +110,7 @@ get_single_method_distances <- function(df, distance = "euclidean", dist_col_lab
 get_abs_dists <- function(df) {
   abs_dist_for_single_cluster <- function(df, k){
     df <- df %>% dplyr::select(docname, paste0("cluster", k))
-    dists <- get_single_method_distances(df = df, distance = "manhattan", dist_col_label = paste0("cluster", k))
+    dists <- get_single_method_distances(df = df, distance = "man", dist_col_label = paste0("cluster", k))
     return(dists)
   }
 
@@ -125,4 +144,28 @@ label_same_different_writer <- function(dists){
   dists <- dists %>% dplyr::select(-writer1, -session1, -prompt1, -rep1, -writer2, -session2, -prompt2, -rep2)
 
   return(dists)
+}
+
+manhattan_dist <- function(df){
+  d <- outer(seq_len(nrow(df)), seq_len(nrow(df)),
+             function(i, j) {rowSums(abs(df[i,] - df[j,]))})
+  return(d)
+}
+
+euclidean_dist <- function(df){
+  d <- outer(seq_len(nrow(df)), seq_len(nrow(df)),
+             function(i, j) {sqrt(rowSums((df[i,] - df[j,])^2))})
+  return(d)
+}
+
+maximum_dist <- function(df){
+  d <- outer(seq_len(nrow(df)), seq_len(nrow(df)),
+             function(i, j) {apply(abs(df[i,] - df[j,]), 1, max)})
+  return(d)
+}
+
+cosine_dist <- function(df){
+  d <- outer(seq_len(nrow(df)), seq_len(nrow(df)),
+             function(i, j) {(rowSums((df[i,] - df[j,])^2)) / (sqrt(rowSums((df[i,])^2)) * sqrt(rowSums((df[j,])^2)))})
+  return(d)
 }
