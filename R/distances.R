@@ -8,7 +8,7 @@
 #'
 #' @param df A data frame of cluster fill rates created with
 #'   `get_cluster_fill_rates`
-#' @param distances A vector of distance measures. Use "absolute" to calculate
+#' @param distance_measures A vector of distance measures. Use "absolute" to calculate
 #'   the absolute difference between cluster fill rates of two documents. The
 #'   output distance will be a vector the length of the number of clusters. Use
 #'   distance measures accepted by 'stats::dist': "euclidean", "maximum",
@@ -19,21 +19,21 @@
 #' @export
 #'
 #' @examples
-#' distances <- get_distances(df = cfr, distances = c("man", "euc")
+#' distances <- get_distances(df = cfr, distance_measures = c("man", "euc")
 #'
-get_distances <- function(df, distances) {
+get_distances <- function(df, distance_measures) {
 
   dists <- list()
-  if ("abs" %in% distances){
+  if ("abs" %in% distance_measures){
     abs <- get_abs_dists(df)
     dists[["abs"]] <- abs
 
-    # delete absolute from distances list
-    distances <- distances[which(distances != "abs")]
+    # delete absolute from distance measures list
+    distance_measures <- distance_measures[which(distance_measures != "abs")]
   }
 
-  for (method in distances){
-    new_dists <- get_single_method_distances(df, distance = method, dist_col_label = method)
+  for (method in distance_measures){
+    new_dists <- get_single_method_distances(df, distance_measure = method, dist_col_label = method)
     dists[[method]] <- new_dists
   }
 
@@ -52,7 +52,7 @@ get_distances <- function(df, distances) {
 #'
 #' @param df A data frame of cluster fill rates created with
 #'   `get_cluster_fill_rates`
-#' @param distance A distance measure used by 'stats::dist'
+#' @param distance_measure A distance measure used by 'stats::dist'
 #' @param dist_col_label A name for the output distance column
 #'
 #' @return A data frame of distances
@@ -60,9 +60,9 @@ get_distances <- function(df, distances) {
 #' @export
 #'
 #' @examples
-#' distances <- get_single_method_distances(df = cfr, distance = "euclidean", dist_col_label = "dist")
+#' distances <- get_single_method_distances(df = cfr, distance_measure = "euclidean", dist_col_label = "dist")
 #'
-get_single_method_distances <- function(df, distance = "euc", dist_col_label = "dist"){
+get_single_method_distances <- function(df, distance_measure = "euc", dist_col_label = "dist"){
   # prevent note "no visible binding for global variable"
   docname <- docname1 <- docname2 <- writer1 <- writer2 <- NULL
 
@@ -70,16 +70,16 @@ get_single_method_distances <- function(df, distance = "euc", dist_col_label = "
   clusters <- df %>% dplyr::select(-docname)
 
   # calculate distances between all pairs of docs
-  if (distance == "man"){
+  if (distance_measure == "man"){
     dists <- manhattan_dist(clusters)
-  } else if (distance == "euc"){
+  } else if (distance_measure == "euc"){
     dists <- euclidean_dist(clusters)
-  } else if (distance == "max"){
+  } else if (distance_measure == "max"){
     dists <- maximum_dist(clusters)
-  } else if (distance == "cos"){
+  } else if (distance_measure == "cos"){
     dists <- cosine_dist(clusters)
   } else {
-    stop("That distance has not been defined. Use 'man', 'euc', 'max', or 'cos'.")
+    stop("That distance measure has not been defined. Use 'man', 'euc', 'max', or 'cos'.")
   }
 
   # set lower triangle as NA because they are duplicates of upper triangle
@@ -110,7 +110,7 @@ get_single_method_distances <- function(df, distance = "euc", dist_col_label = "
 get_abs_dists <- function(df) {
   abs_dist_for_single_cluster <- function(df, k){
     df <- df %>% dplyr::select(docname, paste0("cluster", k))
-    dists <- get_single_method_distances(df = df, distance = "man", dist_col_label = paste0("cluster", k))
+    dists <- get_single_method_distances(df = df, distance_measure = "man", dist_col_label = paste0("cluster", k))
     return(dists)
   }
 

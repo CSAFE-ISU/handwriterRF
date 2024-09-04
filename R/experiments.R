@@ -1,7 +1,25 @@
-run_experiment <- function(df, train_prompt_code, test_prompt_code, train_n,
-                           dataset_name, distances, ntrees, run_number, downsample = TRUE) {
+run_experiment <- function(df,
+                           train_prompt_code,
+                           test_prompt_code,
+                           train_n,
+                           dataset_name,
+                           distance_measures,
+                           ntrees,
+                           run_number,
+                           use_random_forest = TRUE,
+                           downsample = TRUE) {
 
   set.seed(run_number)
+
+  # create output directory if it doesn't already exist
+  if (downsample){
+    outdir <- file.path("experiments", "tests_downsampled", paste0(dataset_name, "_", paste0(distance_measures, collapse="_")))
+  } else {
+    outdir <- file.path("experiments", "tests_not_downsampled", paste0(dataset_name, "_", paste0(distance_measures, collapse="_")))
+  }
+  if (!dir.exists(outdir)){
+    dir.create(outdir)
+  }
 
   # Log ---------------------------------------------------------------------
   # start new log entry (data frame with 1 row)
@@ -9,9 +27,12 @@ run_experiment <- function(df, train_prompt_code, test_prompt_code, train_n,
                         "train_prompt" = train_prompt_code,
                         "test_prompt" = test_prompt_code,
                         "train_n" = train_n,
-                        "distances" = paste(distances, collapse = " + "),
+                        "distance_measures" = paste(distance_measures, collapse = " + "),
+                        "use_random_forest" = paste(use_random_forest),
                         "rf_ntrees" = ntrees,
-                        "run_number" = run_number)
+                        "run_number" = run_number,
+                        "downsample_train_set" = "TRUE",
+                        "downsample_test_set" = paste(downsample))
 
 
   # Get Train and Test Sets -------------------------------------------------
@@ -24,8 +45,8 @@ run_experiment <- function(df, train_prompt_code, test_prompt_code, train_n,
 
   # Get Distances -----------------------------------------------------------
   dists <- list()
-  dists$train <- get_distances(df = sets$train, distances = distances)
-  dists$test <- get_distances(df = sets$test, distances = distances)
+  dists$train <- get_distances(df = sets$train, distance_measures = distance_measures)
+  dists$test <- get_distances(df = sets$test, distance_measures = distance_measures)
 
   if (downsample){
     dists$train <- downsample_diff_pairs(dists$train)
@@ -50,13 +71,12 @@ run_experiment <- function(df, train_prompt_code, test_prompt_code, train_n,
   #   return(votes)
   # }
 
-  # Random Forests ----------------------------------------------------------
+  # Scores ------------------------------------------------------------------
 
-  rf <- randomForest::randomForest(match ~ ., data = subset(dists$train, select = -c(docname1, docname2)), ntree = ntrees)
+  scores <- get_scores(dists, distance_measures = distance_measures, run_number = run_number, use_random_forest = use_random_forest, ntrees = ntrees, downsample = downsample)
 
 
   # SLRs --------------------------------------------------------------------
-  scores <- get_scores(rf, dists)
   slrs <- get_slrs(scores)
 
 
@@ -71,19 +91,6 @@ run_experiment <- function(df, train_prompt_code, test_prompt_code, train_n,
   new_log$auc <- roc$auc
 
   # Save --------------------------------------------------------------------
-  # create output directory if it doesn't already exist
-  if (downsample){
-    outdir <- file.path("experiments", "tests_downsampled", paste0(dataset_name, "_", paste0(distances, collapse="_")))
-  } else {
-    outdir <- file.path("experiments", "tests_not_downsampled", paste0(dataset_name, "_", paste0(distances, collapse="_")))
-  }
-  if (!dir.exists(outdir)){
-    dir.create(outdir)
-  }
-
-  # save random forest
-  saveRDS(rf, file.path(outdir, paste0("rf_", run_number, ".rds")))
-
   # save / update log
   update_log(new_log, outdir)
 
@@ -92,9 +99,10 @@ run_experiment <- function(df, train_prompt_code, test_prompt_code, train_n,
 
 
 update_log <- function(new_log, outdir) {
+
   # sort log columns
-  new_log <- new_log %>% dplyr::select(run_number, dataset, train_prompt, test_prompt, train_n, test_n, distances,
-                                       rf_ntrees, fnr, fpr, auc)
+  new_log <- new_log %>% dplyr::select(run_number, dataset, train_prompt, test_prompt, train_n, test_n, distance_measures,
+                                       use_random_forest, rf_ntrees, downsample_train_set, downsample_test_set, fnr, fpr, auc)
 
   # add to existing log or start new log
   if (file.exists(file.path(outdir, "experiments_log.csv"))){
