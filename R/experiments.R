@@ -117,12 +117,12 @@ make_auc_table_by_test_prompt <- function(log_path){
     dplyr::summarize(mean_auc = mean(auc)) %>%
     tidyr::pivot_wider(names_from = "test_prompt", values_from = "mean_auc")
 
-  write.csv(stats, file.path(dirname(log_path), "mean_auc_by_test_prompt.csv"))
+  write.csv(stats, file.path(dirname(log_path), "mean_auc_by_test_prompt.csv"), row.names = FALSE)
 
   return(stats)
 }
 
-make_auc_table_test_prompts_grouped_together <- function(log_path, test_prompts){
+make_auc_table_with_test_prompts_grouped <- function(log_path, test_prompts){
   exlog <- read.csv(log_path)
 
   stats <- exlog %>%
@@ -130,10 +130,66 @@ make_auc_table_test_prompts_grouped_together <- function(log_path, test_prompts)
     dplyr::group_by(train_prompt) %>%
     dplyr::summarize(mean_auc = mean(auc))
 
-  write.csv(stats, file.path(dirname(log_path), paste0("mean_auc_", paste0(test_prompts, collapse = "_"), "_grouped_together.csv")))
+  write.csv(stats, file.path(dirname(log_path), paste0("mean_auc_with_", paste0(test_prompts, collapse = "_"), "_grouped.csv")), row.names = FALSE)
 
   return(stats)
 }
+
+make_error_table_by_test_prompt <- function(log_path){
+  exlog <- read.csv(log_path)
+
+  stats <- exlog %>%
+    dplyr::mutate(error = 0.5*(fpr + fnr)) %>%
+    dplyr::group_by(train_prompt, test_prompt) %>%
+    dplyr::summarize(mean_error = mean(error)) %>%
+    tidyr::pivot_wider(names_from = "test_prompt", values_from = "mean_error")
+
+  write.csv(stats, file.path(dirname(log_path), "mean_error_by_test_prompt.csv"), row.names = FALSE)
+
+  return(stats)
+}
+
+make_error_table_with_test_prompts_grouped <- function(log_path, test_prompts){
+  exlog <- read.csv(log_path)
+
+  stats <- exlog %>%
+    dplyr::mutate(error = 0.5*(fpr + fnr)) %>%
+    dplyr::filter(test_prompt %in% test_prompts) %>%
+    dplyr::group_by(train_prompt) %>%
+    dplyr::summarize(mean_error = mean(error))
+
+  write.csv(stats, file.path(dirname(log_path), paste0("mean_error_with_", paste0(test_prompts, collapse = "_"), "_grouped.csv")), row.names = FALSE)
+
+  return(stats)
+}
+
+
+make_fpr_table_with_test_prompts_grouped <- function(log_path, test_prompts){
+  exlog <- read.csv(log_path)
+
+  stats <- exlog %>%
+    dplyr::filter(test_prompt %in% test_prompts) %>%
+    dplyr::group_by(train_prompt) %>%
+    dplyr::summarize(mean_fpr = mean(fpr))
+
+  write.csv(stats, file.path(dirname(log_path), paste0("mean_fpr_with_", paste0(test_prompts, collapse = "_"), "_grouped.csv")), row.names = FALSE)
+
+  return(stats)
+}
+
+make_fnr_table_with_test_prompts_grouped <- function(log_path, test_prompts){
+  exlog <- read.csv(log_path)
+
+  stats <- exlog %>%
+    dplyr::filter(test_prompt %in% test_prompts) %>%
+    dplyr::group_by(train_prompt) %>%
+    dplyr::summarize(mean_fnr = mean(fnr))
+
+  write.csv(stats, file.path(dirname(log_path), paste0("mean_fnr_with_", paste0(test_prompts, collapse = "_"), "_grouped.csv")), row.names = FALSE)
+
+  return(stats)
+}
+
 
 powerset <- function(x) {
   sets <- lapply(1:(length(x)), function(i) combn(x, i, simplify = F))
