@@ -1,0 +1,5 @@
+"train_prompt","distance_measures","use_random_forest","mean_error"
+"pCMB","man + euc + cos",TRUE,0.0737037037037037
+"pLND","man + euc + cos",TRUE,0.0448148148148148
+"pPHR","man + euc + cos",TRUE,0.338888888888889
+"pWOZ","man + euc + cos",TRUE,0.0481481481481481

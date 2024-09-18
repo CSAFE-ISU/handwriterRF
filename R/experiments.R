@@ -12,14 +12,7 @@ run_experiment <- function(df,
   set.seed(run_number)
 
   # create output directory if it doesn't already exist
-  if (downsample){
-    outdir <- file.path("experiments", "tests_downsampled", paste0(dataset_name, "_", paste0(distance_measures, collapse="_")))
-  } else {
-    outdir <- file.path("experiments", "tests_not_downsampled", paste0(dataset_name, "_", paste0(distance_measures, collapse="_")))
-  }
-  if (!dir.exists(outdir)){
-    dir.create(outdir)
-  }
+  outdir <- get_experiment_dir(dataset_name = dataset_name, distances_measures = distance_measures, downsample = downsample)
 
   # Log ---------------------------------------------------------------------
   # start new log entry (data frame with 1 row)
@@ -97,6 +90,22 @@ run_experiment <- function(df,
   return(list("rf"= rf, "slrs" = slrs, "errors" = errors))
 }
 
+get_experiment_dir <- function(dataset_name, distance_measures, downsample) {
+  if (downsample){
+    outdir <- file.path("experiments", "tests_downsampled", paste0(dataset_name, "_", paste0(distance_measures, collapse="_")))
+  } else {
+    outdir <- file.path("experiments", "tests_not_downsampled", paste0(dataset_name, "_", paste0(distance_measures, collapse="_")))
+  }
+  if (!dir.exists(outdir)){
+    dir.create(outdir)
+  }
+  return(outdir)
+}
+
+get_experiment_log <- function(dataset_name, distance_measures, downsample){
+  experiment_dir <- get_experiment_dir(dataset_name, distance_measures, downsample = TRUE)
+  return(file.path(experiment_dir, "experiments_log.csv"))
+}
 
 update_log <- function(new_log, outdir) {
 
@@ -117,7 +126,7 @@ update_log <- function(new_log, outdir) {
 }
 
 
-make_auc_table_by_test_prompt <- function(log_path){
+make_auc_grid <- function(log_path){
   exlog <- read.csv(log_path)
 
   stats <- exlog %>%
@@ -130,74 +139,39 @@ make_auc_table_by_test_prompt <- function(log_path){
   return(stats)
 }
 
-make_auc_table_with_test_prompts_grouped <- function(log_path, test_prompts){
-  exlog <- read.csv(log_path)
 
-  stats <- exlog %>%
-    dplyr::filter(test_prompt %in% test_prompts) %>%
-    dplyr::group_by(train_prompt) %>%
-    dplyr::summarize(mean_auc = mean(auc))
+make_master_table <- function(dataset_name, stat, distance_measures, downsample, test_prompts){
+  make_table <- function(log_path, stat, test_prompts){
 
-  write.csv(stats, file.path(dirname(log_path), paste0("mean_auc_with_", paste0(test_prompts, collapse = "_"), "_grouped.csv")), row.names = FALSE)
+    df <- read.csv(log_path)
 
-  return(stats)
+    if (stat == "error"){
+      df <- df %>%
+        dplyr::mutate(error = 0.5*(fpr + fnr))
+    }
+
+    df <- df %>%
+      dplyr::filter(test_prompt %in% test_prompts) %>%
+      dplyr::group_by(train_prompt, distance_measures, use_random_forest) %>%
+      dplyr::summarize(mean_stat = mean(!!sym(stat)))
+    colnames(df)[colnames(df) == "mean_stat"] <- paste0("mean_", stat)
+
+    write.csv(df, file.path(dirname(log_path), paste0("mean_", stat, paste0(test_prompts, collapse = "_"), "_grouped.csv")), row.names = FALSE)
+
+    return(df)
+  }
+
+  distances <- powerset(x=distance_measures)
+  df <- list()
+  for (i in 1:length(distances)){
+    distance_measures <- distances[[i]]
+    log_path <- get_experiment_log(dataset_name = dataset_name, distance_measures = distance_measures, downsample = downsample)
+    stats <- make_table(log_path, stat, test_prompts = c("pLND", "pCMB", "pWOZ"))
+    df[[i]] <- stats
+  }
+  df <- do.call(rbind, df)
+  return(df)
 }
-
-make_error_table_by_test_prompt <- function(log_path){
-  exlog <- read.csv(log_path)
-
-  stats <- exlog %>%
-    dplyr::mutate(error = 0.5*(fpr + fnr)) %>%
-    dplyr::group_by(train_prompt, test_prompt) %>%
-    dplyr::summarize(mean_error = mean(error)) %>%
-    tidyr::pivot_wider(names_from = "test_prompt", values_from = "mean_error")
-
-  write.csv(stats, file.path(dirname(log_path), "mean_error_by_test_prompt.csv"), row.names = FALSE)
-
-  return(stats)
-}
-
-make_error_table_with_test_prompts_grouped <- function(log_path, test_prompts){
-  exlog <- read.csv(log_path)
-
-  stats <- exlog %>%
-    dplyr::mutate(error = 0.5*(fpr + fnr)) %>%
-    dplyr::filter(test_prompt %in% test_prompts) %>%
-    dplyr::group_by(train_prompt) %>%
-    dplyr::summarize(mean_error = mean(error))
-
-  write.csv(stats, file.path(dirname(log_path), paste0("mean_error_with_", paste0(test_prompts, collapse = "_"), "_grouped.csv")), row.names = FALSE)
-
-  return(stats)
-}
-
-
-make_fpr_table_with_test_prompts_grouped <- function(log_path, test_prompts){
-  exlog <- read.csv(log_path)
-
-  stats <- exlog %>%
-    dplyr::filter(test_prompt %in% test_prompts) %>%
-    dplyr::group_by(train_prompt) %>%
-    dplyr::summarize(mean_fpr = mean(fpr))
-
-  write.csv(stats, file.path(dirname(log_path), paste0("mean_fpr_with_", paste0(test_prompts, collapse = "_"), "_grouped.csv")), row.names = FALSE)
-
-  return(stats)
-}
-
-make_fnr_table_with_test_prompts_grouped <- function(log_path, test_prompts){
-  exlog <- read.csv(log_path)
-
-  stats <- exlog %>%
-    dplyr::filter(test_prompt %in% test_prompts) %>%
-    dplyr::group_by(train_prompt) %>%
-    dplyr::summarize(mean_fnr = mean(fnr))
-
-  write.csv(stats, file.path(dirname(log_path), paste0("mean_fnr_with_", paste0(test_prompts, collapse = "_"), "_grouped.csv")), row.names = FALSE)
-
-  return(stats)
-}
-
 
 powerset <- function(x) {
   sets <- lapply(1:(length(x)), function(i) combn(x, i, simplify = F))
