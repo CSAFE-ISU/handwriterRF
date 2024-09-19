@@ -41,11 +41,11 @@ get_combined_cfc <- function(all_clusters){
   df <- handwriter::get_cluster_fill_counts(all_clusters)
 
   # get combined doc cluster fill counts
-  df <- df %>% ungroup() %>% select(-writer, -doc)
+  df <- df %>% dplyr::ungroup() %>% dplyr::select(-writer, -doc)
   df <- expand_docnames(df)
   CMB <- df %>%
-    group_by(writer, rep) %>%
-    summarise(across(where(is.numeric), list(sum = sum)))
+    dplyr::group_by(writer, rep) %>%
+    dplyr::summarise(across(where(is.numeric), list(sum = sum)))
   colnames(CMB) <- c("writer", "rep", seq(1,40))
   CMB$session <- "s01"
   CMB$prompt <- "pCMB"
@@ -54,8 +54,10 @@ get_combined_cfc <- function(all_clusters){
   # add to master df
   df <- rbind(df, CMB)
 
-  # delete extra labels
-  df <- df %>% dplyr::select(-writer, -session, -prompt, -rep)
+  # combine session, prompt, and rep in to doc column to match output of handwriter::get_cluster_fill_counts
+  df <- df %>%
+    dplyr::mutate(doc = paste(session, prompt, rep, sep = "_")) %>%
+    dplyr::select(docname, writer, doc, everything(), -session, -prompt, -rep)
 
   return(df)
 }
@@ -72,19 +74,19 @@ get_combined_cfc <- function(all_clusters){
 
 # Graphs ------------------------------------------------------------------
 
-handwriter::process_batch_dir(input_dir = "data-raw/CSAFE_handwriting_db/docs/PHR/s01",
-                              output_dir = "data-raw/CSAFE_handwriting_db/graphs/PHR/s01")
-
+# handwriter::process_batch_dir(input_dir = "data-raw/CSAFE_handwriting_db/docs/PHR/s01",
+#                               output_dir = "data-raw/CSAFE_handwriting_db/graphs/PHR/s01")
+#
 
 # Clusters ----------------------------------------------------------------
-template <- readRDS("data-raw/template.rds")
-handwriter::get_clusters_batch(template = template,
-                               input_dir = "data-raw/CSAFE_handwriting_db/graphs/PHR/s01",
-                               output_dir = "data-raw/CSAFE_handwriting_db/clusters/PHR/s01",
-                               writer_indices = c(2, 5),
-                               doc_indices = c(7, 18),
-                               num_cores = 4,
-                               save_master_file = TRUE)
+# template <- readRDS("data-raw/templateK40.rds")
+# handwriter::get_clusters_batch(template = template,
+#                                input_dir = "data-raw/CSAFE_handwriting_db/graphs/PHR/s01",
+#                                output_dir = "data-raw/CSAFE_handwriting_db/clusters/PHR/s01",
+#                                writer_indices = c(2, 5),
+#                                doc_indices = c(7, 18),
+#                                num_cores = 4,
+#                                save_master_file = TRUE)
 
 
 # Cluster Fill Rates ------------------------------------------------------
@@ -101,4 +103,3 @@ cfr <- get_cluster_fill_rates(cfc = cfc)
 
 usethis::use_data(cfc, overwrite = TRUE)
 usethis::use_data(cfr, overwrite = TRUE)
-

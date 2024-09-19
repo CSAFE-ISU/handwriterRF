@@ -19,7 +19,7 @@
 #' @export
 #'
 #' @examples
-#' distances <- get_distances(df = cfr, distance_measures = c("man", "euc")
+#' distances <- get_distances(df = cfr, distance_measures = c("man", "euc"))
 #'
 get_distances <- function(df, distance_measures) {
   dists <- list()
@@ -59,7 +59,10 @@ get_distances <- function(df, distance_measures) {
 #' @export
 #'
 #' @examples
-#' distances <- get_single_method_distances(df = cfr, distance_measure = "euclidean", dist_col_label = "dist")
+#' distances <- get_single_method_distances(
+#'   df = cfr,
+#'   distance_measure = c("euc"),
+#'   dist_col_label = "dist")
 #'
 get_single_method_distances <- function(df, distance_measure = "euc", dist_col_label = "dist"){
   # prevent note "no visible binding for global variable"

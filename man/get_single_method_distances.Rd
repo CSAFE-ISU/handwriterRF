@@ -26,6 +26,9 @@ Calculate distances using 'stats::dist' between all pairs of cluster fill
 rates for a single distance measure.
 }
 \examples{
-distances <- get_single_method_distances(df = cfr, distance_measure = "euclidean", dist_col_label = "dist")
+distances <- get_single_method_distances(
+  df = cfr,
+  distance_measure = c("euc"),
+  dist_col_label = "dist")
 
 }

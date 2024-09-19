@@ -53,7 +53,7 @@
 #' @source <https://forensicstats.org/handwritingdatabase/>
 "cfc"
 
-#'Cluster Fill Rates for 1200 CSAFE Handwriting Database Samples
+#' Cluster Fill Rates for 1200 CSAFE Handwriting Database Samples
 #'
 #' A dataset containing cluster fill rates for for 1,200 handwriting samples from
 #' the CSAFE Handwriting Database. The dataset was created by running
@@ -109,3 +109,94 @@
 #' @source <https://forensicstats.org/handwritingdatabase/>
 "cfr"
 
+#' Cluster Template with 40 Clusters
+#'
+#' A cluster template created by 'handwriter' with K=40
+#' clusters. This template was created from 100 handwriting samples from the
+#' CSAFE Handwriting Database. This template is suitable for casework.
+#'
+#' 'handwriter' splits handwriting samples into component shapes
+#' called *graphs*. The graphs are sorted into 40 clusters with a K-Means
+#' algorithm. See 'handwriter' for more details.
+#'
+#' @format A list containing the contents of the cluster template.
+#' \describe{
+#' \item{centers_seed}{An integer for the random number generator use to select the
+#' starting cluster centers for the K-Means algorithm.}
+#' \item{cluster}{A vector of cluster assignments
+#'   for each graph used to create the cluster template. The clusters are numbered sequentially 1, 2,...,K.}
+#' \item{centers}{The final cluster centers produced by the K-Means algorithm.}
+#' \item{K}{The number of clusters in the template.}
+#' \item{n}{The number of training graphs to used to create the template.}
+#' \item{docnames}{A vector that lists the training document from which each graph originated.}
+#' \item{writers}{A vector that lists the writer of each graph.}
+#' \item{iters}{The maximum number of iterations for the K-means
+#'   algorithm.}
+#' \item{changes}{A vector of the number of graphs that
+#'   changed clusters on each iteration of the K-means algorithm.}
+#' \item{outlierCutoff}{A vector of the outlier cutoff values calculated on
+#'   each iteration of the K-means algorithm.}
+#' \item{stop_reason}{The reason the
+#'   K-means algorithm terminated.}
+#' \item{wcd}{The within cluster
+#'   distances on the final iteration of the K-means algorithm. More specifically,
+#'   the distance between each graph and the center of the cluster to which it
+#'   was assigned  on each iteration. The output of 'handwriter::make_clustering_template' stores
+#'   the within cluster distances on each iteration, but the previous iterations were removed here to reduce the file size.}
+#' \item{wcss}{A vector of the
+#'   within-cluster sum of squares on each iteration of the K-means algorithm.}}
+#' @examples
+#' # view number of clusters
+#' templateK40$K
+#'
+#' # view number of iterations
+#' templateK40$iters
+#'
+#' # view cluster centers
+#' templateK40$centers
+#'
+#' @keywords cluster
+#' @md
+"templateK40"
+
+#' Distances and a Random Forest
+#'
+#' A list that contains a data frame of Euclidean distances between the cluster
+#' fill rates of pairs of documents and a random forest trained on those
+#' distances. The random forest was created with 'randomForest'.
+#'
+#' @format A list with the following components:
+#' \describe{
+#' \item{rf}{A random forest created with 'randomForest'}
+#' \item{dists}{A data frame of Euclidean distances between pairs of cluster fill
+#' rates of documents used to train the random forest.}}
+#'
+#' @examples
+#' # view the distances data frame
+#' rf$dists
+#'
+#' # view the random forest
+#' rf$rf
+#'
+#' @md
+"rf"
+
+#' Same Writer and Different Writer Densities
+#'
+#' A list of 'same writer' and 'different writer' densities. The densities were
+#' created by using the 'density' function and a Guassian kernel. The densities
+#' were fit to the 'same' and 'different' scores in rf$rf$votes.
+#'
+#' @format A list with the following components:
+#' \describe{
+#' \item{same_writer}{A density of same writer scores created with the 'density' function.}
+#' \item{diff_writer}{A density of different writer scores created with the 'density' function.}}
+#'
+#' @examples
+#' \dontrun{
+#'   plot(densities$same_writer)
+#'   plot(densities$diff_writer)
+#' }
+#'
+#' @md
+"densities"

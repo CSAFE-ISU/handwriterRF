@@ -253,11 +253,7 @@
 #' #'   The test set is not changed.
 #' #'
 #' #' @return A list of data frames
-#' #' @export
-#' #'
-#' #' @examples
-#' #' dists <- get_distances(df = cfr, distances = c("euclidean"))
-#' #' sets <- get_train_test_sets(dists, 70)
+#' #' @noRd
 #' get_train_test_sets <- function(df, train_prompt_code, test_prompt_code, train_n) {
 #'   writers <- get_train_test_writers(df = df, train_n = train_n)
 #'
@@ -283,12 +279,7 @@
 #' #'   remaining writers are assigned to the test set.
 #' #'
 #' #' @return A list
-#' #' @export
-#' #'
-#' #' @examples
-#' #' dists <- get_distances(df = cfr, distances = c("euclidean"))
-#' #' writers <- get_train_test_writers(dists, 70)
-#' #'
+#' #' @noRd
 #' get_train_test_writers <- function(df, train_n) {
 #'   writers <- unique(df$writer)
 #'   train <- sample(writers, train_n)

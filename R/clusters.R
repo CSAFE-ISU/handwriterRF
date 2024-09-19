@@ -7,22 +7,31 @@
 #'   'handwriter::get_cluster_fill_counts'
 #'
 #' @return A data frame of cluster fill rates
-#' @noRd
+#'
+#' @export
+#'
+#' @examples
+#' rates <- get_cluster_fill_rates(cfc)
+#'
 get_cluster_fill_rates <- function(cfc){
   # drop label columns and calculate cluster fill rates: each row sums to 1.
-  cfc_clusters_only <- cfc %>% dplyr::ungroup() %>% dplyr::select(-docname, -writer, -doc)
+  cfc_clusters_only <- cfc %>%
+    dplyr::ungroup() %>%
+    dplyr::select(-docname, -writer, -doc)
   cfc_clusters_only <- as.matrix(cfc_clusters_only)
   total_graphs <- rowSums(cfc_clusters_only)
   cfr <- diag(1/total_graphs) %*% cfc_clusters_only
 
   # add missing clusters
   missing_labels <- setdiff(1:40, colnames(cfr))
-  missing <- lapply(missing_labels, function(k) data.frame(k = rep(0, nrow(cfr))))
-  missing <- do.call(cbind, missing)
-  colnames(missing) <- missing_labels
-  cfr <- cbind(cfr, missing)
-  # sort columns numerically
-  cfr <- cfr[as.character(sort(as.numeric(colnames(cfr))))]
+  if (length(missing_labels) > 0){
+    missing <- lapply(missing_labels, function(k) data.frame(k = rep(0, nrow(cfr))))
+    missing <- do.call(cbind, missing)
+    colnames(missing) <- missing_labels
+    cfr <- cbind(cfr, missing)
+    # sort columns numerically
+    cfr <- cfr[as.character(sort(as.numeric(colnames(cfr))))]
+  }
 
   # add "cluster" to column names
   colnames(cfr) <- paste0("cluster", colnames(cfr))

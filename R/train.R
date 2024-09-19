@@ -20,6 +20,30 @@ get_train_set <- function(df, train_prompt_code) {
   return(train)
 }
 
+#' Train a Random Forest
+#'
+#' Train a random forest from a data frame of cluster fill rates. The package
+#' randomForest is used.
+#'
+#' @param df A data frame of cluster fill rates created with
+#'   'get_cluster_fill_rates'
+#' @param ntrees An integer number of decision trees to use
+#' @param train_prompt_code Which prompt to use in the training set: "pLND",
+#'   "pPHR", "pWOZ", or "pCMB"
+#' @param distance_measures A vector of distance measures. Any combination of
+#'   "abs", "euc", "man", "max", and "cos" may be used.
+#' @param output_dir A path to a directory where the random forest will be
+#'   saved.
+#' @param run_number An integer used for both the set.seed function and to
+#'   distinguish between different runs on the same input data frame.
+#' @param downsample Whether to downsample the number of "different writer"
+#'   distances before training the random forest. If TRUE, the different writer
+#'   distances will be randomly sampled, resulting in the same number of
+#'   different writer and same writer pairs.
+#'
+#' @return A random forest
+#'
+#' @noRd
 train_rf <- function(df, ntrees, train_prompt_code, distance_measures, output_dir, run_number=1, downsample = TRUE){
   set.seed(run_number)
 
@@ -48,6 +72,18 @@ train_rf <- function(df, ntrees, train_prompt_code, distance_measures, output_di
   return(rf)
 }
 
+#' Make Densities from a Trained Random Forest
+#'
+#' Create densities of "same writer" and "different writer" scores produced
+#' by a trained random forest.
+#'
+#' @param rf A random forest
+#' @param output_dir A path to a directory where the random forest will be
+#'   saved.
+#'
+#' @return A list of densities
+#'
+#' @noRd
 make_densities_from_rf <- function(rf, output_dir) {
   scores_df <- as.data.frame(rf$rf$votes)['same']
   # add labels from train data frame
@@ -70,17 +106,13 @@ make_densities_from_rf <- function(rf, output_dir) {
 }
 
 
-
 #' Downsample Pairs of Different Writer Distances
 #'
 #' @param df A data frame of distances
 #'
 #' @return A data frame
-#' @export
 #'
-#' @examples
-#' dists <- get_distances(df = LND, distances = c("euclidean"))
-#'
+#' @noRd
 downsample_diff_pairs <- function(df){
   n <- sum(df$match == "same")
   df <- df %>%

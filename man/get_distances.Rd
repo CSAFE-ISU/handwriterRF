@@ -24,6 +24,6 @@ Calculate distances using 'stats::dist' between all pairs of cluster fill
 rates using one or more distance measures
 }
 \examples{
-distances <- get_distances(df = cfr, distance_measures = c("man", "euc")
+distances <- get_distances(df = cfr, distance_measures = c("man", "euc"))
 
 }
