@@ -6,7 +6,7 @@
 \usage{
 get_single_method_distances(
   df,
-  distance = "euclidean",
+  distance_measure = "euc",
   dist_col_label = "dist"
 )
 }
@@ -14,7 +14,7 @@ get_single_method_distances(
 \item{df}{A data frame of cluster fill rates created with
 `get_cluster_fill_rates`}
 
-\item{distance}{A distance measure used by 'stats::dist'}
+\item{distance_measure}{A distance measure used by 'stats::dist'}
 
 \item{dist_col_label}{A name for the output distance column}
 }
@@ -26,6 +26,6 @@ Calculate distances using 'stats::dist' between all pairs of cluster fill
 rates for a single distance measure.
 }
 \examples{
-distances <- get_single_method_distances(df = cfr, distance = "euclidean", dist_col_label = "dist")
+distances <- get_single_method_distances(df = cfr, distance_measure = "euclidean", dist_col_label = "dist")
 
 }

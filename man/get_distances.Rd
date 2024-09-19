@@ -4,13 +4,13 @@
 \alias{get_distances}
 \title{Get Distances}
 \usage{
-get_distances(df, distances)
+get_distances(df, distance_measures)
 }
 \arguments{
 \item{df}{A data frame of cluster fill rates created with
 `get_cluster_fill_rates`}
 
-\item{distances}{A vector of distance measures. Use "absolute" to calculate
+\item{distance_measures}{A vector of distance measures. Use "absolute" to calculate
 the absolute difference between cluster fill rates of two documents. The
 output distance will be a vector the length of the number of clusters. Use
 distance measures accepted by 'stats::dist': "euclidean", "maximum",
@@ -24,6 +24,6 @@ Calculate distances using 'stats::dist' between all pairs of cluster fill
 rates using one or more distance measures
 }
 \examples{
-distances <- get_distances(df = cfr, distances = c("manhattan", "euclidean")
+distances <- get_distances(df = cfr, distance_measures = c("man", "euc")
 
 }

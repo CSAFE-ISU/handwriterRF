@@ -4,12 +4,12 @@
 \alias{get_train_test_sets}
 \title{Get Training and Testing Sets}
 \usage{
-get_train_test_sets(dists, train_n, downsample = TRUE)
+get_train_test_sets(df, train_prompt_code, test_prompt_code, train_n)
 }
 \arguments{
-\item{dists}{A data frame of distances created with 'get_distances'}
-
 \item{train_n}{The number of writers to assign to the training set}
+
+\item{dists}{A data frame of distances created with 'get_distances'}
 
 \item{downsample}{True or False. True downsamples the different writer
 distances in the training set to equal the number of same writer distances.

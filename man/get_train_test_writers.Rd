@@ -4,13 +4,13 @@
 \alias{get_train_test_writers}
 \title{Get Writers for Train and Test Sets}
 \usage{
-get_train_test_writers(dists, train_n)
+get_train_test_writers(df, train_n)
 }
 \arguments{
-\item{dists}{A data frame of distances created with `get_distances`}
-
 \item{train_n}{The number of writers in 'dists' to assign to to the train set. The
 remaining writers are assigned to the test set.}
+
+\item{dists}{A data frame of distances created with `get_distances`}
 }
 \value{
 A list
