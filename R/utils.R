@@ -7,9 +7,9 @@
 #' @return NULL
 #'
 #' @noRd
-create_dir <- function(folder, ...){
+create_dir <- function(folder){
   if (!dir.exists(folder)){
-    dir.create(folder, ...)
+    dir.create(folder, recursive = TRUE)
   }
 }
 

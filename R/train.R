@@ -24,7 +24,7 @@ train_rf <- function(df, ntrees, train_prompt_code, distance_measures, output_di
   set.seed(run_number)
 
   # create output directory if it doesn't already exist
-  create_dir(output_dir, recursive = TRUE)
+  create_dir(output_dir)
 
   # get train set
   df <- expand_docnames(df)
