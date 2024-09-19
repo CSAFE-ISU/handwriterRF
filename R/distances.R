@@ -22,7 +22,6 @@
 #' distances <- get_distances(df = cfr, distance_measures = c("man", "euc")
 #'
 get_distances <- function(df, distance_measures) {
-
   dists <- list()
   if ("abs" %in% distance_measures){
     abs <- get_abs_dists(df)
@@ -67,7 +66,7 @@ get_single_method_distances <- function(df, distance_measure = "euc", dist_col_l
   docname <- docname1 <- docname2 <- writer1 <- writer2 <- NULL
 
   # drop all columns except clusters
-  clusters <- df %>% dplyr::select(-docname)
+  clusters <- df %>% dplyr::ungroup() %>% dplyr::select(-docname)
 
   # calculate distances between all pairs of docs
   if (distance_measure == "man"){
@@ -109,12 +108,14 @@ get_single_method_distances <- function(df, distance_measure = "euc", dist_col_l
 
 get_abs_dists <- function(df) {
   abs_dist_for_single_cluster <- function(df, k){
-    df <- df %>% dplyr::select(docname, paste0("cluster", k))
-    dists <- get_single_method_distances(df = df, distance_measure = "man", dist_col_label = paste0("cluster", k))
+    df <- df %>% dplyr::select(docname, k)
+    dists <- get_single_method_distances(df = df, distance_measure = "man", dist_col_label = k)
     return(dists)
   }
 
-  abs_dists <- lapply(1:40, function(k) {abs_dist_for_single_cluster(df, k)})
+  non_empty_clusters <- colnames(df)[!(colnames(df) %in% c("docname", "total_graphs"))]
+
+  abs_dists <- lapply(non_empty_clusters, function(k) {abs_dist_for_single_cluster(df, k)})
   dists <- purrr::reduce(abs_dists, dplyr::left_join, by = c("docname1"="docname1", "docname2"="docname2"))
   return(dists)
 }

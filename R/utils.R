@@ -1,3 +1,18 @@
+#' Create a Directory
+#'
+#' This helper function creates a directory if it doesn't already exist.
+#'
+#' @param folder A filepath for the new directory
+#'
+#' @return NULL
+#'
+#' @noRd
+create_dir <- function(folder, ...){
+  if (!dir.exists(folder)){
+    dir.create(folder, ...)
+  }
+}
+
 #' Expand CSAFE Handwriting Database Document Names
 #'
 #' Documents from the CSAFE Handwriting Database contain the writer, session,

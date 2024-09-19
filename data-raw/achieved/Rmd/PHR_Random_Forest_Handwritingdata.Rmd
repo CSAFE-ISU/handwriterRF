@@ -1,0 +1,116 @@
+---
+title: "Random Forest with Phrase"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gtools)
+library(randomForest)
+source("handwriting_reformat.R")
+source("calc_dist.R")
+source("kde_slr_functions.R")
+d1<-readRDS("d1.Rdata")
+
+p<-d1 %>% filter(prompt=="PHR")
+
+#basic data counts
+#dim(p %>% select(writer) %>% unique())
+table(p$prompt)
+table(p$rep)
+```
+
+```{r}
+#sample of 80% of the writers
+#same as in Method 3 with the London Letters but now looking at Wizard of Oz prompt
+
+n_writers<-n_distinct(p$writer)
+
+#randomly select 80% of the total writers
+samp_writers2 <- p %>% dplyr::select(writer) %>% unique() %>%
+  sample_n(ceiling(.8*n_writers))
+
+#dataset with the documents from only the sampled writers
+p_writers2 <- p %>% filter(writer %in% samp_writers2$writer)
+
+#all document combinations of size of the sampled dataset
+pairs_writers2 <- combinations(nrow(p_writers2),2)
+pairs_writers2_df <- as.data.frame(combinations(nrow(p_writers2),2)) %>%
+  rename(row1=V1,row2=V2) %>% mutate(row1=as.numeric(row1), row2=as.numeric(row2))
+
+#count number of combinations from same and different writers
+row_writer<-as.data.frame(cbind(c(1:dim(p_writers2)[1]),p_writers2$writer)) %>%
+  rename(row=V1,writer=V2) %>% mutate(row=as.numeric(levels(row))[row])
+
+writers_combo<-left_join(pairs_writers2_df,row_writer, by=c("row1"="row")) %>% 
+  left_join(row_writer, by=c("row2"="row"))
+same_number<-writers_combo %>% filter(writer.x==writer.y) %>% summarise(n())
+
+#random sample of the same number of different sources
+diff_sources<-writers_combo %>% filter(!writer.x==writer.y) %>% sample_n(same_number[[1]])
+
+#create training set with equal number of different source and same source
+train_writers2<-writers_combo %>% filter(writer.x==writer.y) %>% rbind(diff_sources)
+
+#pairs to compare based on rows in sampled dataset
+pairs_writers2<-train_writers2 %>% dplyr::select(c("row1","row2")) %>% as.matrix()
+
+#distance measures 
+#train_writers_all_p<-calc_dist(p_writers2,pairs_writers2)
+#write.csv(train_writers_all_p, "train_writers_all_p.csv", row.names = TRUE)
+train_writers_all_p<-read.csv("train_writers_all_p.csv")
+```
+
+```{r}
+#random forest
+forest_writers_all_p <- randomForest(
+  as.formula(paste("y ~ ", paste(c(paste("c",c(1:40),sep=""),'euch_dist'),collapse= "+"))),
+             data=train_writers_all_p, ntree=200)
+forest_writers_all_p
+importance(forest_writers_all_p)
+plot(forest_writers_all_p)
+
+#saveRDS(forest_writers_all_p , "forest_writers_all_p.RDS")
+```
+
+```{r}
+#create a testing dataset
+#samp_test_writers2 <- anti_join(w,samp_writers2)
+#pairs_test_writers2 <- combinations(dim(samp_test_writers2)[1],2)
+#test_writers2<-calc_dist(samp_test_writers2,pairs_test_writers2)
+#write.csv(test_writers2, "test_writers2_p.csv", row.names = TRUE)
+test_writers2_p<-read.csv("test_writers2_p.csv")
+```
+
+```{r}
+prediction_writers2_p<-predict(forest_writers_all_p, newdata = subset(test_writers2_p, select=-c(y)))
+table(test_writers2_p[, "y"], prediction_writers2_p)
+varimportanceplot_p<-varImpPlot(forest_writers_all_p, main="Variable Importance in Random Forest");varimportanceplot_p
+
+#png(file="varimportanceplot_p.png",
+#width=600, height=500)
+#varImpPlot(forest_writers_all_p, main="Variable Importance in Phrase Prompt Random Forest")
+#dev.off()
+```
+
+```{r}
+kde_data_p<-plot_kdes(test_writers2_p,forest_writers_all_p)+
+  ggtitle("KDEs for Phrase Prompt");kde_data_p
+#ggsave("kde_data_p.png",path="")
+```
+
+```{r}
+slrs_writers2_p<-loo_slr(test_writers2_p,forest_writers_all_p)
+#saveRDS(slrs_writers2_p,"slrs_writers2_p.rds")
+slr_data_p<-plot_slr(slrs_writers2_p)+
+  ggtitle("SLRs for Phrase Prompt");slr_data_p
+#ggsave("slr_data_p.png",path="")
+logslr_data_p<-plot_logslr(slrs_writers2_p)+
+  ggtitle("SLRs for Phrase Prompt");logslr_data_p
+#ggsave("slr_logdata_p.png",path="")
+logslr2_data_p<-plot_logslr2(slrs_writers2_p)+
+  ggtitle("SLRs for Phrase Prompt");logslr2_data_p
+#ggsave("slr2_logdata_p.png",path="")
+```
