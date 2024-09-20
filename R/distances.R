@@ -19,7 +19,7 @@
 #' @export
 #'
 #' @examples
-#' distances <- get_distances(df = cfr, distance_measures = c("man", "euc"))
+#' distances <- get_distances(df = cfr, distance_measures = c("abs", "euc"))
 #'
 get_distances <- function(df, distance_measures) {
   dists <- list()
@@ -110,6 +110,9 @@ get_single_method_distances <- function(df, distance_measure = "euc", dist_col_l
 }
 
 get_abs_dists <- function(df) {
+  # Prevent note "no visible binding for global variable"
+  docname <- NULL
+
   abs_dist_for_single_cluster <- function(df, k){
     df <- df %>% dplyr::select(docname, k)
     dists <- get_single_method_distances(df = df, distance_measure = "man", dist_col_label = k)
@@ -134,7 +137,7 @@ get_abs_dists <- function(df) {
 #' @noRd
 label_same_different_writer <- function(dists){
   # prevent note "no visible binding for global variable"
-  writer1 <- writer2 <- NULL
+  writer1 <- writer2 <- session1 <- prompt1 <- rep1 <- session2 <- prompt2 <- rep2 <- NULL
 
   dists <- expand_docnames(dists, "docname1", "1")
   dists <- expand_docnames(dists, "docname2", "2")

@@ -73,7 +73,7 @@ calculate_slr <- function(sample1_path, sample2_path, project_dir = NULL, copy_s
 }
 
 eval_density_at_point <- function(den, x){
-  y <- approx(den$x, den$y, xout = x, n=10000)$y
+  y <- stats::approx(den$x, den$y, xout = x, n=10000)$y
   return(y)
 }
 

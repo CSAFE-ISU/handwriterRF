@@ -11,6 +11,8 @@
 #'
 #' @noRd
 get_train_set <- function(df, train_prompt_code) {
+  # Prevent note "no visible binding for global variable"
+  writer <- session <- prompt <- rep <- total_graphs <- NULL
 
   # build train set
   train <- df %>%
@@ -45,6 +47,9 @@ get_train_set <- function(df, train_prompt_code) {
 #'
 #' @noRd
 train_rf <- function(df, ntrees, train_prompt_code, distance_measures, output_dir, run_number=1, downsample = TRUE){
+  # Prevent note "no visible binding for global variable"
+  docname1 <- docname2 <- NULL
+
   set.seed(run_number)
 
   # create output directory if it doesn't already exist
@@ -85,6 +90,9 @@ train_rf <- function(df, ntrees, train_prompt_code, distance_measures, output_di
 #'
 #' @noRd
 make_densities_from_rf <- function(rf, output_dir) {
+  # Prevent note "no visible binding for global variable"
+  score <- session <- prompt <- rep <- total_graphs <- NULL
+
   scores_df <- as.data.frame(rf$rf$votes)['same']
   # add labels from train data frame
   scores_df$match <- rf$dists$match
@@ -97,8 +105,8 @@ make_densities_from_rf <- function(rf, output_dir) {
   scores$diff_writer <- scores_df %>% dplyr::filter(match == "different") %>% dplyr::pull(score)
 
   pdfs <- list()
-  pdfs$same_writer <- density(scores$same_writer, kernel = "gaussian", n=10000)
-  pdfs$diff_writer <- density(scores$diff_writer, kernel = "gaussian", n=10000)
+  pdfs$same_writer <- stats::density(scores$same_writer, kernel = "gaussian", n=10000)
+  pdfs$diff_writer <- stats::density(scores$diff_writer, kernel = "gaussian", n=10000)
 
   saveRDS(pdfs, file.path(output_dir, "densities.rds"))
 

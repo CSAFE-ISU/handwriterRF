@@ -286,3 +286,11 @@
 #'   test <- setdiff(writers, train)
 #'   return(list("train" = train, "test" = test))
 #' }
+
+# plot_votes <- function(votes, type = "train"){
+#   p <- votes[[type]] %>%
+#     ggplot(aes(x=votes, color=match, fill=match)) +
+#     geom_density(alpha = 0.2) +
+#     theme_bw()
+#   return(p)
+# }

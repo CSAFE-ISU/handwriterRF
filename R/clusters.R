@@ -14,6 +14,9 @@
 #' rates <- get_cluster_fill_rates(cfc)
 #'
 get_cluster_fill_rates <- function(cfc){
+  # Prevent note "no visible binding for global variable"
+  docname <- writer <- doc <- NULL
+
   # drop label columns and calculate cluster fill rates: each row sums to 1.
   cfc_clusters_only <- cfc %>%
     dplyr::ungroup() %>%
