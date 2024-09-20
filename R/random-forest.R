@@ -14,11 +14,12 @@
 #'
 #' @examples
 #' # Select the cluster fill rates for two handwriting samples
-#' df <- cfr[1:2,]
 #' # Calculate the Euclidean distance between the cluster fill rates
-#' d <- get_distances(df, c("abs", "euc"))
-#' score <- get_score(rf$rf, d)
+#' d1 <- get_distances(cfr[1:2, ], c("abs", "euc"))
+#' score <- get_score(rf$rf, d1)
 #'
+#' d2 <- get_distances(cfr[1:3, ], c("abs", "euc"))
+#' score <- get_score(rf$rf, d2)
 get_score <- function(rf, d){
   # Prevent note "no visible binding for global variable"
   docname1 <- docname2 <- NULL

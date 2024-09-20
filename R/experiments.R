@@ -294,3 +294,30 @@
 #     theme_bw()
 #   return(p)
 # }
+
+#' #' Label Same and Different Writer Pairs
+#' #'
+#' #' Labels distances as belonging to same or different writers.
+#' #'
+#' #' @param dists A data frame of distances
+#' #'
+#' #' @return A data frame
+#' #' @noRd
+#' label_same_different_writer <- function(dists){
+#'   # prevent note "no visible binding for global variable"
+#'   writer1 <- writer2 <- session1 <- prompt1 <- rep1 <- session2 <- prompt2 <- rep2 <- NULL
+#'
+#'   dists <- expand_docnames(dists, "docname1", "1")
+#'   dists <- expand_docnames(dists, "docname2", "2")
+#'
+#'   dists <- dists %>% dplyr::mutate(match = ifelse(writer1 == writer2, "same", "different"))
+#'
+#'   # make match a factor
+#'   dists$match <- as.factor(dists$match)
+#'
+#'   # drop columns in prep for rf
+#'   dists <- dists %>% dplyr::select(-writer1, -session1, -prompt1, -rep1, -writer2, -session2, -prompt2, -rep2)
+#'
+#'   return(dists)
+#' }
+#'
