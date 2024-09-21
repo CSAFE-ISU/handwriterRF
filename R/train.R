@@ -67,14 +67,14 @@ train_rf <- function(df, ntrees, train_prompt_code, distance_measures, output_di
   }
 
   # train and save random forest
-  rf <- list()
-  rf$rf <- randomForest::randomForest(match ~ ., data = subset(dists, select = -c(docname1, docname2)), ntree = ntrees)
+  random_forest <- list()
+  random_forest$rf <- randomForest::randomForest(match ~ ., data = subset(dists, select = -c(docname1, docname2)), ntree = ntrees)
 
   # add distances to list
-  rf$dists <- dists
-  saveRDS(rf, file.path(output_dir, paste0("rf_", run_number, ".rds")))
+  random_forest$dists <- dists
+  saveRDS(random_forest, file.path(output_dir, paste0("rf_", run_number, ".rds")))
 
-  return(rf)
+  return(random_forest)
 }
 
 #' Make Densities from a Trained Random Forest
@@ -82,20 +82,20 @@ train_rf <- function(df, ntrees, train_prompt_code, distance_measures, output_di
 #' Create densities of "same writer" and "different writer" scores produced
 #' by a trained random forest.
 #'
-#' @param rf A random forest
+#' @param random_forest A random forest created with 'train_rf'.
 #' @param output_dir A path to a directory where the random forest will be
 #'   saved.
 #'
 #' @return A list of densities
 #'
 #' @noRd
-make_densities_from_rf <- function(rf, output_dir) {
+make_densities_from_rf <- function(random_forest, output_dir) {
   # Prevent note "no visible binding for global variable"
   score <- session <- prompt <- rep <- total_graphs <- NULL
 
-  scores_df <- as.data.frame(rf$rf$votes)['same']
+  scores_df <- as.data.frame(random_forest$rf$votes)['same']
   # add labels from train data frame
-  scores_df$match <- rf$dists$match
+  scores_df$match <- random_forest$dists$match
   colnames(scores_df) <- c("score", "match")
 
   # split the train and test sets into same and different writers to make it

@@ -19,8 +19,13 @@
 #' @export
 #'
 #' @examples
-#' distances <- get_distances(df = cfr, distance_measures = c("abs", "euc"))
+#' # calculate maximum and Euclidean distances between the first 3 documents in cfr.
+#' distances <- get_distances(df = cfr[1:3,], distance_measures = c("max", "euc"))
 #'
+#' \dontrun{
+#' # calculate maximum and Euclidean distances between all documents in cfr.
+#' distances <- get_distances(df = cfr, distance_measures = c("max", "euc"))
+#' }
 get_distances <- function(df, distance_measures) {
   dists <- list()
 

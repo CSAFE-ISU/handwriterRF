@@ -57,7 +57,7 @@ calculate_slr <- function(sample1_path, sample2_path, project_dir = NULL, copy_s
 
   # Score
   message("Calculating similarity score between samples...\n")
-  score <- get_score(rf = rf$rf, d = d)
+  score <- get_score(random_forest = rf$rf, d = d)
 
   # SLR
   message("Calculating SLR for samples...\n")

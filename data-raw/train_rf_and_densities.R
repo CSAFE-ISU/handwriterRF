@@ -16,7 +16,7 @@ rf <- train_rf(df = cfr,
                downsample = TRUE)
 file.rename(file.path(main_dir, "rf_1.rds"), file.path(main_dir, "rf.rds"))
 
-densities <- make_densities_from_rf(rf = rf, output_dir = main_dir)
+densities <- make_densities_from_rf(random_forest = rf, output_dir = main_dir)
 
 usethis::use_data(rf, overwrite = TRUE)
 usethis::use_data(densities, overwrite = TRUE)
