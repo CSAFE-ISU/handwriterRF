@@ -29,6 +29,7 @@
 get_distances <- function(df, distance_measures) {
   dists <- list()
 
+  browser()
   for (method in distance_measures){
     if (method == "abs"){
       dists[["abs"]] <- absolute_dist(df)
@@ -67,6 +68,13 @@ get_distances <- function(df, distance_measures) {
 #'
 #' @noRd
 absolute_dist_for_single_cluster <- function(df, k){
+
+  # outer throws error if df is a tibble and the cluster k is a zero vector,
+  # so convert df to a data frame.
+  # if (tibble::is_tibble(df)){
+  #   df <- as.data.frame(df)
+  # }
+
   # select cluster k
   df <- df %>% dplyr::select(dplyr::all_of(k))
   d <- outer(seq_len(nrow(df)), seq_len(nrow(df)),

@@ -13,6 +13,34 @@ testthat::test_that("Get distances works for absolute and Euclidean distances on
   testthat::expect_equal(actual, expected)
 })
 
+testthat::test_that("Absolute distance for single cluster works when cluster fill rates are zero for both documents and data is in a tibble", {
+  df <- data.frame(
+    docname = c("w0004_s01_pLND_r01", "w0004_s01_pLND_r02"),
+    "cluster1" = rep(0, 2),
+    "cluster2" = rep(0, 2),
+    "cluster3" = rep(0, 2))
+  df <- tibble::as_tibble(df)
+  actual <- absolute_dist_for_single_cluster(df, "cluster1")
+
+  expected <- matrix(0, nrow=2, ncol=2)
+
+  testthat::expect_equal(actual, expected)
+})
+
+testthat::test_that("Absolute distance works on data frame with 2 docs", {
+  df <- cfr[1:2, 1:5]
+  actual <- absolute_dist(df)
+
+  docname1 <- c("w0004_s01_pLND_r01")
+  docname2 <- c("w0004_s01_pLND_r02")
+  cluster1 <- c(0.00271603634678445945)
+  cluster2 <- c(0.00236406619385342784)
+  cluster3 <- c(0.01795634396869812133)
+  expected <- data.frame(docname1, docname2, cluster1, cluster2, cluster3)
+
+  testthat::expect_equal(actual, expected)
+})
+
 testthat::test_that("Absolute distance works on data frame with 3 docs", {
   df <- cfr[1:3, 1:5]
   actual <- absolute_dist(df)
