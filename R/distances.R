@@ -8,11 +8,11 @@
 #'
 #' @param df A data frame of cluster fill rates created with
 #'   `get_cluster_fill_rates`
-#' @param distance_measures A vector of distance measures. Use "absolute" to calculate
-#'   the absolute difference between cluster fill rates of two documents. The
-#'   output distance will be a vector the length of the number of clusters. Use
-#'   distance measures accepted by 'stats::dist': "euclidean", "maximum",
-#'   "manhattan", "canberra", "binary", or "minkowski".
+#' @param distance_measures A vector of distance measures. Use "abs" to
+#'   calculate the absolute difference, "man" for the Manhattan distance, "euc"
+#'   for the Euclidean distance, "max" for the maximum absolute distance, and
+#'   "cos" for the cosine distance. The vector can be a single distance, or any
+#'   combination of these five distance measures.
 #'
 #' @return A data frame of distances
 #'
@@ -23,8 +23,8 @@
 #' distances <- get_distances(df = cfr[1:3,], distance_measures = c("max", "euc"))
 #'
 #' \dontrun{
-#' # calculate maximum and Euclidean distances between all documents in cfr.
-#' distances <- get_distances(df = cfr, distance_measures = c("max", "euc"))
+#' # calculate absolute and Euclidean distances between all documents in cfr.
+#' distances <- get_distances(df = cfr, distance_measures = c("abs", "euc"))
 #' }
 get_distances <- function(df, distance_measures) {
   dists <- list()

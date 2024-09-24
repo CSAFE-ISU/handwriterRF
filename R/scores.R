@@ -1,11 +1,12 @@
-#' Get Similarity Score
+#' Calculate a Similarity Score
 #'
 #' Use a trained random forest to produce a similarity score for the distance
 #' between two handwriting samples.
 #'
-#' @param random_forest A random forest created with 'randomForest'
-#' @param d A distance between two handwriting samples, calculated with
-#'   'get_distances'
+#' @param d A data frame of distance(s) between two handwriting samples,
+#'   calculated with 'get_distances'. The distance(s) needs to be the
+#'   distance(s) used to train the random forest.
+#' @param random_forest A random forest created with `train_rf`.
 #'
 #' @return A number
 #'
@@ -20,7 +21,7 @@
 #' score <- get_score(random_forest, d1)
 #' }
 #'
-get_score <- function(random_forest, d){
+get_score <- function(d, random_forest){
   # Prevent note "no visible binding for global variable"
   docname1 <- docname2 <- NULL
 

@@ -1,32 +1,3 @@
-#' Get Training Set
-#'
-#' Create a training set from a data frame of cluster fill rates created with
-#' 'get_cluster_fill_rates'.
-#'
-#' @param df A data frame of cluster fill rates created with
-#' 'get_cluster_fill_rates'
-#' @param train_prompt_code Which prompt to use in the training set: "pLND", "pPHR", "pWOZ", or "pCMB"
-#'
-#' @return A data frame
-#'
-#' @noRd
-get_train_set <- function(df, train_prompt_code) {
-  # Prevent note "no visible binding for global variable"
-  writer <- session <- prompt <- rep <- total_graphs <- NULL
-
-  df <- expand_docnames(df)
-
-  # build train set
-  train <- df %>%
-    dplyr::filter(prompt == train_prompt_code) %>%
-    dplyr::select(-writer, -session, -prompt, -rep, -total_graphs)
-
-  # return data frame instead of tibble
-  train <- as.data.frame(train)
-
-  return(train)
-}
-
 #' Train a Random Forest
 #'
 #' Train a random forest from a data frame of cluster fill rates. The package
@@ -87,6 +58,35 @@ train_rf <- function(df,
   saveRDS(random_forest, file.path(output_dir, paste0("rf_", run_number, ".rds")))
 
   return(random_forest)
+}
+
+#' Get Training Set
+#'
+#' Create a training set from a data frame of cluster fill rates created with
+#' 'get_cluster_fill_rates'.
+#'
+#' @param df A data frame of cluster fill rates created with
+#' 'get_cluster_fill_rates'
+#' @param train_prompt_code Which prompt to use in the training set: "pLND", "pPHR", "pWOZ", or "pCMB"
+#'
+#' @return A data frame
+#'
+#' @noRd
+get_train_set <- function(df, train_prompt_code) {
+  # Prevent note "no visible binding for global variable"
+  writer <- session <- prompt <- rep <- total_graphs <- NULL
+
+  df <- expand_docnames(df)
+
+  # build train set
+  train <- df %>%
+    dplyr::filter(prompt == train_prompt_code) %>%
+    dplyr::select(-writer, -session, -prompt, -rep, -total_graphs)
+
+  # return data frame instead of tibble
+  train <- as.data.frame(train)
+
+  return(train)
 }
 
 #' Make Densities from a Trained Random Forest
