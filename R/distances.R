@@ -73,7 +73,7 @@ absolute_dist_for_single_cluster <- function(df, k){
   df <- as.data.frame(df)
 
   # select cluster k
-  df <- df %>% dplyr::select(dplyr::all_of(k))
+  df <- df %>% dplyr::select(tidyselect::all_of(k))
   d <- outer(seq_len(nrow(df)), seq_len(nrow(df)),
              function(i, j) {abs(df[i,] - df[j,])})
   return(d)
@@ -245,7 +245,7 @@ dist_matrix2df <- function(m, docnames, dist_col_label){
   df <- as.data.frame(m)
   colnames(df) <- docnames
   df$docname <- docnames
-  df <- df %>% dplyr::select(docname, tidyselect::everything())
+  df <- df %>% dplyr::select(tidyselect::all_of(c("docname")), tidyselect::everything())
 
   # reshape matrix to three columns (docname1, docname2, distance name) and drop
   # NAs

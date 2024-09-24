@@ -36,7 +36,7 @@ create_dir <- function(folder){
 #' df <- expand_docnames(cfr, "docname", "_1")
 #'
 expand_docnames <- function(df, docname_col = "docname", suffix=""){
-  df <- df %>% tidyr::separate_wider_delim(docname_col,
+  df <- df %>% tidyr::separate_wider_delim(tidyselect::all_of(docname_col),
                                            delim = "_",
                                            names = c(paste0("writer", suffix),
                                                      paste0("session", suffix),

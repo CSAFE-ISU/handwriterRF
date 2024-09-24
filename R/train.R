@@ -14,10 +14,15 @@ get_train_set <- function(df, train_prompt_code) {
   # Prevent note "no visible binding for global variable"
   writer <- session <- prompt <- rep <- total_graphs <- NULL
 
+  df <- expand_docnames(df)
+
   # build train set
   train <- df %>%
     dplyr::filter(prompt == train_prompt_code) %>%
     dplyr::select(-writer, -session, -prompt, -rep, -total_graphs)
+
+  # return data frame instead of tibble
+  train <- as.data.frame(train)
 
   return(train)
 }
@@ -46,7 +51,13 @@ get_train_set <- function(df, train_prompt_code) {
 #' @return A random forest
 #'
 #' @noRd
-train_rf <- function(df, ntrees, train_prompt_code, distance_measures, output_dir, run_number=1, downsample = TRUE){
+train_rf <- function(df,
+                     ntrees,
+                     train_prompt_code,
+                     distance_measures,
+                     output_dir,
+                     run_number = 1,
+                     downsample = TRUE){
   # Prevent note "no visible binding for global variable"
   docname1 <- docname2 <- NULL
 
@@ -56,11 +67,12 @@ train_rf <- function(df, ntrees, train_prompt_code, distance_measures, output_di
   create_dir(output_dir)
 
   # get train set
-  df <- expand_docnames(df)
   train <- get_train_set(df = df, train_prompt_code = train_prompt_code)
 
   # get distances between all pairs of documents
   dists <- get_distances(df = train, distance_measures = distance_measures)
+
+  dists <- label_same_different_writer(dists)
 
   if (downsample){
     dists <- downsample_diff_pairs(dists)
@@ -128,3 +140,30 @@ downsample_diff_pairs <- function(df){
     dplyr::slice_sample(n=n)
   return(df)
 }
+
+#' Label Same and Different Writer Pairs
+#'
+#' Labels distances as belonging to same or different writers.
+#'
+#' @param dists A data frame of distances
+#'
+#' @return A data frame
+#' @noRd
+label_same_different_writer <- function(dists){
+  # prevent note "no visible binding for global variable"
+  writer1 <- writer2 <- session1 <- prompt1 <- rep1 <- session2 <- prompt2 <- rep2 <- NULL
+
+  dists <- expand_docnames(dists, "docname1", "1")
+  dists <- expand_docnames(dists, "docname2", "2")
+
+  dists <- dists %>% dplyr::mutate(match = ifelse(writer1 == writer2, "same", "different"))
+
+  # make match a factor
+  dists$match <- as.factor(dists$match)
+
+  # drop columns in prep for rf
+  dists <- dists %>% dplyr::select(-writer1, -session1, -prompt1, -rep1, -writer2, -session2, -prompt2, -rep2)
+
+  return(dists)
+}
+
