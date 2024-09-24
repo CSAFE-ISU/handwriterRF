@@ -1,7 +1,9 @@
-testthat::test_that("Get distances works for absolute and Euclidean distances on a data frame with 3 docs", {
+testthat::test_that("Get distances works for absolute and Euclidean distances", {
+  # Run on a data frame of cluster fill rates from 3 documents
   df <- cfr[1:3, 1:5]
   actual <- get_distances(df, c("abs", "euc"))
 
+  # Expected
   docname1 <- c("w0004_s01_pLND_r01", "w0004_s01_pLND_r01", "w0004_s01_pLND_r02")
   docname2 <- c("w0004_s01_pLND_r02", "w0004_s01_pLND_r03", "w0004_s01_pLND_r03")
   cluster1 <- c(0.00271603634678445945, 0.00235846414126135787, 0.00507450048804581732)
@@ -9,6 +11,23 @@ testthat::test_that("Get distances works for absolute and Euclidean distances on
   cluster3 <- c(0.01795634396869812133, 0.02135502448096983016, 0.00339868051227170884)
   euc <- c(0.01831381858401399249, 0.02148486572151266094, 0.00655110006227082459)
   expected <- data.frame(docname1, docname2, cluster1, cluster2, cluster3, euc)
+
+  testthat::expect_equal(actual, expected)
+})
+
+testthat::test_that("Get distances works for manhattan, Euclidean, maximum, and cosine distances", {
+  # Run on a data frame of cluster fill rates from 3 documents
+  df <- cfr[1:3,]
+  actual <- get_distances(df, c("man", "euc", "max", "cos"))
+
+  # Expected
+  docname1 <- c("w0004_s01_pLND_r01", "w0004_s01_pLND_r01", "w0004_s01_pLND_r02")
+  docname2 <- c("w0004_s01_pLND_r02", "w0004_s01_pLND_r03", "w0004_s01_pLND_r03")
+  man <- c(0.49063466084742685114, 0.5087448040962209, 0.3331177307633507)
+  euc <- c(0.10685899181624387844, 0.09904812595546802489, 0.07217430037487819472)
+  max <- c(0.04773301890666338532, 0.03066563588898972570, 0.03822633565792103727)
+  cos <- c(0.22288835246478172492, 0.19042881048462328986, 0.11071174930031003891)
+  expected <- data.frame(docname1, docname2, man, euc, max, cos)
 
   testthat::expect_equal(actual, expected)
 })
