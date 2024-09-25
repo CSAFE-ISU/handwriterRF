@@ -11,11 +11,23 @@ calculate_slr <- function(sample1_path, sample2_path, project_dir = NULL, copy_s
   process_and_save_samples <- function(sample1_path, sample2_path, project_dir) {
     # Process samples and save in project_dir > graphs
     message("Processing samples...")
+
     create_dir(file.path(project_dir, "graphs"))
-    doc1 <- handwriter::processDocument(sample1_path)
-    doc2 <- handwriter::processDocument(sample2_path)
-    saveRDS(doc1, file.path(project_dir, "graphs", paste0(doc1$docname, "_proclist.rds")))
-    saveRDS(doc2, file.path(project_dir, "graphs", paste0(doc2$docname, "_proclist.rds")))
+
+    # Skip if processed doc1 already exists in project_dir > graphs
+    outfile1 <- file.path(project_dir, "graphs", stringr::str_replace(basename(sample1_path), ".png", "_proclist.rds"))
+    if (!file.exists(outfile1)){
+      doc1 <- handwriter::processDocument(sample1_path)
+      saveRDS(doc1, outfile1)
+    }
+
+    # Skip if processed doc2 already exists in project_dir > graphs
+    outfile2 <- file.path(project_dir, "graphs", stringr::str_replace(basename(sample2_path), ".png", "_proclist.rds"))
+    if (!file.exists(outfile2)){
+      doc2 <- handwriter::processDocument(sample2_path)
+      saveRDS(doc2, outfile2)
+    }
+
     return()
   }
 
@@ -34,8 +46,8 @@ calculate_slr <- function(sample1_path, sample2_path, project_dir = NULL, copy_s
 
   if (copy_samples){
     copy_samples_to_project_dir(sample1_path = sample1_path,
-                               sample2_path = sample2_path,
-                               project_dir = project_dir)
+                                sample2_path = sample2_path,
+                                project_dir = project_dir)
   }
 
   process_and_save_samples(sample1_path = sample1_path,
@@ -57,12 +69,12 @@ calculate_slr <- function(sample1_path, sample2_path, project_dir = NULL, copy_s
 
   # Score
   message("Calculating similarity score between samples...\n")
-  score <- get_score(random_forest = rf$rf, d = d)
+  score <- get_score(random_forest = rf, d = d)
 
   # SLR
   message("Calculating SLR for samples...\n")
-  numerator <- eval_density_at_point(den = densities$same_writer, x = score)
-  denominator <- eval_density_at_point(den = densities$diff_writer, x = score)
+  numerator <- eval_density_at_point(den = densities$same_writer, x = score, type = "numerator")
+  denominator <- eval_density_at_point(den = densities$diff_writer, x = score, type = "denominator")
 
   # Delete project folder from temp directory
   if (project_dir == file.path(tempdir(), "comparison")){
@@ -72,18 +84,33 @@ calculate_slr <- function(sample1_path, sample2_path, project_dir = NULL, copy_s
   return(numerator / denominator)
 }
 
-eval_density_at_point <- function(den, x){
+eval_density_at_point <- function(den, x, type, zero_correction = 1e-10){
   y <- stats::approx(den$x, den$y, xout = x, n=10000)$y
+
+  # correct NA
+  if (is.na(y) && (type == "numerator")){
+    y <- 0
+  }
+  if (is.na(y) && (type == "denominator")){
+    y <- zero_correction
+  }
+
+  # correct zero in denominator
+  if ((y == 0) && (type == "denominator")){
+    y <- zero_correction
+  }
+
   return(y)
 }
 
-# correct_NAs <- function(evals, zero_correction = 1e-10){
-#   evals$numerators[is.na(evals$numerators)] <- 0
-#   evals$denominators[is.na(evals$denominators)] <- zero_correction
-#   return(evals)
-# }
-#
-# correct_zeros <- function(evals, zero_correction = 1e-10){
-#   evals$denominators[which(evals$denominators == 0)] <- zero_correction
-#   return(evals)
-# }
+correct_NAs <- function(y, type, zero_correction){
+  if (type == "numerator"){
+    y <- 0
+  } else if (type == "denominator"){
+    y <- zero_correction
+  } else {
+    stop("Type not defined. Use 'numerator' or 'denominator'.")
+  }
+
+  return(y)
+}

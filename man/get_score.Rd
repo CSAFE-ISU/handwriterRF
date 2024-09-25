@@ -4,17 +4,14 @@
 \alias{get_score}
 \title{Calculate a Similarity Score}
 \usage{
-get_score(d, random_forest, package = "ranger")
+get_score(d, random_forest)
 }
 \arguments{
 \item{d}{A data frame of distance(s) between two handwriting samples,
 calculated with 'get_distances'. The distance(s) needs to be the
 distance(s) used to train the random forest.}
 
-\item{random_forest}{A random forest created with `train_rf`.}
-
-\item{package}{The name of the package used to create the random forest:
-"randomForest" or "ranger".}
+\item{random_forest}{A 'ranger' random forest created with `train_rf`.}
 }
 \value{
 A number
@@ -24,12 +21,9 @@ Use a trained random forest to produce a similarity score for the distance
 between two handwriting samples.
 }
 \examples{
-\dontrun{
 # Select the cluster fill rates for two handwriting samples
 # Calculate the Euclidean distance between the cluster fill rates
 d <- get_distances(cfr[1:2, ], c("abs", "euc"))
-random_forest <- rf$rf
-score <- get_score(random_forest, d)
-}
+score <- get_score(d = d, random_forest = rf)
 
 }

@@ -3,7 +3,7 @@
 \docType{data}
 \name{rf}
 \alias{rf}
-\title{Distances and a 'randomForest' Random Forest}
+\title{Distances and a 'ranger' Random Forest}
 \format{
 A list with the following components:
 \describe{
@@ -17,14 +17,14 @@ rf
 \description{
 A list that contains a data frame of Euclidean distances between the cluster
 fill rates of pairs of documents and a random forest trained on those
-distances. The random forest was created with 'randomForest'.
+distances. The random forest was created with 'ranger'.
 }
 \examples{
-# view the distances data frame
-rf$dists
-
 # view the random forest
 rf$rf
+
+# view the distances data frame
+rf$dists
 
 }
 \keyword{datasets}

@@ -1,7 +1,6 @@
 #' Train a Random Forest
 #'
-#' Train a random forest from a data frame of cluster fill rates. The package
-#' randomForest is used.
+#' Train a random forest with 'ranger' from a data frame of cluster fill rates.
 #'
 #' @param df A data frame of cluster fill rates created with
 #'   'get_cluster_fill_rates'
@@ -28,8 +27,7 @@ train_rf <- function(df,
                      distance_measures,
                      output_dir,
                      run_number = 1,
-                     downsample = TRUE,
-                     package = "ranger"){
+                     downsample = TRUE){
   # Prevent note "no visible binding for global variable"
   docname1 <- docname2 <- NULL
 
@@ -52,24 +50,19 @@ train_rf <- function(df,
 
   # train and save random forest
   random_forest <- list()
-  if (package == "randomForest"){
-    random_forest$rf <- randomForest::randomForest(match ~ ., data = subset(dists, select = -c(docname1, docname2)), ntree = ntrees)
-  } else if (package == "ranger"){
-    random_forest$rf <- ranger::ranger(match ~ .,
-                                       data = subset(dists, select = -c(docname1, docname2)),
-                                       importance = 'permutation',
-                                       scale.permutation.importance = TRUE,
-                                       num.trees = 200)
-  } else {
-    stop("That package has not been implemented yet.")
-  }
+  random_forest$rf <- ranger::ranger(match ~ .,
+                                     data = subset(dists, select = -c(docname1, docname2)),
+                                     importance = 'permutation',
+                                     scale.permutation.importance = TRUE,
+                                     num.trees = 200)
 
   # add distances to list
   random_forest$dists <- dists
-  saveRDS(random_forest, file.path(output_dir, paste0("rf_", run_number, ".rds")))
+  saveRDS(random_forest, file.path(output_dir, paste0("rf", run_number, ".rds")))
 
   return(random_forest)
 }
+
 
 #' Get Training Set
 #'
@@ -100,12 +93,13 @@ get_train_set <- function(df, train_prompt_code) {
   return(train)
 }
 
+
 #' Make Densities from a Trained Random Forest
 #'
-#' Create densities of "same writer" and "different writer" scores produced
-#' by a trained random forest.
+#' Create densities of "same writer" and "different writer" scores produced by a
+#' trained random forest.
 #'
-#' @param random_forest A random forest created with 'train_rf'.
+#' @param random_forest A 'ranger' random forest created with 'train_rf'.
 #' @param output_dir A path to a directory where the random forest will be
 #'   saved.
 #'
@@ -116,10 +110,10 @@ make_densities_from_rf <- function(random_forest, output_dir) {
   # Prevent note "no visible binding for global variable"
   score <- session <- prompt <- rep <- total_graphs <- NULL
 
-  scores_df <- as.data.frame(random_forest$rf$votes)['same']
+  scores_df <- data.frame('score' = get_score(random_forest$dists, random_forest = random_forest))
+
   # add labels from train data frame
   scores_df$match <- random_forest$dists$match
-  colnames(scores_df) <- c("score", "match")
 
   # split the train and test sets into same and different writers to make it
   # easier on the next step
@@ -152,6 +146,7 @@ downsample_diff_pairs <- function(df){
   return(df)
 }
 
+
 #' Label Same and Different Writer Pairs
 #'
 #' Labels distances as belonging to same or different writers.
@@ -177,4 +172,3 @@ label_same_different_writer <- function(dists){
 
   return(dists)
 }
-

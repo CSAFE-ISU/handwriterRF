@@ -168,27 +168,6 @@
 #' @md
 "templateK40"
 
-#' Distances and a 'randomForest' Random Forest
-#'
-#' A list that contains a data frame of Euclidean distances between the cluster
-#' fill rates of pairs of documents and a random forest trained on those
-#' distances. The random forest was created with 'randomForest'.
-#'
-#' @format A list with the following components:
-#' \describe{
-#' \item{rf}{A random forest created with 'randomForest'}
-#' \item{dists}{A data frame of Euclidean distances between pairs of cluster fill
-#' rates of documents used to train the random forest.}}
-#'
-#' @examples
-#' # view the distances data frame
-#' rf$dists
-#'
-#' # view the random forest
-#' rf$rf
-#'
-#' @md
-"rf"
 
 #' Distances and a 'ranger' Random Forest
 #'
@@ -203,20 +182,25 @@
 #' rates of documents used to train the random forest.}}
 #'
 #' @examples
-#' # view the distances data frame
-#' rf_ranger$dists
-#'
 #' # view the random forest
-#' rf_ranger$rf
+#' rf$rf
+#'
+#' # view the distances data frame
+#' rf$dists
 #'
 #' @md
-"rf_ranger"
+"rf"
 
 #' Same Writer and Different Writer Densities
 #'
-#' A list of 'same writer' and 'different writer' densities. The densities were
-#' created by using the 'density' function and a Guassian kernel. The densities
-#' were fit to the 'same' and 'different' scores in rf$rf$votes.
+#' A list of 'same writer' and 'different writer' densities created with
+#' 'make_densities_from_rf' and the random forest 'rf'. A similarity score was
+#' calculated for each distance value used to train 'rf'. The similarity score
+#' is the proportion of decision trees that predicted 'same writer' for the
+#' distance value. The 'same writer' density was created by applying the
+#' 'density' function to the 'same writer' similarity scores. Similarly, the
+#' 'different writer' density was created by applying the 'density' function to
+#' the 'different writer' similarity scores.
 #'
 #' @format A list with the following components:
 #' \describe{
