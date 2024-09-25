@@ -25,6 +25,8 @@ get_score <- function(d, random_forest){
   # Prevent note "no visible binding for global variable"
   docname1 <- docname2 <- NULL
 
-  score <- stats::predict(random_forest, subset(d, select = -c(docname1, docname2)), type="prob")[,"same"]
+  d <- d %>% dplyr::select(-tidyselect::any_of(c("docname1", "docname2")))
+
+  score <- stats::predict(random_forest, d, type="prob")[,2]
   return(score)
 }
