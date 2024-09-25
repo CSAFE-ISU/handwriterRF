@@ -168,7 +168,7 @@
 #' @md
 "templateK40"
 
-#' Distances and a Random Forest
+#' Distances and a 'randomForest' Random Forest
 #'
 #' A list that contains a data frame of Euclidean distances between the cluster
 #' fill rates of pairs of documents and a random forest trained on those
@@ -189,6 +189,28 @@
 #'
 #' @md
 "rf"
+
+#' Distances and a 'ranger' Random Forest
+#'
+#' A list that contains a data frame of Euclidean distances between the cluster
+#' fill rates of pairs of documents and a random forest trained on those
+#' distances. The random forest was created with 'ranger'.
+#'
+#' @format A list with the following components:
+#' \describe{
+#' \item{rf}{A random forest created with 'randomForest'}
+#' \item{dists}{A data frame of Euclidean distances between pairs of cluster fill
+#' rates of documents used to train the random forest.}}
+#'
+#' @examples
+#' # view the distances data frame
+#' rf_ranger$dists
+#'
+#' # view the random forest
+#' rf_ranger$rf
+#'
+#' @md
+"rf_ranger"
 
 #' Same Writer and Different Writer Densities
 #'

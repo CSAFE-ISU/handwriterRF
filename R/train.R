@@ -28,7 +28,8 @@ train_rf <- function(df,
                      distance_measures,
                      output_dir,
                      run_number = 1,
-                     downsample = TRUE){
+                     downsample = TRUE,
+                     package = "ranger"){
   # Prevent note "no visible binding for global variable"
   docname1 <- docname2 <- NULL
 
@@ -51,7 +52,17 @@ train_rf <- function(df,
 
   # train and save random forest
   random_forest <- list()
-  random_forest$rf <- randomForest::randomForest(match ~ ., data = subset(dists, select = -c(docname1, docname2)), ntree = ntrees)
+  if (package == "randomForest"){
+    random_forest$rf <- randomForest::randomForest(match ~ ., data = subset(dists, select = -c(docname1, docname2)), ntree = ntrees)
+  } else if (package == "ranger"){
+    random_forest$rf <- ranger::ranger(match ~ .,
+                                       data = subset(dists, select = -c(docname1, docname2)),
+                                       importance = 'permutation',
+                                       scale.permutation.importance = TRUE,
+                                       num.trees = 200)
+  } else {
+    stop("That package has not been implemented yet.")
+  }
 
   # add distances to list
   random_forest$dists <- dists

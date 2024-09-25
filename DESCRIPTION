@@ -24,6 +24,7 @@ Imports:
     magrittr,
     purrr,
     randomForest,
+    ranger,
     reshape2,
     tidyr,
     tidyselect

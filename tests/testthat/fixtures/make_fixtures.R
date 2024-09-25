@@ -9,7 +9,8 @@ rf <- train_rf(df = cfr,
                distance_measures = "euc",
                output_dir = testthat::test_path("fixtures", "train"),
                run_number = 1,
-               downsample = TRUE)
+               downsample = TRUE,
+               package = "randomForest")
 
 # save densities
 dens <- make_densities_from_rf(rf, testthat::test_path("fixtures", "train"))

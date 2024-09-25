@@ -5,14 +5,15 @@ test_that("Get train set works", {
 })
 
 
-test_that("Train random forest works", {
+test_that("Train random forest works with randomForest package", {
   actual <- train_rf(df = cfr,
                  ntrees = 200,
                  train_prompt_code = "pLND",
                  distance_measures = "euc",
                  output_dir = tempdir(),
                  run_number = 1,
-                 downsample = TRUE)
+                 downsample = TRUE,
+                 package = "randomForest")
 
   expected <- readRDS(testthat::test_path("fixtures", "train", "rf_1.rds"))
 
