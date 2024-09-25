@@ -8,25 +8,25 @@ calculate_slr <- function(sample1_path, sample2_path, project_dir = NULL, copy_s
     file.copy(sample2_path, file.path(project_dir, "docs", basename(sample2_path)))
   }
 
+  skip_if_processed <- function(sample_path, project_dir){
+    # process file if it hasn't already been processed and saved in project_dir > graph
+    outfile <- gsub(".png", "_proclist.rds", basename(sample_path))
+    outfile_path <- file.path(project_dir, "graphs", outfile)
+    if (!file.exists(outfile_path)){
+      doc <- handwriter::processDocument(sample_path)
+      saveRDS(doc, outfile_path)
+    }
+    return()
+  }
+
   process_and_save_samples <- function(sample1_path, sample2_path, project_dir) {
     # Process samples and save in project_dir > graphs
     message("Processing samples...")
 
     create_dir(file.path(project_dir, "graphs"))
 
-    # Skip if processed doc1 already exists in project_dir > graphs
-    outfile1 <- file.path(project_dir, "graphs", stringr::str_replace(basename(sample1_path), ".png", "_proclist.rds"))
-    if (!file.exists(outfile1)){
-      doc1 <- handwriter::processDocument(sample1_path)
-      saveRDS(doc1, outfile1)
-    }
-
-    # Skip if processed doc2 already exists in project_dir > graphs
-    outfile2 <- file.path(project_dir, "graphs", stringr::str_replace(basename(sample2_path), ".png", "_proclist.rds"))
-    if (!file.exists(outfile2)){
-      doc2 <- handwriter::processDocument(sample2_path)
-      saveRDS(doc2, outfile2)
-    }
+    skip_if_processed(sample_path = sample1_path, project_dir = project_dir)
+    skip_if_processed(sample_path = sample2_path, project_dir = project_dir)
 
     return()
   }
