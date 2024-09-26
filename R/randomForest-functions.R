@@ -1,6 +1,5 @@
 # Internal Functions ------------------------------------------------------
 
-
 #' Train a Random Forest with randomForest
 #'
 #' Train a random forest from a data frame of cluster fill rates. The package
@@ -9,8 +8,6 @@
 #' @param df A data frame of cluster fill rates created with
 #'   'get_cluster_fill_rates'
 #' @param ntrees An integer number of decision trees to use
-#' @param train_prompt_code Which prompt to use in the training set: "pLND",
-#'   "pPHR", "pWOZ", or "pCMB"
 #' @param distance_measures A vector of distance measures. Any combination of
 #'   "abs", "euc", "man", "max", and "cos" may be used.
 #' @param output_dir A path to a directory where the random forest will be
@@ -27,7 +24,6 @@
 #' @noRd
 train_randomForest_rf <- function(df,
                                   ntrees,
-                                  train_prompt_code,
                                   distance_measures,
                                   output_dir,
                                   run_number = 1,
@@ -40,11 +36,8 @@ train_randomForest_rf <- function(df,
   # create output directory if it doesn't already exist
   create_dir(output_dir)
 
-  # get train set
-  train <- get_train_set(df = df, train_prompt_code = train_prompt_code)
-
   # get distances between all pairs of documents
-  dists <- get_distances(df = train, distance_measures = distance_measures)
+  dists <- get_distances(df = df, distance_measures = distance_measures)
 
   dists <- label_same_different_writer(dists)
 
@@ -53,14 +46,18 @@ train_randomForest_rf <- function(df,
   }
 
   # train and save random forest
-  random_forest <- list()
-  random_forest$rf <- randomForest::randomForest(match ~ ., data = subset(dists, select = -c(docname1, docname2)), ntree = ntrees)
+  rforest <- list()
+  rforest$rf <- randomForest::randomForest(match ~ ., data = subset(dists, select = -c(docname1, docname2)), ntree = ntrees)
 
   # add distances to list
-  random_forest$dists <- dists
-  saveRDS(random_forest, file.path(output_dir, paste0("rf_randomForest", run_number, ".rds")))
+  rforest$dists <- dists
 
-  return(random_forest)
+  # make densities from training data
+  rforest$densities <- make_densities_randomForest_rf(rforest = rforest)
+
+  saveRDS(rforest, file.path(output_dir, paste0("rf_randomForest", run_number, ".rds")))
+
+  return(rforest)
 }
 
 #' Make Densities from a Trained randomForest Random Forest
@@ -68,20 +65,18 @@ train_randomForest_rf <- function(df,
 #' Create densities of "same writer" and "different writer" scores produced by a
 #' trained random forest.
 #'
-#' @param random_forest A random forest created with 'train_rf'.
-#' @param output_dir A path to a directory where the random forest will be
-#'   saved.
+#' @param rforest A random forest created with 'train_rf'.
 #'
 #' @return A list of densities
 #'
 #' @noRd
-make_densities_randomForest_rf <- function(random_forest, output_dir) {
+make_densities_randomForest_rf <- function(rforest) {
   # Prevent note "no visible binding for global variable"
   score <- session <- prompt <- rep <- total_graphs <- NULL
 
-  scores_df <- as.data.frame(random_forest$rf$votes)["same"]
+  scores_df <- as.data.frame(rforest$rf$votes)["same"]
   # add labels from train data frame
-  scores_df$match <- random_forest$dists$match
+  scores_df$match <- rforest$dists$match
   colnames(scores_df) <- c("score", "match")
 
   # split the train and test sets into same and different writers to make it
@@ -98,8 +93,6 @@ make_densities_randomForest_rf <- function(random_forest, output_dir) {
   pdfs$same_writer <- stats::density(scores$same_writer, kernel = "gaussian", n = 10000)
   pdfs$diff_writer <- stats::density(scores$diff_writer, kernel = "gaussian", n = 10000)
 
-  saveRDS(pdfs, file.path(output_dir, "densities_randomForest.rds"))
-
   return(pdfs)
 }
 
@@ -113,18 +106,18 @@ make_densities_randomForest_rf <- function(random_forest, output_dir) {
 #' @param d A data frame of distance(s) between two handwriting samples,
 #'   calculated with 'get_distances'. The distance(s) needs to be the
 #'   distance(s) used to train the random forest.
-#' @param random_forest A random forest created with `train_rf`.
+#' @param rforest A random forest created with `train_rf`.
 #'
 #' @return A number
 #'
 #' @noRd
-get_randomForest_score <- function(d, random_forest) {
+get_randomForest_score <- function(d, rforest) {
   # Prevent note "no visible binding for global variable"
   docname1 <- docname2 <- NULL
 
   d <- d %>% dplyr::select(-tidyselect::any_of(c("docname1", "docname2")))
 
-  score <- stats::predict(random_forest, d, type = "prob")[, 2]
+  score <- stats::predict(rforest, d, type = "prob")[, 2]
 
   return(score)
 }

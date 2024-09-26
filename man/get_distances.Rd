@@ -25,7 +25,7 @@ rates using one or more distance measures
 }
 \examples{
 # calculate maximum and Euclidean distances between the first 3 documents in cfr.
-distances <- get_distances(df = cfr[1:3,], distance_measures = c("max", "euc"))
+distances <- get_distances(df = cfr[1:3, ], distance_measures = c("max", "euc"))
 
 \dontrun{
 # calculate absolute and Euclidean distances between all documents in cfr.

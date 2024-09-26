@@ -5,7 +5,7 @@ test_that("SLR works on w0030 samples", {
     project_dir = testthat::test_path("fixtures", "slrs_w0030")
   )
 
-  expect_equal(actual, 4582274302)
+  expect_equal(actual, 21296750614)
 })
 
 test_that("SLR works on w0030 versus w0238 samples", {
@@ -26,7 +26,7 @@ test_that("SLR works on w0238 samples", {
     copy_samples = TRUE
   )
 
-  expect_equal(actual, 96831846345)
+  expect_equal(actual, 98661971967)
 })
 
 test_that("SLR works on w0030 samples in temp directory", {
@@ -36,7 +36,7 @@ test_that("SLR works on w0030 samples in temp directory", {
     sample2_path = testthat::test_path("fixtures", "samples", "w0030_s01_pWOZ_r02.png")
   )
 
-  expect_equal(actual, 4582274302)
+  expect_equal(actual, 21296750614)
 })
 
 test_that("SLRs throws error if samples are the same file", {

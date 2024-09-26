@@ -1,8 +1,8 @@
 test_that("Train random forest works with randomForest package", {
+  train <- get_csafe_train_set(df = cfr, train_prompt_code = "pLND")
   actual <- train_randomForest_rf(
-    df = cfr,
+    df = train,
     ntrees = 200,
-    train_prompt_code = "pLND",
     distance_measures = "euc",
     output_dir = tempdir(),
     run_number = 1,
@@ -24,10 +24,8 @@ test_that("Train random forest works with randomForest package", {
 
 test_that("Make densities works with randomForest package", {
   # load random forest from test fixtures
-  random_forest <- readRDS(testthat::test_path("fixtures", "train", "rf_randomForest1.rds"))
-  actual <- make_densities_randomForest_rf(random_forest, tempdir())
+  rforest <- readRDS(testthat::test_path("fixtures", "train", "rf_randomForest1.rds"))
+  actual <- make_densities_randomForest_rf(rforest)
 
-  expected <- readRDS(testthat::test_path("fixtures", "train", "densities_randomForest.rds"))
-
-  expect_identical(actual, expected)
+  expect_identical(actual, rforest$densities)
 })

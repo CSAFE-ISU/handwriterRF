@@ -18,6 +18,8 @@
 #'   format.
 #' @param sample2_path File path to a second handwriting sample saved in PNG
 #'   file format.
+#' @param rforest Optional. A random forest trained with 'ranger'. If rforest is
+#'   not given, the data object random_forest is used.
 #' @param project_dir Optional. A path to a directory where helper files will be
 #'   saved. If no project directory is specified, the helper files will be saved
 #'   to 'tempdir()' and deleted before the function terminates.
@@ -42,7 +44,7 @@
 #' calculate_slr(sample1, sample2)
 #' }
 #'
-calculate_slr <- function(sample1_path, sample2_path, project_dir = NULL, copy_samples = FALSE) {
+calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, project_dir = NULL, copy_samples = FALSE) {
   copy_samples_to_project_dir <- function(sample1_path, sample2_path, project_dir) {
     # Copy samples to project_dir > docs
     message("Copying samples to output directory > docs...\n")
@@ -118,12 +120,12 @@ calculate_slr <- function(sample1_path, sample2_path, project_dir = NULL, copy_s
 
   # Score
   message("Calculating similarity score between samples...\n")
-  score <- get_score(random_forest = rf, d = d)
+  score <- get_score(rforest = rforest, d = d)
 
   # SLR
   message("Calculating SLR for samples...\n")
-  numerator <- eval_density_at_point(den = densities$same_writer, x = score, type = "numerator")
-  denominator <- eval_density_at_point(den = densities$diff_writer, x = score, type = "denominator")
+  numerator <- eval_density_at_point(den = rforest$densities$same_writer, x = score, type = "numerator")
+  denominator <- eval_density_at_point(den = rforest$densities$diff_writer, x = score, type = "denominator")
 
   # Delete project folder from temp directory
   if (project_dir == file.path(tempdir(), "comparison")) {

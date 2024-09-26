@@ -3,5 +3,4 @@
 # variable <- NULL at the beginning of the function that uses the variable.
 # Instead, we declare the variables here to fix the note.
 utils::globalVariables(c("templateK40"))
-utils::globalVariables(c("rf"))
-utils::globalVariables(c("densities"))
+utils::globalVariables(c("random_forest"))
