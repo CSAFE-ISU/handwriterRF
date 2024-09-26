@@ -194,3 +194,27 @@ label_same_different_writer <- function(dists) {
 
   return(dists)
 }
+
+
+#' Which Distances were Used in a Random Forest
+#'
+#' @param rforest A random forest created with 'train_rf'.
+#'
+#' @return A character vector of distance measures
+#'
+#' @noRd
+which_dists <- function(rforest) {
+  # get the distance measures from the column names of rforest$dist
+  df <- rforest$dists %>%
+    dplyr::ungroup() %>%
+    dplyr::select(dplyr::starts_with("cluster"), dplyr::any_of(c("man", "euc", "max", "cos")))
+  distance_measures <- colnames(df)
+
+  # add "abs" and delete "cluster<#>"
+  if (any(startsWith(distance_measures, "cluster"))){
+    distance_measures <- c("abs", distance_measures)
+    distance_measures <- distance_measures[!startsWith(distance_measures, "cluster")]
+  }
+
+  return(distance_measures)
+}

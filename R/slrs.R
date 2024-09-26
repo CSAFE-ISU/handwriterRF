@@ -116,7 +116,8 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
 
   # Distance
   message("Calculating distance between samples...\n")
-  d <- get_distances(rates, c("abs", "euc"))
+  dist_measures <- which_dists(rforest = rforest)
+  d <- get_distances(df = rates, distance_measures = dist_measures)
 
   # Score
   message("Calculating similarity score between samples...\n")
