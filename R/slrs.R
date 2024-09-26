@@ -102,15 +102,3 @@ eval_density_at_point <- function(den, x, type, zero_correction = 1e-10){
 
   return(y)
 }
-
-correct_NAs <- function(y, type, zero_correction){
-  if (type == "numerator"){
-    y <- 0
-  } else if (type == "denominator"){
-    y <- zero_correction
-  } else {
-    stop("Type not defined. Use 'numerator' or 'denominator'.")
-  }
-
-  return(y)
-}
