@@ -1,17 +1,19 @@
 test_that("Get train set works", {
-  actual <- get_train_set(df=cfr, train_prompt_code = "pLND")
+  actual <- get_train_set(df = cfr, train_prompt_code = "pLND")
   expected <- read.csv(testthat::test_path("fixtures", "train", "train_set.csv"))
   expect_equal(actual, expected)
 })
 
 test_that("Train random forest works with ranger package", {
-  actual <- train_rf(df = cfr,
-                     ntrees = 200,
-                     train_prompt_code = "pLND",
-                     distance_measures = "euc",
-                     output_dir = tempdir(),
-                     run_number = 1,
-                     downsample = TRUE)
+  actual <- train_rf(
+    df = cfr,
+    ntrees = 200,
+    train_prompt_code = "pLND",
+    distance_measures = "euc",
+    output_dir = tempdir(),
+    run_number = 1,
+    downsample = TRUE
+  )
 
   expected <- readRDS(testthat::test_path("fixtures", "train", "rf1.rds"))
 

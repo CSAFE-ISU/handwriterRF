@@ -7,8 +7,8 @@
 #' @return NULL
 #'
 #' @noRd
-create_dir <- function(folder){
-  if (!dir.exists(folder)){
+create_dir <- function(folder) {
+  if (!dir.exists(folder)) {
     dir.create(folder, recursive = TRUE)
   }
 }
@@ -35,13 +35,16 @@ create_dir <- function(folder){
 #' df <- expand_docnames(cfr, "docname", "")
 #' df <- expand_docnames(cfr, "docname", "_1")
 #'
-expand_docnames <- function(df, docname_col = "docname", suffix=""){
+expand_docnames <- function(df, docname_col = "docname", suffix = "") {
   df <- df %>% tidyr::separate_wider_delim(tidyselect::all_of(docname_col),
-                                           delim = "_",
-                                           names = c(paste0("writer", suffix),
-                                                     paste0("session", suffix),
-                                                     paste0("prompt", suffix),
-                                                     paste0("rep", suffix)),
-                                           cols_remove = FALSE)
+    delim = "_",
+    names = c(
+      paste0("writer", suffix),
+      paste0("session", suffix),
+      paste0("prompt", suffix),
+      paste0("rep", suffix)
+    ),
+    cols_remove = FALSE
+  )
   return(df)
 }

@@ -17,7 +17,7 @@ testthat::test_that("Get distances works for absolute and Euclidean distances", 
 
 testthat::test_that("Get distances works for manhattan, Euclidean, maximum, and cosine distances", {
   # Run on a data frame of cluster fill rates from 3 documents
-  df <- cfr[1:3,]
+  df <- cfr[1:3, ]
   actual <- get_distances(df, c("man", "euc", "max", "cos"))
 
   # Expected
@@ -37,11 +37,12 @@ testthat::test_that("Absolute distance for single cluster works when cluster fil
     docname = c("w0004_s01_pLND_r01", "w0004_s01_pLND_r02"),
     "cluster1" = rep(0, 2),
     "cluster2" = rep(0, 2),
-    "cluster3" = rep(0, 2))
+    "cluster3" = rep(0, 2)
+  )
   df <- tibble::as_tibble(df)
   actual <- absolute_dist_for_single_cluster(df, "cluster1")
 
-  expected <- matrix(0, nrow=2, ncol=2)
+  expected <- matrix(0, nrow = 2, ncol = 2)
 
   testthat::expect_equal(actual, expected)
 })
@@ -75,7 +76,7 @@ testthat::test_that("Absolute distance works on data frame with 3 docs", {
 })
 
 testthat::test_that("Manhattan distance works on data frame with 3 docs", {
-  df <- cfr[1:3,]
+  df <- cfr[1:3, ]
   actual <- manhattan_dist(df)
 
   docname1 <- c("w0004_s01_pLND_r01", "w0004_s01_pLND_r01", "w0004_s01_pLND_r02")
@@ -87,7 +88,7 @@ testthat::test_that("Manhattan distance works on data frame with 3 docs", {
 })
 
 testthat::test_that("Euclidean distance works on data frame with 3 docs", {
-  df <- cfr[1:3,]
+  df <- cfr[1:3, ]
   actual <- euclidean_dist(df)
 
   docname1 <- c("w0004_s01_pLND_r01", "w0004_s01_pLND_r01", "w0004_s01_pLND_r02")
@@ -99,7 +100,7 @@ testthat::test_that("Euclidean distance works on data frame with 3 docs", {
 })
 
 testthat::test_that("Maximum distance works on data frame with 3 docs", {
-  df <- cfr[1:3,]
+  df <- cfr[1:3, ]
   actual <- maximum_dist(df)
 
   docname1 <- c("w0004_s01_pLND_r01", "w0004_s01_pLND_r01", "w0004_s01_pLND_r02")
@@ -111,7 +112,7 @@ testthat::test_that("Maximum distance works on data frame with 3 docs", {
 })
 
 testthat::test_that("Cosine distance works on data frame with 3 docs", {
-  df <- cfr[1:3,]
+  df <- cfr[1:3, ]
 
   actual <- cosine_dist(df)
 
@@ -122,4 +123,3 @@ testthat::test_that("Cosine distance works on data frame with 3 docs", {
 
   testthat::expect_equal(actual, expected)
 })
-

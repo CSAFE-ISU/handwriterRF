@@ -40,10 +40,12 @@ test_that("SLR works on w0030 samples in temp directory", {
 })
 
 test_that("SLRs throws error if samples are the same file", {
-  expect_error(calculate_slr(
-    sample1_path = testthat::test_path("fixtures", "samples", "w0238_s01_pWOZ_r02.png"),
-    sample2_path = testthat::test_path("fixtures", "samples", "w0238_s01_pWOZ_r02.png"),
-    project_dir = testthat::test_path("fixtures", "slrs_w0238")
-  ),
-  "sample1_path and sample2_path cannot be identical.")
+  expect_error(
+    calculate_slr(
+      sample1_path = testthat::test_path("fixtures", "samples", "w0238_s01_pWOZ_r02.png"),
+      sample2_path = testthat::test_path("fixtures", "samples", "w0238_s01_pWOZ_r02.png"),
+      project_dir = testthat::test_path("fixtures", "slrs_w0238")
+    ),
+    "sample1_path and sample2_path cannot be identical."
+  )
 })

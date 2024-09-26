@@ -1,4 +1,3 @@
-
 # External Functions ------------------------------------------------------
 
 #' Get Distances
@@ -20,7 +19,7 @@
 #'
 #' @examples
 #' # calculate maximum and Euclidean distances between the first 3 documents in cfr.
-#' distances <- get_distances(df = cfr[1:3,], distance_measures = c("max", "euc"))
+#' distances <- get_distances(df = cfr[1:3, ], distance_measures = c("max", "euc"))
 #'
 #' \dontrun{
 #' # calculate absolute and Euclidean distances between all documents in cfr.
@@ -29,16 +28,16 @@
 get_distances <- function(df, distance_measures) {
   dists <- list()
 
-  for (method in distance_measures){
-    if (method == "abs"){
+  for (method in distance_measures) {
+    if (method == "abs") {
       dists[["abs"]] <- absolute_dist(df)
-    } else if (method == "man"){
+    } else if (method == "man") {
       dists[["man"]] <- manhattan_dist(df)
-    } else if (method == "euc"){
+    } else if (method == "euc") {
       dists[["euc"]] <- euclidean_dist(df)
-    } else if (method == "max"){
+    } else if (method == "max") {
       dists[["max"]] <- maximum_dist(df)
-    } else if (method == "cos"){
+    } else if (method == "cos") {
       dists[["cos"]] <- cosine_dist(df)
     }
     # remove method from list
@@ -46,7 +45,7 @@ get_distances <- function(df, distance_measures) {
   }
 
   # combine data frames
-  dists <- purrr::reduce(dists, dplyr::left_join, by = c("docname1"="docname1", "docname2"="docname2"))
+  dists <- purrr::reduce(dists, dplyr::left_join, by = c("docname1" = "docname1", "docname2" = "docname2"))
 
   return(dists)
 }
@@ -66,16 +65,19 @@ get_distances <- function(df, distance_measures) {
 #' @return A matrix
 #'
 #' @noRd
-absolute_dist_for_single_cluster <- function(df, k){
-
+absolute_dist_for_single_cluster <- function(df, k) {
   # outer throws error if df is a tibble and the cluster k is a zero vector,
   # so convert df to a data frame.
   df <- as.data.frame(df)
 
   # select cluster k
   df <- df %>% dplyr::select(tidyselect::all_of(k))
-  d <- outer(seq_len(nrow(df)), seq_len(nrow(df)),
-             function(i, j) {abs(df[i,] - df[j,])})
+  d <- outer(
+    seq_len(nrow(df)), seq_len(nrow(df)),
+    function(i, j) {
+      abs(df[i, ] - df[j, ])
+    }
+  )
   return(d)
 }
 
@@ -90,16 +92,20 @@ absolute_dist_for_single_cluster <- function(df, k){
 #' @return A data frame
 #'
 #' @noRd
-absolute_dist <- function(df){
+absolute_dist <- function(df) {
   # split docnames and clusters
   docnames <- df$docname
   df <- get_cluster_cols(df)
 
-  dists <- lapply(colnames(df), function(k) {absolute_dist_for_single_cluster(df, k)})
-  dists <- lapply(1:length(dists), function(i) {dist_matrix2df(dists[[i]], docnames, paste0("cluster", i))})
+  dists <- lapply(colnames(df), function(k) {
+    absolute_dist_for_single_cluster(df, k)
+  })
+  dists <- lapply(1:length(dists), function(i) {
+    dist_matrix2df(dists[[i]], docnames, paste0("cluster", i))
+  })
 
   # combine data frames
-  dists <- purrr::reduce(dists, dplyr::left_join, by = c("docname1"="docname1", "docname2"="docname2"))
+  dists <- purrr::reduce(dists, dplyr::left_join, by = c("docname1" = "docname1", "docname2" = "docname2"))
 
   return(dists)
 }
@@ -115,13 +121,17 @@ absolute_dist <- function(df){
 #' @return A data frame
 #'
 #' @noRd
-manhattan_dist <- function(df){
+manhattan_dist <- function(df) {
   # split docnames and clusters
   docnames <- df$docname
   df <- get_cluster_cols(df)
 
-  d <- outer(seq_len(nrow(df)), seq_len(nrow(df)),
-             function(i, j) {rowSums(abs(df[i,] - df[j,]))})
+  d <- outer(
+    seq_len(nrow(df)), seq_len(nrow(df)),
+    function(i, j) {
+      rowSums(abs(df[i, ] - df[j, ]))
+    }
+  )
 
   df <- dist_matrix2df(d, docnames, "man")
 
@@ -139,13 +149,17 @@ manhattan_dist <- function(df){
 #' @return A data frame
 #'
 #' @noRd
-euclidean_dist <- function(df){
+euclidean_dist <- function(df) {
   # split docnames and clusters
   docnames <- df$docname
   df <- get_cluster_cols(df)
 
-  d <- outer(seq_len(nrow(df)), seq_len(nrow(df)),
-             function(i, j) {sqrt(rowSums((df[i,] - df[j,])^2))})
+  d <- outer(
+    seq_len(nrow(df)), seq_len(nrow(df)),
+    function(i, j) {
+      sqrt(rowSums((df[i, ] - df[j, ])^2))
+    }
+  )
 
   df <- dist_matrix2df(d, docnames, "euc")
 
@@ -163,13 +177,17 @@ euclidean_dist <- function(df){
 #' @return A data frame
 #'
 #' @noRd
-maximum_dist <- function(df){
+maximum_dist <- function(df) {
   # split docnames and clusters
   docnames <- df$docname
   df <- get_cluster_cols(df)
 
-  d <- outer(seq_len(nrow(df)), seq_len(nrow(df)),
-             function(i, j) {apply(abs(df[i,] - df[j,]), 1, max)})
+  d <- outer(
+    seq_len(nrow(df)), seq_len(nrow(df)),
+    function(i, j) {
+      apply(abs(df[i, ] - df[j, ]), 1, max)
+    }
+  )
 
   df <- dist_matrix2df(d, docnames, "max")
 
@@ -187,13 +205,17 @@ maximum_dist <- function(df){
 #' @return A data frame
 #'
 #' @noRd
-cosine_dist <- function(df){
+cosine_dist <- function(df) {
   # split docnames and clusters
   docnames <- df$docname
   df <- get_cluster_cols(df)
 
-  d <- outer(seq_len(nrow(df)), seq_len(nrow(df)),
-             function(i, j) {(rowSums((df[i,] - df[j,])^2)) / (sqrt(rowSums((df[i,])^2)) * sqrt(rowSums((df[j,])^2)))})
+  d <- outer(
+    seq_len(nrow(df)), seq_len(nrow(df)),
+    function(i, j) {
+      (rowSums((df[i, ] - df[j, ])^2)) / (sqrt(rowSums((df[i, ])^2)) * sqrt(rowSums((df[j, ])^2)))
+    }
+  )
 
   df <- dist_matrix2df(d, docnames, "cos")
 
@@ -211,9 +233,11 @@ cosine_dist <- function(df){
 #' @return A data frame
 #'
 #' @noRd
-get_cluster_cols <- function(df){
+get_cluster_cols <- function(df) {
   # drop all columns except clusters
-  df <- df %>% dplyr::ungroup() %>% dplyr::select(dplyr::starts_with("cluster"))
+  df <- df %>%
+    dplyr::ungroup() %>%
+    dplyr::select(dplyr::starts_with("cluster"))
   return(df)
 }
 
@@ -231,7 +255,7 @@ get_cluster_cols <- function(df){
 #' @return A data frame
 #'
 #' @noRd
-dist_matrix2df <- function(m, docnames, dist_col_label){
+dist_matrix2df <- function(m, docnames, dist_col_label) {
   # Prevent note "no visible binding for global variable"
   docname <- docname2 <- NULL
 

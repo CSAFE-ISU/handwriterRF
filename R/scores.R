@@ -1,4 +1,3 @@
-
 # Internal Functions ------------------------------------------------------
 
 
@@ -15,7 +14,7 @@
 #' @return A number
 #'
 #' @noRd
-get_score <- function(d, random_forest){
+get_score <- function(d, random_forest) {
   get_prop_same_votes <- function(preds) {
     preds <- as.data.frame(preds)
     ntrees <- ncol(preds)
@@ -26,7 +25,9 @@ get_score <- function(d, random_forest){
   # Prevent note "no visible binding for global variable"
   docname1 <- docname2 <- NULL
 
-  d <- d %>% dplyr::ungroup() %>% dplyr::select(-tidyselect::any_of(c("docname1", "docname2", "match")))
+  d <- d %>%
+    dplyr::ungroup() %>%
+    dplyr::select(-tidyselect::any_of(c("docname1", "docname2", "match")))
 
   preds <- ranger::predictions(stats::predict(random_forest$rf, d, predict.all = TRUE))
   score <- get_prop_same_votes(preds = preds)

@@ -209,8 +209,8 @@
 #'
 #' @examples
 #' \dontrun{
-#'   plot(densities$same_writer)
-#'   plot(densities$diff_writer)
+#' plot(densities$same_writer)
+#' plot(densities$diff_writer)
 #' }
 #'
 #' @md

@@ -1,4 +1,3 @@
-
 # Internal Functions ------------------------------------------------------
 
 
@@ -32,7 +31,7 @@ train_randomForest_rf <- function(df,
                                   distance_measures,
                                   output_dir,
                                   run_number = 1,
-                                  downsample = TRUE){
+                                  downsample = TRUE) {
   # Prevent note "no visible binding for global variable"
   docname1 <- docname2 <- NULL
 
@@ -49,7 +48,7 @@ train_randomForest_rf <- function(df,
 
   dists <- label_same_different_writer(dists)
 
-  if (downsample){
+  if (downsample) {
     dists <- downsample_diff_pairs(dists)
   }
 
@@ -80,7 +79,7 @@ make_densities_randomForest_rf <- function(random_forest, output_dir) {
   # Prevent note "no visible binding for global variable"
   score <- session <- prompt <- rep <- total_graphs <- NULL
 
-  scores_df <- as.data.frame(random_forest$rf$votes)['same']
+  scores_df <- as.data.frame(random_forest$rf$votes)["same"]
   # add labels from train data frame
   scores_df$match <- random_forest$dists$match
   colnames(scores_df) <- c("score", "match")
@@ -88,12 +87,16 @@ make_densities_randomForest_rf <- function(random_forest, output_dir) {
   # split the train and test sets into same and different writers to make it
   # easier on the next step
   scores <- list()
-  scores$same_writer <- scores_df %>% dplyr::filter(match == "same") %>% dplyr::pull(score)
-  scores$diff_writer <- scores_df %>% dplyr::filter(match == "different") %>% dplyr::pull(score)
+  scores$same_writer <- scores_df %>%
+    dplyr::filter(match == "same") %>%
+    dplyr::pull(score)
+  scores$diff_writer <- scores_df %>%
+    dplyr::filter(match == "different") %>%
+    dplyr::pull(score)
 
   pdfs <- list()
-  pdfs$same_writer <- stats::density(scores$same_writer, kernel = "gaussian", n=10000)
-  pdfs$diff_writer <- stats::density(scores$diff_writer, kernel = "gaussian", n=10000)
+  pdfs$same_writer <- stats::density(scores$same_writer, kernel = "gaussian", n = 10000)
+  pdfs$diff_writer <- stats::density(scores$diff_writer, kernel = "gaussian", n = 10000)
 
   saveRDS(pdfs, file.path(output_dir, "densities_randomForest.rds"))
 
@@ -115,13 +118,13 @@ make_densities_randomForest_rf <- function(random_forest, output_dir) {
 #' @return A number
 #'
 #' @noRd
-get_randomForest_score <- function(d, random_forest){
+get_randomForest_score <- function(d, random_forest) {
   # Prevent note "no visible binding for global variable"
   docname1 <- docname2 <- NULL
 
   d <- d %>% dplyr::select(-tidyselect::any_of(c("docname1", "docname2")))
 
-  score <- stats::predict(random_forest, d, type="prob")[,2]
+  score <- stats::predict(random_forest, d, type = "prob")[, 2]
 
   return(score)
 }
