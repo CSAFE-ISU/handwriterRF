@@ -1,50 +1,178 @@
-get_slrs <- function(scores, zero_correction = 1e-10){
+# External Functions ------------------------------------------------------
 
-  pdfs <- get_densities(scores)
+#' Calculate a Score-Based Likelihood Ratio
+#'
+#' Compares two handwriting samples scanned and saved a PNG images. The writing
+#' in both samples is split into component shapes, or graphs, with
+#' 'handwriter::processDocument'. The graphs are grouped into clusters of
+#' similar shapes with 'handwriter::get_clusterassignment'. The proportion of
+#' graphs assigned to each cluster, called the cluster fill rates, are used as
+#' writer profiles. The cluster fill rates are calculated with
+#' 'get_cluster_fill_rates'. A similarity score is calculated between the two
+#' samples using a random forest trained with 'ranger'. The similarity score is
+#' compared to reference distributions of 'same writer' and 'different writer'
+#' similarity scores. The result is a score-based likelihood ratio that conveys
+#' the strength of the evidence in favor of 'same writer' or 'different writer'.
+#'
+#' @param sample1_path File path to a handwriting sample saved in PNG file
+#'   format.
+#' @param sample2_path File path to a second handwriting sample saved in PNG
+#'   file format.
+#' @param rforest Optional. A random forest trained with 'ranger'. If rforest is
+#'   not given, the data object random_forest is used.
+#' @param project_dir Optional. A path to a directory where helper files will be
+#'   saved. If no project directory is specified, the helper files will be saved
+#'   to 'tempdir()' and deleted before the function terminates.
+#' @param copy_samples TRUE or FALSE. If TRUE, the PNG files will be copied to
+#'   the project directory. If a project directory is not given, the samples
+#'   will not be copied.
+#'
+#' @return A number
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Compare two samples from the same writer
+#' sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
+#' sample2 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r02.png"), package = "handwriterRF")
+#' calculate_slr(sample1, sample2)
+#'
+#' # Compare samples from two writers
+#' sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
+#' sample2 <- system.file(file.path("extdata", "w0238_s01_pWOZ_r02.png"), package = "handwriterRF")
+#' calculate_slr(sample1, sample2)
+#' }
+#'
+calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, project_dir = NULL, copy_samples = FALSE) {
+  copy_samples_to_project_dir <- function(sample1_path, sample2_path, project_dir) {
+    # Copy samples to project_dir > docs
+    message("Copying samples to output directory > docs...\n")
+    create_dir(file.path(project_dir, "docs"))
+    file.copy(sample1_path, file.path(project_dir, "docs", basename(sample1_path)))
+    file.copy(sample2_path, file.path(project_dir, "docs", basename(sample2_path)))
+  }
 
-  test_same_writer_evals <- eval_density_at_point(density = pdfs, x = scores$test_same_writer)
-  test_same_writer_evals <- correct_NAs(evals = test_same_writer_evals, zero_correction = zero_correction)
-  test_same_writer_evals <- correct_zeros(evals = test_same_writer_evals, zero_correction = zero_correction)
+  skip_if_processed <- function(sample_path, project_dir) {
+    # process file if it hasn't already been processed and saved in project_dir > graph
+    outfile <- gsub(".png", "_proclist.rds", basename(sample_path))
+    outfile_path <- file.path(project_dir, "graphs", outfile)
+    if (!file.exists(outfile_path)) {
+      doc <- handwriter::processDocument(sample_path)
+      saveRDS(doc, outfile_path)
+    }
+    return()
+  }
 
-  test_diff_writer_evals <- eval_density_at_point(density = pdfs, x = scores$test_diff_writer)
-  test_diff_writer_evals <- correct_NAs(evals = test_diff_writer_evals, zero_correction = zero_correction)
-  test_diff_writer_evals <- correct_zeros(evals = test_diff_writer_evals, zero_correction = zero_correction)
+  process_and_save_samples <- function(sample1_path, sample2_path, project_dir) {
+    # Process samples and save in project_dir > graphs
+    message("Processing samples...")
 
-  slrs <- list()
-  slrs$same_writer <- test_same_writer_evals$numerators / test_same_writer_evals$denominators
-  slrs$diff_writer <- test_diff_writer_evals$numerators / test_diff_writer_evals$denominators
+    create_dir(file.path(project_dir, "graphs"))
 
-  return(slrs)
+    skip_if_processed(sample_path = sample1_path, project_dir = project_dir)
+    skip_if_processed(sample_path = sample2_path, project_dir = project_dir)
+
+    return()
+  }
+
+  # error if sample1_path == sample2_path
+  if (identical(sample1_path, sample2_path)) {
+    stop("sample1_path and sample2_path cannot be identical.")
+  }
+
+  # set output directory as temp directory if NULL
+  if (is.null(project_dir)) {
+    project_dir <- file.path(tempdir(), "comparison")
+    # the project directory will be deleted from the temp directory so copying
+    # samples to the project directory is useless.
+    copy_samples <- FALSE
+  }
+
+  if (copy_samples) {
+    copy_samples_to_project_dir(
+      sample1_path = sample1_path,
+      sample2_path = sample2_path,
+      project_dir = project_dir
+    )
+  }
+
+  process_and_save_samples(
+    sample1_path = sample1_path,
+    sample2_path = sample2_path,
+    project_dir = project_dir
+  )
+
+  clusters <- handwriter::get_clusters_batch(
+    template = templateK40,
+    input_dir = file.path(project_dir, "graphs"),
+    output_dir = file.path(project_dir, "clusters"),
+    writer_indices = c(2, 5),
+    doc_indices = c(7, 18),
+    save_master_file = TRUE
+  )
+  counts <- handwriter::get_cluster_fill_counts(clusters)
+  rates <- get_cluster_fill_rates(counts)
+
+  # Distance
+  message("Calculating distance between samples...\n")
+  dist_measures <- which_dists(rforest = rforest)
+  d <- get_distances(df = rates, distance_measures = dist_measures)
+
+  # Score
+  message("Calculating similarity score between samples...\n")
+  score <- get_score(rforest = rforest, d = d)
+
+  # SLR
+  message("Calculating SLR for samples...\n")
+  numerator <- eval_density_at_point(den = rforest$densities$same_writer, x = score, type = "numerator")
+  denominator <- eval_density_at_point(den = rforest$densities$diff_writer, x = score, type = "denominator")
+
+  # Delete project folder from temp directory
+  if (project_dir == file.path(tempdir(), "comparison")) {
+    unlink(project_dir, recursive = TRUE)
+  }
+
+  return(numerator / denominator)
 }
 
-get_densities <- function(scores){
-  pdfs <- list()
-  pdfs$same_writer <- density(scores$train_same_writer, kernel = "gaussian", n=10000)
-  pdfs$diff_writer <- density(scores$train_diff_writer, kernel = "gaussian", n=10000)
-  return(pdfs)
-}
 
-eval_density_at_point <- function(density, x){
-  evals <- list()
-  evals$numerators <- approx(density$same_writer$x, density$same_writer$y, xout = x, n=10000)$y
-  evals$denominators <- approx(density$diff_writer$x, density$diff_writer$y, xout = x, n=10000)$y
-  return(evals)
-}
+# Internal Functions ------------------------------------------------------
 
-correct_NAs <- function(evals, zero_correction){
-  evals$numerators[is.na(evals$numerators)] <- 0
-  evals$denominators[is.na(evals$denominators)] <- zero_correction
-  return(evals)
-}
+#' Evaluate Density at a Point
+#'
+#' @param den A density created with 'density'
+#' @param x A number at which to evaluate the density. I.e., calculate the
+#'   height of the density at the point.
+#' @param type Use 'numerator' or 'denominator' to specify whether the density
+#'   is for the numerator or denominator of the score-based likelihood ratio.
+#'   This is used to determine how to handle NAs or zeros. If the density is for
+#'   the numerator and the density evaluated at the point is NA, the output
+#'   value is 0. If the density is for the denominator and the density evaluated
+#'   at the point is NA or zero, the output is the value input for zero
+#'   correction, to avoid dividing by zero when the score-based likelihood is
+#'   calculated. If the density
+#' @param zero_correction A small number to be used in place of zero in the
+#'   denominator of the score-based likelihood ratio.
+#'
+#' @return A number
+#'
+#' @noRd
+eval_density_at_point <- function(den, x, type, zero_correction = 1e-10) {
+  y <- stats::approx(den$x, den$y, xout = x, n = 10000)$y
 
-correct_zeros <- function(evals, zero_correction){
-  evals$denominators[which(evals$denominators == 0)] <- zero_correction
-  return(evals)
-}
+  # correct NA
+  if (is.na(y) && (type == "numerator")) {
+    y <- 0
+  }
+  if (is.na(y) && (type == "denominator")) {
+    y <- zero_correction
+  }
 
-calculate_error_rates <- function(slrs) {
-  error_rates <- list()
-  error_rates$fnr <- sum(slrs$same_writer < 1) / length(slrs$same_writer)
-  error_rates$fpr <- sum(slrs$diff_writer > 1) / length(slrs$diff_writer)
-  return(error_rates)
+  # correct zero in denominator
+  if ((y == 0) && (type == "denominator")) {
+    y <- zero_correction
+  }
+
+  return(y)
 }

@@ -1,4 +1,3 @@
-
 # External Functions ------------------------------------------------------
 
 #' Get Distances
@@ -8,164 +7,280 @@
 #'
 #' @param df A data frame of cluster fill rates created with
 #'   `get_cluster_fill_rates`
-#' @param distance_measures A vector of distance measures. Use "absolute" to calculate
-#'   the absolute difference between cluster fill rates of two documents. The
-#'   output distance will be a vector the length of the number of clusters. Use
-#'   distance measures accepted by 'stats::dist': "euclidean", "maximum",
-#'   "manhattan", "canberra", "binary", or "minkowski".
+#' @param distance_measures A vector of distance measures. Use "abs" to
+#'   calculate the absolute difference, "man" for the Manhattan distance, "euc"
+#'   for the Euclidean distance, "max" for the maximum absolute distance, and
+#'   "cos" for the cosine distance. The vector can be a single distance, or any
+#'   combination of these five distance measures.
 #'
 #' @return A data frame of distances
 #'
 #' @export
 #'
 #' @examples
-#' distances <- get_distances(df = cfr, distance_measures = c("man", "euc")
+#' # calculate maximum and Euclidean distances between the first 3 documents in cfr.
+#' distances <- get_distances(df = cfr[1:3, ], distance_measures = c("max", "euc"))
 #'
+#' \dontrun{
+#' # calculate absolute and Euclidean distances between all documents in cfr.
+#' distances <- get_distances(df = cfr, distance_measures = c("abs", "euc"))
+#' }
 get_distances <- function(df, distance_measures) {
-
   dists <- list()
-  if ("abs" %in% distance_measures){
-    abs <- get_abs_dists(df)
-    dists[["abs"]] <- abs
 
-    # delete absolute from distance measures list
-    distance_measures <- distance_measures[which(distance_measures != "abs")]
-  }
-
-  for (method in distance_measures){
-    new_dists <- get_single_method_distances(df, distance_measure = method, dist_col_label = method)
-    dists[[method]] <- new_dists
+  for (method in distance_measures) {
+    if (method == "abs") {
+      dists[["abs"]] <- absolute_dist(df)
+    } else if (method == "man") {
+      dists[["man"]] <- manhattan_dist(df)
+    } else if (method == "euc") {
+      dists[["euc"]] <- euclidean_dist(df)
+    } else if (method == "max") {
+      dists[["max"]] <- maximum_dist(df)
+    } else if (method == "cos") {
+      dists[["cos"]] <- cosine_dist(df)
+    }
+    # remove method from list
+    distance_measures <- distance_measures[which(distance_measures != method)]
   }
 
   # combine data frames
-  dists <- purrr::reduce(dists, dplyr::left_join, by = c("docname1"="docname1", "docname2"="docname2"))
-
-  dists <- label_same_different_writer(dists)
+  dists <- purrr::reduce(dists, dplyr::left_join, by = c("docname1" = "docname1", "docname2" = "docname2"))
 
   return(dists)
 }
 
-#' Get Distances with a Single Distance Measure
-#'
-#' Calculate distances using 'stats::dist' between all pairs of cluster fill
-#' rates for a single distance measure.
-#'
-#' @param df A data frame of cluster fill rates created with
-#'   `get_cluster_fill_rates`
-#' @param distance_measure A distance measure used by 'stats::dist'
-#' @param dist_col_label A name for the output distance column
-#'
-#' @return A data frame of distances
-#'
-#' @export
-#'
-#' @examples
-#' distances <- get_single_method_distances(df = cfr, distance_measure = "euclidean", dist_col_label = "dist")
-#'
-get_single_method_distances <- function(df, distance_measure = "euc", dist_col_label = "dist"){
-  # prevent note "no visible binding for global variable"
-  docname <- docname1 <- docname2 <- writer1 <- writer2 <- NULL
 
+# Internal Functions ------------------------------------------------------
+
+#' Calculate the Absolute Distances for a Single Cluster
+#'
+#' Calculate the absolute distances for a single cluster between all pairs of
+#' documents in a data frame.
+#'
+#' @param df A data frame of cluster will rates created with
+#'   `get_cluster_fill_rates`.
+#' @param k The name of a cluster. E.g., "cluster1"
+#'
+#' @return A matrix
+#'
+#' @noRd
+absolute_dist_for_single_cluster <- function(df, k) {
+  # outer throws error if df is a tibble and the cluster k is a zero vector,
+  # so convert df to a data frame.
+  df <- as.data.frame(df)
+
+  # select cluster k
+  df <- df %>% dplyr::select(tidyselect::all_of(k))
+  d <- outer(
+    seq_len(nrow(df)), seq_len(nrow(df)),
+    function(i, j) {
+      abs(df[i, ] - df[j, ])
+    }
+  )
+  return(d)
+}
+
+#' Calculate the Absolute Distances
+#'
+#' Calculate the absolute distances between all pairs of documents in a data
+#' frame.
+#'
+#' @param df A data frame of cluster will rates created with
+#'   `get_cluster_fill_rates`.
+#'
+#' @return A data frame
+#'
+#' @noRd
+absolute_dist <- function(df) {
+  # split docnames and clusters
+  docnames <- df$docname
+  df <- get_cluster_cols(df)
+
+  dists <- lapply(colnames(df), function(k) {
+    absolute_dist_for_single_cluster(df, k)
+  })
+  dists <- lapply(1:length(dists), function(i) {
+    dist_matrix2df(dists[[i]], docnames, paste0("cluster", i))
+  })
+
+  # combine data frames
+  dists <- purrr::reduce(dists, dplyr::left_join, by = c("docname1" = "docname1", "docname2" = "docname2"))
+
+  return(dists)
+}
+
+#' Calculate the Manhattan Distances
+#'
+#' Calculate the manhattan distances between all pairs of documents in a data
+#' frame.
+#'
+#' @param df A data frame of cluster will rates created with
+#'   `get_cluster_fill_rates`.
+#'
+#' @return A data frame
+#'
+#' @noRd
+manhattan_dist <- function(df) {
+  # split docnames and clusters
+  docnames <- df$docname
+  df <- get_cluster_cols(df)
+
+  d <- outer(
+    seq_len(nrow(df)), seq_len(nrow(df)),
+    function(i, j) {
+      rowSums(abs(df[i, ] - df[j, ]))
+    }
+  )
+
+  df <- dist_matrix2df(d, docnames, "man")
+
+  return(df)
+}
+
+#' Calculate the Euclidean Distances
+#'
+#' Calculate the Euclidean distances between all pairs of documents in a data
+#' frame.
+#'
+#' @param df A data frame of cluster will rates created with
+#'   `get_cluster_fill_rates`.
+#'
+#' @return A data frame
+#'
+#' @noRd
+euclidean_dist <- function(df) {
+  # split docnames and clusters
+  docnames <- df$docname
+  df <- get_cluster_cols(df)
+
+  d <- outer(
+    seq_len(nrow(df)), seq_len(nrow(df)),
+    function(i, j) {
+      sqrt(rowSums((df[i, ] - df[j, ])^2))
+    }
+  )
+
+  df <- dist_matrix2df(d, docnames, "euc")
+
+  return(df)
+}
+
+#' Calculate the Maximum Distances
+#'
+#' Calculate the maximum distances between all pairs of documents in a data
+#' frame.
+#'
+#' @param df A data frame of cluster will rates created with
+#'   `get_cluster_fill_rates`.
+#'
+#' @return A data frame
+#'
+#' @noRd
+maximum_dist <- function(df) {
+  # split docnames and clusters
+  docnames <- df$docname
+  df <- get_cluster_cols(df)
+
+  d <- outer(
+    seq_len(nrow(df)), seq_len(nrow(df)),
+    function(i, j) {
+      apply(abs(df[i, ] - df[j, ]), 1, max)
+    }
+  )
+
+  df <- dist_matrix2df(d, docnames, "max")
+
+  return(df)
+}
+
+#' Calculate the Cosine Distances
+#'
+#' Calculate the cosine distances between all pairs of documents in a data
+#' frame.
+#'
+#' @param df A data frame of cluster will rates created with
+#'   `get_cluster_fill_rates`.
+#'
+#' @return A data frame
+#'
+#' @noRd
+cosine_dist <- function(df) {
+  # split docnames and clusters
+  docnames <- df$docname
+  df <- get_cluster_cols(df)
+
+  d <- outer(
+    seq_len(nrow(df)), seq_len(nrow(df)),
+    function(i, j) {
+      (rowSums((df[i, ] - df[j, ])^2)) / (sqrt(rowSums((df[i, ])^2)) * sqrt(rowSums((df[j, ])^2)))
+    }
+  )
+
+  df <- dist_matrix2df(d, docnames, "cos")
+
+  return(df)
+}
+
+#' Select the Cluster Columns
+#'
+#' For a data frame created with `get_cluster_fill_rates`, create
+#' a data frame that consists solely of the cluster columns.
+#'
+#' @param df A data frame of cluster will rates created with
+#'   `get_cluster_fill_rates`.
+#'
+#' @return A data frame
+#'
+#' @noRd
+get_cluster_cols <- function(df) {
   # drop all columns except clusters
-  clusters <- df %>% dplyr::select(-docname)
+  df <- df %>%
+    dplyr::ungroup() %>%
+    dplyr::select(dplyr::starts_with("cluster"))
+  return(df)
+}
 
-  # calculate distances between all pairs of docs
-  if (distance_measure == "man"){
-    dists <- manhattan_dist(clusters)
-  } else if (distance_measure == "euc"){
-    dists <- euclidean_dist(clusters)
-  } else if (distance_measure == "max"){
-    dists <- maximum_dist(clusters)
-  } else if (distance_measure == "cos"){
-    dists <- cosine_dist(clusters)
-  } else {
-    stop("That distance measure has not been defined. Use 'man', 'euc', 'max', or 'cos'.")
-  }
+#' Convert a Matrix of Distances to a Data Frame
+#'
+#' Convert a matrix of distances to a data frame with three columns: docname1,
+#' docname2, and <dist_col_label>.
+#'
+#' @param m A matrix of distances
+#' @param docnames A vector of document names corresponding to rows and columns
+#'   of the distance matrix.
+#' @param dist_col_label A character string to name the distance column in the
+#'   returned data frame.
+#'
+#' @return A data frame
+#'
+#' @noRd
+dist_matrix2df <- function(m, docnames, dist_col_label) {
+  # Prevent note "no visible binding for global variable"
+  docname <- docname2 <- NULL
 
-  # set lower triangle as NA because they are duplicates of upper triangle
-  dists[lower.tri(dists)] <- NA
-  # set diagonal entries to NA because each is the distance between a document
-  # and itself. We don't want to use these distances in our distributions.
-  diag(dists) <- NA
+  # set lower triangle as NA because they are duplicates of upper triangle. Set
+  m[lower.tri(m)] <- NA
+  # diagonal entries to NA because each is the distance between a document and
+  # itself. We don't want to use these distances in our distributions.
+  diag(m) <- NA
 
   # format data frame
-  dists <- as.data.frame(dists)
-  colnames(dists) <- df$docname
-  dists$docname <- df$docname
-  dists <- dists %>% dplyr::select(docname, tidyselect::everything())
+  df <- as.data.frame(m)
+  colnames(df) <- docnames
+  df$docname <- docnames
+  df <- df %>% dplyr::select(tidyselect::all_of(c("docname")), tidyselect::everything())
 
   # reshape matrix to three columns (docname1, docname2, distance name) and drop
   # NAs
-  colnames(dists)[colnames(dists) == "docname"] <- "docname1"
-  dists <- reshape2::melt(dists, id.vars = "docname1", variable.name = "docname2", value.name = dist_col_label, na.rm = TRUE)
+  colnames(df)[colnames(df) == "docname"] <- "docname1"
+  df <- reshape2::melt(df, id.vars = "docname1", variable.name = "docname2", value.name = dist_col_label, na.rm = TRUE)
 
-  # check number of rows
-  if (nrow(dists) != choose(nrow(df), 2)){
-    stop(paste("There should be", choose(nrow(df), 2), "distances, but there are", nrow(dists)))
-  }
+  # change docname2 column from factor to character
+  df <- df %>% dplyr::mutate(docname2 = as.character(docname2))
 
-  return(dists)
-}
+  # reset row names
+  row.names(df) <- NULL
 
-get_abs_dists <- function(df) {
-  abs_dist_for_single_cluster <- function(df, k){
-    df <- df %>% dplyr::select(docname, paste0("cluster", k))
-    dists <- get_single_method_distances(df = df, distance_measure = "man", dist_col_label = paste0("cluster", k))
-    return(dists)
-  }
-
-  abs_dists <- lapply(1:40, function(k) {abs_dist_for_single_cluster(df, k)})
-  dists <- purrr::reduce(abs_dists, dplyr::left_join, by = c("docname1"="docname1", "docname2"="docname2"))
-  return(dists)
-}
-
-# Internal Functions ------------------------------------------------------
-#' Label Same and Different Writer Pairs
-#'
-#' Labels distances as belonging to same or different writers.
-#'
-#' @param dists A data frame of distances
-#'
-#' @return A data frame
-#' @noRd
-label_same_different_writer <- function(dists){
-  # prevent note "no visible binding for global variable"
-  writer1 <- writer2 <- NULL
-
-  dists <- expand_docnames(dists, "docname1", "1")
-  dists <- expand_docnames(dists, "docname2", "2")
-
-  dists <- dists %>% dplyr::mutate(match = ifelse(writer1 == writer2, "same", "different"))
-
-  # make match a factor
-  dists$match <- as.factor(dists$match)
-
-  # drop columns in prep for rf
-  dists <- dists %>% dplyr::select(-writer1, -session1, -prompt1, -rep1, -writer2, -session2, -prompt2, -rep2)
-
-  return(dists)
-}
-
-manhattan_dist <- function(df){
-  d <- outer(seq_len(nrow(df)), seq_len(nrow(df)),
-             function(i, j) {rowSums(abs(df[i,] - df[j,]))})
-  return(d)
-}
-
-euclidean_dist <- function(df){
-  d <- outer(seq_len(nrow(df)), seq_len(nrow(df)),
-             function(i, j) {sqrt(rowSums((df[i,] - df[j,])^2))})
-  return(d)
-}
-
-maximum_dist <- function(df){
-  d <- outer(seq_len(nrow(df)), seq_len(nrow(df)),
-             function(i, j) {apply(abs(df[i,] - df[j,]), 1, max)})
-  return(d)
-}
-
-cosine_dist <- function(df){
-  d <- outer(seq_len(nrow(df)), seq_len(nrow(df)),
-             function(i, j) {(rowSums((df[i,] - df[j,])^2)) / (sqrt(rowSums((df[i,])^2)) * sqrt(rowSums((df[j,])^2)))})
-  return(d)
+  return(df)
 }

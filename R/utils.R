@@ -1,3 +1,18 @@
+#' Create a Directory
+#'
+#' This helper function creates a directory if it doesn't already exist.
+#'
+#' @param folder A filepath for the new directory
+#'
+#' @return NULL
+#'
+#' @noRd
+create_dir <- function(folder) {
+  if (!dir.exists(folder)) {
+    dir.create(folder, recursive = TRUE)
+  }
+}
+
 #' Expand CSAFE Handwriting Database Document Names
 #'
 #' Documents from the CSAFE Handwriting Database contain the writer, session,
@@ -20,13 +35,16 @@
 #' df <- expand_docnames(cfr, "docname", "")
 #' df <- expand_docnames(cfr, "docname", "_1")
 #'
-expand_docnames <- function(df, docname_col = "docname", suffix=""){
-  df <- df %>% tidyr::separate_wider_delim(docname_col,
-                                           delim = "_",
-                                           names = c(paste0("writer", suffix),
-                                                     paste0("session", suffix),
-                                                     paste0("prompt", suffix),
-                                                     paste0("rep", suffix)),
-                                           cols_remove = FALSE)
+expand_docnames <- function(df, docname_col = "docname", suffix = "") {
+  df <- df %>% tidyr::separate_wider_delim(tidyselect::all_of(docname_col),
+    delim = "_",
+    names = c(
+      paste0("writer", suffix),
+      paste0("session", suffix),
+      paste0("prompt", suffix),
+      paste0("rep", suffix)
+    ),
+    cols_remove = FALSE
+  )
   return(df)
 }

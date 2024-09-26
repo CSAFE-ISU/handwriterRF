@@ -3,7 +3,7 @@
 
 # Files
 ^LICENSE\.md$
-^scratch\.R$
+^scratch*
 
 # Folders
 ^data-raw$

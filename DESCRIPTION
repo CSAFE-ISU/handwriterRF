@@ -12,13 +12,20 @@ LazyData: true
 RoxygenNote: 7.3.2
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0),
+    tibble
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)
 Imports: 
     dplyr,
+    handwriter,
     magrittr,
+    purrr,
+    randomForest,
+    ranger,
     reshape2,
     tidyr,
     tidyselect
+Config/testthat/edition: 3

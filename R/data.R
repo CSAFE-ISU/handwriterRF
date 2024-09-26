@@ -8,7 +8,16 @@
 #'
 #' @format A data frame with 1200 rows and 41 variables:
 #' \describe{
-#'   \item{docname}{file name of the handwriting sample}
+#'   \item{docname}{The file name of the handwriting sample. The file
+#'   name includes the writer ID, the writing session, prompt, and
+#'   repetition number of the handwriting sample. There are 1,200
+#'   handwriting samples.}
+#'   \item{writer}{Writer ID. There are 100 distinct writer ID's. Each
+#'   writer has 12 documents.}
+#'   \item{doc}{A document code that records the writing session, prompt,
+#'   and repetition number of the handwriting sample. There are 12 distinct
+#'   document codes. Each writer has a writing sample for each of the 12 document
+#'   codes.}
 #'   \item{1}{number of graphs in cluster 1}
 #'   \item{2}{number of graphs in cluster 2}
 #'   \item{3}{number of graphs in cluster 3}
@@ -53,7 +62,7 @@
 #' @source <https://forensicstats.org/handwritingdatabase/>
 "cfc"
 
-#'Cluster Fill Rates for 1200 CSAFE Handwriting Database Samples
+#' Cluster Fill Rates for 1200 CSAFE Handwriting Database Samples
 #'
 #' A dataset containing cluster fill rates for for 1,200 handwriting samples from
 #' the CSAFE Handwriting Database. The dataset was created by running
@@ -109,3 +118,95 @@
 #' @source <https://forensicstats.org/handwritingdatabase/>
 "cfr"
 
+#' Cluster Template with 40 Clusters
+#'
+#' A cluster template created by 'handwriter' with K=40
+#' clusters. This template was created from 100 handwriting samples from the
+#' CSAFE Handwriting Database. This template is suitable for casework.
+#'
+#' 'handwriter' splits handwriting samples into component shapes
+#' called *graphs*. The graphs are sorted into 40 clusters with a K-Means
+#' algorithm. See 'handwriter' for more details.
+#'
+#' @format A list containing the contents of the cluster template.
+#' \describe{
+#' \item{centers_seed}{An integer for the random number generator use to select the
+#' starting cluster centers for the K-Means algorithm.}
+#' \item{cluster}{A vector of cluster assignments
+#'   for each graph used to create the cluster template. The clusters are numbered sequentially 1, 2,...,K.}
+#' \item{centers}{The final cluster centers produced by the K-Means algorithm.}
+#' \item{K}{The number of clusters in the template.}
+#' \item{n}{The number of training graphs to used to create the template.}
+#' \item{docnames}{A vector that lists the training document from which each graph originated.}
+#' \item{writers}{A vector that lists the writer of each graph.}
+#' \item{iters}{The maximum number of iterations for the K-means
+#'   algorithm.}
+#' \item{changes}{A vector of the number of graphs that
+#'   changed clusters on each iteration of the K-means algorithm.}
+#' \item{outlierCutoff}{A vector of the outlier cutoff values calculated on
+#'   each iteration of the K-means algorithm.}
+#' \item{stop_reason}{The reason the
+#'   K-means algorithm terminated.}
+#' \item{wcd}{The within cluster
+#'   distances on the final iteration of the K-means algorithm. More specifically,
+#'   the distance between each graph and the center of the cluster to which it
+#'   was assigned  on each iteration. The output of 'handwriter::make_clustering_template' stores
+#'   the within cluster distances on each iteration, but the previous iterations were removed here to reduce the file size.}
+#' \item{wcss}{A vector of the
+#'   within-cluster sum of squares on each iteration of the K-means algorithm.}}
+#' @examples
+#' # view number of clusters
+#' templateK40$K
+#'
+#' # view number of iterations
+#' templateK40$iters
+#'
+#' # view cluster centers
+#' templateK40$centers
+#'
+#' @keywords cluster
+#' @md
+"templateK40"
+
+
+#' A 'ranger' Random Forest, Distances, and Densities
+#'
+#' A list that contains a trained random forest created with 'ranger', the data
+#' frame of distances used to train the random forest, and two densities
+#' obtained from the random forest.
+#'
+#' @format A list with the following components:
+#' \describe{
+#' \item{rf}{A random forest created with 'ranger' with settings:
+#' importance = "permutation", scale.permutation.importance = TRUE, and num.trees = 200.}
+#' \item{dists}{The data frame used to train the random forest. The data frame has
+#' 600 rows. Each row contains the absolute and Euclidean distances between the
+#' cluster fill rates of two handwriting samples. If both handwriting samples are
+#' from the same writer, the class is 'same'. If the handwriting samples are from
+#' different writers, the class is 'different'. There are 300 'same' distances and
+#' 300 'different' distances in the data frame.}
+#' \item{densities}{A similarity score was obtained for each pair of handwriting samples in the
+#' training data frame, dists, by calculating the proportion of decision trees that voted 'same'
+#' class for the pair. The 'same_writer' density was created by applying the 'density' function
+#' to the similarity scores for the 300 same writer pairs in dists. Similarly, the 'diff_writer'
+#' density was created by applying the 'density' function to the similarity scores for the 300
+#' different writer pairs in dists. The default settings were used with the 'density' function.}
+#' }
+#'
+#' @examples
+#' # view the random forest
+#' random_forest$rf
+#'
+#' # view the distances data frame
+#' random_forest$dists
+#'
+#' \dontrun{
+#' # plot the same writer density
+#' plot(random_forest$densities$same_writer)
+#'
+#' # plot the different writer density
+#' plot(random_forest$densities$diff_writer)
+#' }
+#'
+#' @md
+"random_forest"

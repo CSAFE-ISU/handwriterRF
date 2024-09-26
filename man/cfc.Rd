@@ -7,7 +7,16 @@
 \format{
 A data frame with 1200 rows and 41 variables:
 \describe{
-  \item{docname}{file name of the handwriting sample}
+  \item{docname}{The file name of the handwriting sample. The file
+  name includes the writer ID, the writing session, prompt, and
+  repetition number of the handwriting sample. There are 1,200
+  handwriting samples.}
+  \item{writer}{Writer ID. There are 100 distinct writer ID's. Each
+  writer has 12 documents.}
+  \item{doc}{A document code that records the writing session, prompt,
+  and repetition number of the handwriting sample. There are 12 distinct
+  document codes. Each writer has a writing sample for each of the 12 document
+  codes.}
   \item{1}{number of graphs in cluster 1}
   \item{2}{number of graphs in cluster 2}
   \item{3}{number of graphs in cluster 3}
