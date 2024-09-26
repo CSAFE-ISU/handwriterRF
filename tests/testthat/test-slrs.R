@@ -47,5 +47,3 @@ test_that("SLRs throws error if samples are the same file", {
   ),
   "sample1_path and sample2_path cannot be identical.")
 })
-
-

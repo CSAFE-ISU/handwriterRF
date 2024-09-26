@@ -1,3 +1,48 @@
+
+# External Functions ------------------------------------------------------
+
+#' Calculate a Score-Based Likelihood Ratio
+#'
+#' Compares two handwriting samples scanned and saved a PNG images. The writing
+#' in both samples is split into component shapes, or graphs, with
+#' 'handwriter::processDocument'. The graphs are grouped into clusters of
+#' similar shapes with 'handwriter::get_clusterassignment'. The proportion of
+#' graphs assigned to each cluster, called the cluster fill rates, are used as
+#' writer profiles. The cluster fill rates are calculated with
+#' 'get_cluster_fill_rates'. A similarity score is calculated between the two
+#' samples using a random forest trained with 'ranger'. The similarity score is
+#' compared to reference distributions of 'same writer' and 'different writer'
+#' similarity scores. The result is a score-based likelihood ratio that conveys
+#' the strength of the evidence in favor of 'same writer' or 'different writer'.
+#'
+#' @param sample1_path File path to a handwriting sample saved in PNG file
+#'   format.
+#' @param sample2_path File path to a second handwriting sample saved in PNG
+#'   file format.
+#' @param project_dir Optional. A path to a directory where helper files will be
+#'   saved. If no project directory is specified, the helper files will be saved
+#'   to 'tempdir()' and deleted before the function terminates.
+#' @param copy_samples TRUE or FALSE. If TRUE, the PNG files will be copied to
+#'   the project directory. If a project directory is not given, the samples
+#'   will not be copied.
+#'
+#' @return A number
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Compare two samples from the same writer
+#' sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
+#' sample2 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r02.png"), package = "handwriterRF")
+#' calculate_slr(sample1, sample2)
+#'
+#' # Compare samples from two writers
+#' sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
+#' sample2 <- system.file(file.path("extdata", "w0238_s01_pWOZ_r02.png"), package = "handwriterRF")
+#' calculate_slr(sample1, sample2)
+#' }
+#'
 calculate_slr <- function(sample1_path, sample2_path, project_dir = NULL, copy_samples = FALSE){
 
   copy_samples_to_project_dir <- function(sample1_path, sample2_path, project_dir){
@@ -84,6 +129,28 @@ calculate_slr <- function(sample1_path, sample2_path, project_dir = NULL, copy_s
   return(numerator / denominator)
 }
 
+
+# Internal Functions ------------------------------------------------------
+
+#' Evaluate Density at a Point
+#'
+#' @param den A density created with 'density'
+#' @param x A number at which to evaluate the density. I.e., calculate the
+#'   height of the density at the point.
+#' @param type Use 'numerator' or 'denominator' to specify whether the density
+#'   is for the numerator or denominator of the score-based likelihood ratio.
+#'   This is used to determine how to handle NAs or zeros. If the density is for
+#'   the numerator and the density evaluated at the point is NA, the output
+#'   value is 0. If the density is for the denominator and the density evaluated
+#'   at the point is NA or zero, the output is the value input for zero
+#'   correction, to avoid dividing by zero when the score-based likelihood is
+#'   calculated. If the density
+#' @param zero_correction A small number to be used in place of zero in the
+#'   denominator of the score-based likelihood ratio.
+#'
+#' @return A number
+#'
+#' @noRd
 eval_density_at_point <- function(den, x, type, zero_correction = 1e-10){
   y <- stats::approx(den$x, den$y, xout = x, n=10000)$y
 

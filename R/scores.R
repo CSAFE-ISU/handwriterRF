@@ -1,3 +1,7 @@
+
+# Internal Functions ------------------------------------------------------
+
+
 #' Calculate a Similarity Score
 #'
 #' Use a trained random forest to produce a similarity score for the distance
@@ -10,14 +14,7 @@
 #'
 #' @return A number
 #'
-#' @export
-#'
-#' @examples
-#' # Select the cluster fill rates for two handwriting samples
-#' # Calculate the Euclidean distance between the cluster fill rates
-#' d <- get_distances(cfr[1:2, ], c("abs", "euc"))
-#' score <- get_score(d = d, random_forest = rf)
-#'
+#' @noRd
 get_score <- function(d, random_forest){
   get_prop_same_votes <- function(preds) {
     preds <- as.data.frame(preds)

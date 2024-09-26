@@ -1,3 +1,7 @@
+
+# Internal Functions ------------------------------------------------------
+
+
 #' Train a Random Forest with randomForest
 #'
 #' Train a random forest from a data frame of cluster fill rates. The package
