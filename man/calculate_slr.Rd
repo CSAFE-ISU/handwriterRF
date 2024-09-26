@@ -7,6 +7,7 @@
 calculate_slr(
   sample1_path,
   sample2_path,
+  rforest = random_forest,
   project_dir = NULL,
   copy_samples = FALSE
 )
@@ -17,6 +18,9 @@ format.}
 
 \item{sample2_path}{File path to a second handwriting sample saved in PNG
 file format.}
+
+\item{rforest}{Optional. A random forest trained with 'ranger'. If rforest is
+not given, the data object random_forest is used.}
 
 \item{project_dir}{Optional. A path to a directory where helper files will be
 saved. If no project directory is specified, the helper files will be saved

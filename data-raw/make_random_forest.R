@@ -3,8 +3,8 @@ devtools::load_all()
 main_dir <- "data-raw"
 
 train <- get_csafe_train_set(df = cfr, train_prompt_code = "pCMB")
-rforest <- train_rf(
-  df = cfr,
+random_forest <- train_rf(
+  df = train,
   ntrees = 200,
   distance_measures = c("abs", "euc"),
   output_dir = main_dir,
