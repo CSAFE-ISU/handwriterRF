@@ -4,13 +4,13 @@
 \alias{get_csafe_train_set}
 \title{Get Training Set}
 \usage{
-get_csafe_train_set(df, train_prompt_code)
+get_csafe_train_set(df, train_prompt_codes)
 }
 \arguments{
 \item{df}{A data frame of cluster fill rates created with
 'get_cluster_fill_rates'}
 
-\item{train_prompt_code}{Which prompt to use in the training set: "pLND", "pPHR", "pWOZ", or "pCMB"}
+\item{train_prompt_codes}{Which prompt(s) to use in the training set: "pLND", "pPHR", "pWOZ", or "pCMB"}
 }
 \value{
 A data frame
@@ -20,6 +20,6 @@ Create a training set from a data frame of cluster fill rates created with
 'get_cluster_fill_rates'.
 }
 \examples{
-train <- get_csafe_train_set(df = cfr, train_prompt_code = "pCMB")
+train <- get_csafe_train_set(df = cfr, train_prompt_codes = "pCMB")
 
 }

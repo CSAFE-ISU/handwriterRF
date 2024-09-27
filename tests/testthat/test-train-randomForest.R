@@ -1,5 +1,5 @@
 test_that("Train random forest works with randomForest package", {
-  train <- get_csafe_train_set(df = cfr, train_prompt_code = "pLND")
+  train <- get_csafe_train_set(df = cfr, train_prompt_codes = "pLND")
   actual <- train_randomForest_rf(
     df = train,
     ntrees = 200,

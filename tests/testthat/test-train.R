@@ -1,11 +1,11 @@
 test_that("Get train set works", {
-  actual <- get_csafe_train_set(df = cfr, train_prompt_code = "pLND")
+  actual <- get_csafe_train_set(df = cfr, train_prompt_codes = "pLND")
   expected <- read.csv(testthat::test_path("fixtures", "train", "train_set.csv"))
   expect_equal(actual, expected)
 })
 
 test_that("Train random forest works with ranger package", {
-  train <- get_csafe_train_set(df = cfr, train_prompt_code = "pLND")
+  train <- get_csafe_train_set(df = cfr, train_prompt_codes = "pLND")
   actual <- train_rf(
     df = train,
     ntrees = 200,
