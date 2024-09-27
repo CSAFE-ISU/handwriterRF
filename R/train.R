@@ -86,17 +86,18 @@ train_rf <- function(df,
 #' 'get_cluster_fill_rates'.
 #'
 #' @param df A data frame of cluster fill rates created with
-#' 'get_cluster_fill_rates'
-#' @param train_prompt_code Which prompt to use in the training set: "pLND", "pPHR", "pWOZ", or "pCMB"
+#'   'get_cluster_fill_rates'
+#' @param train_prompt_codes A character vector of which prompt(s) to use in the
+#'   training set. Available prompts are "pLND", "pPHR", "pWOZ", and "pCMB".
 #'
 #' @return A data frame
 #'
 #' @export
 #'
 #' @examples
-#' train <- get_csafe_train_set(df = cfr, train_prompt_code = "pCMB")
+#' train <- get_csafe_train_set(df = cfr, train_prompt_codes = "pCMB")
 #'
-get_csafe_train_set <- function(df, train_prompt_code) {
+get_csafe_train_set <- function(df, train_prompt_codes) {
   # Prevent note "no visible binding for global variable"
   writer <- session <- prompt <- rep <- total_graphs <- NULL
 
@@ -104,7 +105,7 @@ get_csafe_train_set <- function(df, train_prompt_code) {
 
   # build train set
   train <- df %>%
-    dplyr::filter(prompt == train_prompt_code) %>%
+    dplyr::filter(prompt %in% train_prompt_codes) %>%
     dplyr::select(-writer, -session, -prompt, -rep, -total_graphs)
 
   # return data frame instead of tibble
