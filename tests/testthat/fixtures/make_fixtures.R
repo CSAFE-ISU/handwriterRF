@@ -1,5 +1,5 @@
 # save train set
-train_set <- get_csafe_train_set(df = cfr, train_prompt_code = "pLND")
+train_set <- get_csafe_train_set(df = cfr, train_prompt_codes = "pLND")
 write.csv(train_set, testthat::test_path("fixtures", "train", "train_set.csv"), row.names = FALSE)
 
 

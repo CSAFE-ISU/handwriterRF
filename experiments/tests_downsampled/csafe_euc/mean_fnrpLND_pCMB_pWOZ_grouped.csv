@@ -1,9 +1,0 @@
-"train_prompt","distance_measures","use_random_forest","mean_fnr"
-"pCMB","euc",FALSE,0.0266666666666667
-"pCMB","euc",TRUE,0.137037037037037
-"pLND","euc",FALSE,0.0380952380952381
-"pLND","euc",TRUE,0.0577777777777778
-"pPHR","euc",FALSE,0.144761904761905
-"pPHR","euc",TRUE,0
-"pWOZ","euc",FALSE,0.0504761904761905
-"pWOZ","euc",TRUE,0.0362962962962963

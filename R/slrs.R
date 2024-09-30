@@ -127,13 +127,20 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
   message("Calculating SLR for samples...\n")
   numerator <- eval_density_at_point(den = rforest$densities$same_writer, x = score, type = "numerator")
   denominator <- eval_density_at_point(den = rforest$densities$diff_writer, x = score, type = "denominator")
+  slr <- numerator / denominator
 
-  # Delete project folder from temp directory
+  df <- data.frame("sample1_path" = sample1_path, "sample2_path" = sample2_path,
+                   "docname1" = basename(sample1_path), "docname2" = basename(sample2_path),
+                   "slr" = slr)
+
+  # Delete project folder from temp directory or save SLR to project folder
   if (project_dir == file.path(tempdir(), "comparison")) {
     unlink(project_dir, recursive = TRUE)
+  } else {
+    saveRDS(df, file.path(project_dir, "slr.rds"))
   }
 
-  return(numerator / denominator)
+  return(slr)
 }
 
 
