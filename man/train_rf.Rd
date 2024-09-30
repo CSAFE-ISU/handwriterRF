@@ -10,7 +10,7 @@ train_rf(
   distance_measures,
   output_dir = NULL,
   run_number = 1,
-  downsample_strata = c("match", "pLND", "pPHR", "pWOZ")
+  downsample = TRUE
 )
 }
 \arguments{
@@ -28,11 +28,10 @@ saved.}
 \item{run_number}{An integer used for both the set.seed function and to
 distinguish between different runs on the same input data frame.}
 
-\item{downsample_strata}{A character vector of strata for drawing a
-stratified random sample of different writer pairs to equal the number of
-same writer pairs. Use 'Null' to prevent downsampling and use all different
-writer pairs. Use 'match' to treat all different writer pairs as a single
-strata.}
+\item{downsample}{Whether to downsample the number of "different writer"
+distances before training the random forest. If TRUE, the different writer
+distances will be randomly sampled, resulting in the same number of
+different writer and same writer pairs.}
 }
 \value{
 A random forest
@@ -41,12 +40,12 @@ A random forest
 Train a random forest with 'ranger' from a data frame of cluster fill rates.
 }
 \examples{
-train <- get_csafe_train_set(df = cfr, train_prompt_codes = "pCMB")
+train <- get_csafe_train_set(df = cfr, train_prompt_code = "pCMB")
 rforest <- train_rf(
   df = train,
   ntrees = 200,
   distance_measures = c("euc"),
   run_number = 1,
-  downsample_strata = TRUE
+  downsample = TRUE
 )
 }

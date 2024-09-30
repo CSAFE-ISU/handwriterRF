@@ -1,4 +1,7 @@
 get_test_samples <- function(train, sessions, prompts, seed = 100) {
+  # Prevent note "no visible binding for global variable"
+  session <- prompt <- path <- writer <- docname <- NULL
+
   set.seed(seed)
 
   # csafe database
@@ -76,7 +79,8 @@ load_slrs <- function(experiment_dir) {
 }
 
 calculate_errors <- function(df) {
-  slr <- NULL
+  # Prevent note "no visible binding for global variable"
+  total <- slr <- NULL
 
   # false positive rate
   total_diff <- df %>%
