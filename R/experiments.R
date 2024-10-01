@@ -7,10 +7,10 @@ get_test_samples <- function(train, sessions, prompts, db_path, seed = 100) {
   # get test writers ----
   train_writers <- expand_docnames(train, "docname")
   train_writers <- unique(train_writers$writer)
-  test_writers <- setdiff(list.files(db), train_writers)
+  test_writers <- setdiff(list.files(db_path), train_writers)
 
   # get all possible test samples
-  samples <- unlist(sapply(file.path(db, test_writers), function(x) list.files(x, pattern = ".png", full.names = TRUE), USE.NAMES = FALSE))
+  samples <- unlist(sapply(file.path(db_path, test_writers), function(x) list.files(x, pattern = ".png", full.names = TRUE), USE.NAMES = FALSE))
   samples <- data.frame("path" = samples)
   samples$docname <- basename(samples$path)
   samples <- expand_docnames(samples, "docname")
@@ -40,8 +40,8 @@ get_test_samples <- function(train, sessions, prompts, db_path, seed = 100) {
   samples <- rbind(same, diff)
   samples <- expand_docnames(samples, "docname1", "1")
   samples <- expand_docnames(samples, "docname2", "2")
-  samples$sample1_path <- file.path(db, samples$writer1, samples$docname1)
-  samples$sample2_path <- file.path(db, samples$writer2, samples$docname2)
+  samples$sample1_path <- file.path(db_path, samples$writer1, samples$docname1)
+  samples$sample2_path <- file.path(db_path, samples$writer2, samples$docname2)
 
   return(samples)
 }
