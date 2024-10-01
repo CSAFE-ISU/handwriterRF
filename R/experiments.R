@@ -1,11 +1,8 @@
-get_test_samples <- function(train, sessions, prompts, seed = 100) {
+get_test_samples <- function(train, sessions, prompts, db_path, seed = 100) {
   # Prevent note "no visible binding for global variable"
   session <- prompt <- path <- writer <- docname <- NULL
 
   set.seed(seed)
-
-  # csafe database
-  db <- "/Users/stephanie/Documents/handwriting_datasets/CSAFE_Handwriting_Database/docs"
 
   # get test writers ----
   train_writers <- expand_docnames(train, "docname")
