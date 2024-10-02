@@ -150,7 +150,7 @@ make_densities_from_rf <- function(rforest) {
   pdfs$same_writer <- stats::density(scores$same_writer, kernel = "gaussian", n = 10000)
   pdfs$diff_writer <- stats::density(scores$diff_writer, kernel = "gaussian", n = 10000)
 
-  return(pdfs)
+  return(list("scores"=scores, "pdfs"=pdfs))
 }
 
 

@@ -10,7 +10,8 @@ get_test_samples <- function(train, sessions, prompts, db_path, seed = 100) {
   test_writers <- setdiff(list.files(db_path), train_writers)
 
   # get all possible test samples
-  samples <- unlist(sapply(file.path(db_path, test_writers), function(x) list.files(x, pattern = ".png", full.names = TRUE), USE.NAMES = FALSE))
+  test_writer_folders <- file.path(db_path, test_writers)
+  samples <- unlist(lapply(test_writer_folders, function(x) list.files(x, pattern = ".png", full.names = TRUE)))
   samples <- data.frame("path" = samples)
   samples$docname <- basename(samples$path)
   samples <- expand_docnames(samples, "docname")
