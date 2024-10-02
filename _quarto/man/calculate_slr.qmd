@@ -1,0 +1,88 @@
+## Calculate a Score-Based Likelihood Ratio {.unnumbered}
+
+
+### Description
+
+Compares two handwriting samples scanned and saved a PNG images. The writing
+in both samples is split into component shapes, or graphs, with
+'handwriter::processDocument'. The graphs are grouped into clusters of
+similar shapes with 'handwriter::get_clusterassignment'. The proportion of
+graphs assigned to each cluster, called the cluster fill rates, are used as
+writer profiles. The cluster fill rates are calculated with
+'get_cluster_fill_rates'. A similarity score is calculated between the two
+samples using a random forest trained with 'ranger'. The similarity score is
+compared to reference distributions of 'same writer' and 'different writer'
+similarity scores. The result is a score-based likelihood ratio that conveys
+the strength of the evidence in favor of 'same writer' or 'different writer'.
+
+
+
+### Usage
+
+<pre><code class='language-R'>calculate_slr(
+  sample1_path,
+  sample2_path,
+  rforest = random_forest,
+  project_dir = NULL,
+  copy_samples = FALSE
+)
+</code></pre>
+
+
+### Arguments
+
+<table>
+<tr><td style = "white-space: nowrap; font-family: monospace; vertical-align: top"><code id="sample1_path">sample1_path</code></td>
+<td>
+File path to a handwriting sample saved in PNG file
+format.
+</td></tr>
+<tr><td style = "white-space: nowrap; font-family: monospace; vertical-align: top"><code id="sample2_path">sample2_path</code></td>
+<td>
+File path to a second handwriting sample saved in PNG
+file format.
+</td></tr>
+<tr><td style = "white-space: nowrap; font-family: monospace; vertical-align: top"><code id="rforest">rforest</code></td>
+<td>
+Optional. A random forest trained with 'ranger'. If rforest is
+not given, the data object random_forest is used.
+</td></tr>
+<tr><td style = "white-space: nowrap; font-family: monospace; vertical-align: top"><code id="project_dir">project_dir</code></td>
+<td>
+Optional. A path to a directory where helper files will be
+saved. If no project directory is specified, the helper files will be saved
+to 'tempdir()' and deleted before the function terminates.
+</td></tr>
+<tr><td style = "white-space: nowrap; font-family: monospace; vertical-align: top"><code id="copy_samples">copy_samples</code></td>
+<td>
+TRUE or FALSE. If TRUE, the PNG files will be copied to
+the project directory. If a project directory is not given, the samples
+will not be copied.
+</td></tr>
+</table>
+
+
+### Value
+
+A number
+
+
+
+### Examples
+```{r, warning=FALSE, message=FALSE, eval=FALSE}
+library(handwriterRF)
+
+# Compare two samples from the same writer
+sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
+sample2 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r02.png"), package = "handwriterRF")
+calculate_slr(sample1, sample2)
+
+# Compare samples from two writers
+sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
+sample2 <- system.file(file.path("extdata", "w0238_s01_pWOZ_r02.png"), package = "handwriterRF")
+calculate_slr(sample1, sample2)
+
+
+
+
+```

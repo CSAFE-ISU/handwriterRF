@@ -1,0 +1,47 @@
+## Get Training Set {.unnumbered}
+
+
+### Description
+
+Create a training set from a data frame of cluster fill rates created with
+'get_cluster_fill_rates'.
+
+
+
+### Usage
+
+<pre><code class='language-R'>get_csafe_train_set(df, train_prompt_codes)
+</code></pre>
+
+
+### Arguments
+
+<table>
+<tr><td style = "white-space: nowrap; font-family: monospace; vertical-align: top"><code id="df">df</code></td>
+<td>
+A data frame of cluster fill rates created with
+'get_cluster_fill_rates'
+</td></tr>
+<tr><td style = "white-space: nowrap; font-family: monospace; vertical-align: top"><code id="train_prompt_codes">train_prompt_codes</code></td>
+<td>
+A character vector of which prompt(s) to use in the
+training set. Available prompts are &quot;pLND&quot;, &quot;pPHR&quot;, &quot;pWOZ&quot;, and &quot;pCMB&quot;.
+</td></tr>
+</table>
+
+
+### Value
+
+A data frame
+
+
+
+### Examples
+```{r, warning=FALSE, message=FALSE, eval=TRUE}
+library(handwriterRF)
+
+train <- get_csafe_train_set(df = cfr, train_prompt_codes = "pCMB")
+
+
+
+```
