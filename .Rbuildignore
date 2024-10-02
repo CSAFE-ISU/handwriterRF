@@ -8,3 +8,6 @@
 # Folders
 ^data-raw$
 ^experiments$
+^docs$
+^altdoc$
+^_quarto$

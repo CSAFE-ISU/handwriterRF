@@ -1,0 +1,85 @@
+---
+title: "handwriterRF"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{handwriterRF}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Writer IDs
+
+The CSAFE Handwriting Database assigned unique IDs to its writers where the IDs start with the letter "w" are are followed by a four digit number. The smallest ID number is 1 and the largest is 720, but some IDs in that range are not used. The ID numbers are padded on the left with zeros to make them four digits in length. E.g. the first writer ID is "w0001" and the last is "w0720." In the implementation of the method we will use the CSAFE writer ID to more easily track the true writer of a handwriting sample. However, for ease in notation we will denote the set of writers in an experiment as $\{w_1,w_2,...,w_n\}$ where $n$ is the total number of writers.
+
+In an abuse of notation, instead of denoting a specific writer as $w_i$ for some $i \in \{1,2,...n\}$ we will omit the subscript and denote a given writer as $w \in \{w_1, w_2, ..., w_n\}$. To refer to two distinct writers we we use $w$ and $w'$
+
+## Handwriting Samples
+
+Each writer $w_i$ in the CSAFE Handwriting Database produced twenty-seven handwriting samples over three writing sessions ${s_1, s_2, s_3}$. A specific session is denoted $s \in \{s_1, s_2, s_3\}$ and two distinct session are denoted $s$ and $s'$.
+
+During each writing session, each writer copied three prompts: $p \in \{L, P, W\}$ where $L$ refers to the London Letter prompt, $P$ refers to the common phrase prompt, and $W$ refers to the Wizard of Oz prompt.
+
+During each writing session, each writer produced three repetitions of each of the three prompts, for a total of nine samples per session. A specific repetition is denoted $r \in \{r_1, r_2, r_3\}$ and two distinct repetitions are denoted $r$ and $r'$.
+
+We create a fourth pseudo prompt $C$ by combining the prompts $L$, $P$, and $W$ from a specific writer, session, and repetition. In other words, for writer $w$ we create a pseudo prompt $C$ by combining the $L$, $P$, and $W$ prompts from the first session and first repetition. Each writer has three $C$ prompts per session for a total of nine $C$ prompts.
+
+## Training and Testing Sets
+
+Randomly assign writers to either the training or testing set. Mattie assigned 72 writers (80% of 90) to the training set and 18 writers (20% of 90) to the test set. Let $n_{train}$ and $n_{test}$ be the number of writers in the training and testing sets, respectively.
+
+For the $n_{train}$ writers in the training set, choose a session $s \in \{s_1, s_2, s_3\}$ and split the writers' handwriting samples into four subsets based on the prompt $p \in \{L, P, W, C\}$. Each writer has three repetitions of each of the four prompts for the given session for a total of twelve handwriting samples.
+
+## Features
+
+We use the cluster fill rates obtained with the 'handwriter' R package as document-level features.
+
+## Calculate Distances
+
+Let $x \in \mathbb{R}^{40}$ and $y \mathbb{R}^{40}$ be the cluster fill rates for $doc_x$ and $doc_y$, respectively.
+
+Distance measures:
+
+- Manhattan distance (the norm induced metric of the $\ell^1$-norm): $d_A(x,y) = \sum_{i=1}^{40}|x_i - y_i|$
+- Euclidean distance (the norm induced metric of the $\ell^2$-norm): $d_E(x,y) = \sqrt{x^Ty}$
+- Cosine similarity: $d_C(x,y) = \frac{x^Ty}{||x||_2 ||y||2}$ where $||x||_2 = \sqrt{x^Tx}$  and $||y||_2 = \sqrt{y^Ty}$. Note that $d_C(\cdot, \cdot)$ is not a metric.
+
+Concatenate distance measures: $d(x,y) = d_A(x,y) +\!\!\!+ d_E(x,y) \in \mathbb{R}^2$ where $+\!\!\!+$ denotes vector concatenation.
+
+
+
+
+
+## Train a Random Forest
+
+Calculate distances between known matching (KM) and known non-matching (KNM) pairs for the common source SLR. 
+
+Let $D_{KM}$ and $D_{KNM}$ be the sets of known matching and known non-matching scores, respectively.
+
+Train a random forest $rf(D_{KM}, D_{KNM})$
+
+## Calculate Similarity Scores
+
+For a new pair, $x$ and $y$, use the random forest to make predictions about $d(x,y) = concat(d_A, d_E)$. Each decision tree in the random forest predicts "same-writer" or "different-writer" for the distance $d$. A similarity score is the percentage of decision trees in the random forest that predict "same-writer." The similarity score is a function that maps from $(\mathbb{R}^+)^{41} \to [0,1]$.
+
+## Kernel Density Estimation
+
+Use kernel density estimation to estimate the "same-writer" and "different-writer" score densities using the density function in R with a Gaussian kernel (default bandwidth) within the bounds $[0, 1]$.
+
+## Training and Testing Sets
+
+Split dataset: 80% training and 20% testing. Split by writers.
+
+### Training Subsets
+
+Let $p \subset {L, P, W, C}$ denote a prompt where
+
+-   $L$ is the London letter (3 prompts per session $s$)
+-   $P$ is the common phrase (3 prompts per session $s$)
+-   $W$ is the Wizard of Oz (3 prompts per session $s$)
+-   $C$ is a pseudo document created by combining the three prompts from repetition $r$ of session $s$. (3 prompts, or pseudo docs, per session $s$)
+
+
+
+For prompt $p$, session $s$, and $n_w$ writers there are $n_w {3 \choose 2} = 3 n_w$ "same-writer" scores.
+
+For prompt $p$, session $s$, and $n_w$ writers there are $9 {n_w \choose 2}$ "different-writer" scores. Downsample the "different-writer" scores by randomly selecting a sample of $3 n_w$ scores.
