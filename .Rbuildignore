@@ -3,6 +3,7 @@
 
 # Files
 ^LICENSE\.md$
+^README.qmd$
 ^scratch*
 
 # Folders
