@@ -27,7 +27,7 @@ K-means algorithm terminated.}
 \item{wcd}{The within cluster
 distances on the final iteration of the K-means algorithm. More specifically,
 the distance between each graph and the center of the cluster to which it
-was assigned  on each iteration. The output of 'handwriter::make_clustering_template' stores
+was assigned  on each iteration. The output of \code{\link[handwriter]{make_clustering_template}}' stores
 the within cluster distances on each iteration, but the previous iterations were removed here to reduce the file size.}
 \item{wcss}{A vector of the
 within-cluster sum of squares on each iteration of the K-means algorithm.}}
@@ -36,13 +36,12 @@ within-cluster sum of squares on each iteration of the K-means algorithm.}}
 templateK40
 }
 \description{
-A cluster template created by 'handwriter' with 40 clusters. This template
+A cluster template created by \pkg{handwriter} with 40 clusters. This template
 was created from 120 handwriting samples from the CSAFE Handwriting Database.
 }
 \details{
-'handwriter' splits handwriting samples into component shapes called
-\emph{graphs}. The graphs are sorted into 40 clusters with a K-Means algorithm.
-See 'handwriter' for more details.
+\pkg{handwriter} splits handwriting samples into component shapes called
+graphs. The graphs are sorted into 40 clusters with a K-Means algorithm.
 }
 \examples{
 # view number of clusters

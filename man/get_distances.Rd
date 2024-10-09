@@ -8,12 +8,12 @@ get_distances(df, distance_measures)
 }
 \arguments{
 \item{df}{A data frame of cluster fill rates created with
-`get_cluster_fill_rates`}
+\code{\link{get_cluster_fill_rates}}}
 
-\item{distance_measures}{A vector of distance measures. Use "abs" to
-calculate the absolute difference, "man" for the Manhattan distance, "euc"
-for the Euclidean distance, "max" for the maximum absolute distance, and
-"cos" for the cosine distance. The vector can be a single distance, or any
+\item{distance_measures}{A vector of distance measures. Use 'abs' to
+calculate the absolute difference, 'man' for the Manhattan distance, 'euc'
+for the Euclidean distance, 'max' for the maximum absolute distance, and
+'cos' for the cosine distance. The vector can be a single distance, or any
 combination of these five distance measures.}
 }
 \value{
@@ -28,7 +28,7 @@ and cosine distance.
 \details{
 The absolute distance between two n-length vectors of cluster fill rates, a
 and b, is a vector of the same length as a and b. It can be calculated as
-'abs(a-b)' where subtraction is performed element-wise, then the absolute
+abs(a-b) where subtraction is performed element-wise, then the absolute
 value of each element is returned. More specifically, element i of the vector is \eqn{|a_i
 - b_i|} for \eqn{i=1,2,...,n}.
 
@@ -49,10 +49,10 @@ The cosine distance between two n-length vectors of cluster fill rates, a and b,
 }
 \examples{
 # calculate maximum and Euclidean distances between the first 3 documents in cfr.
-distances <- get_distances(df = cfr[1:3, ], distance_measures = c("max", "euc"))
+distances <- get_distances(df = cfr[1:3, ], distance_measures = c('max', 'euc'))
 
 \dontrun{
 # calculate absolute and Euclidean distances between all documents in cfr.
-distances <- get_distances(df = cfr, distance_measures = c("abs", "euc"))
+distances <- get_distances(df = cfr, distance_measures = c('abs', 'euc'))
 }
 }

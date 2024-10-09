@@ -15,7 +15,7 @@ train_rf(
 }
 \arguments{
 \item{df}{A data frame of cluster fill rates created with
-'get_cluster_fill_rates'}
+\code{\link{get_cluster_fill_rates}}}
 
 \item{ntrees}{An integer number of decision trees to use}
 
@@ -37,7 +37,7 @@ different writer and same writer pairs.}
 A random forest
 }
 \description{
-Train a random forest with 'ranger' from a data frame of cluster fill rates.
+Train a random forest with \pkg{ranger} from a data frame of cluster fill rates.
 }
 \examples{
 train <- get_csafe_train_set(df = cfr, train_prompt_code = 'pCMB')

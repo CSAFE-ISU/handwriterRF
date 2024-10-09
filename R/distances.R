@@ -9,7 +9,7 @@
 #'
 #' The absolute distance between two n-length vectors of cluster fill rates, a
 #' and b, is a vector of the same length as a and b. It can be calculated as
-#' 'abs(a-b)' where subtraction is performed element-wise, then the absolute
+#' abs(a-b) where subtraction is performed element-wise, then the absolute
 #' value of each element is returned. More specifically, element i of the vector is \eqn{|a_i
 #' - b_i|} for \eqn{i=1,2,...,n}.
 #'
@@ -29,11 +29,11 @@
 #' \eqn{\sum_{i=1}^n (a_i - b_i)^2 / (\sqrt{\sum_{i=1}^n a_i^2}\sqrt{\sum_{i=1}^n b_i^2})}.
 #'
 #' @param df A data frame of cluster fill rates created with
-#'   `get_cluster_fill_rates`
-#' @param distance_measures A vector of distance measures. Use "abs" to
-#'   calculate the absolute difference, "man" for the Manhattan distance, "euc"
-#'   for the Euclidean distance, "max" for the maximum absolute distance, and
-#'   "cos" for the cosine distance. The vector can be a single distance, or any
+#'   \code{\link{get_cluster_fill_rates}}
+#' @param distance_measures A vector of distance measures. Use 'abs' to
+#'   calculate the absolute difference, 'man' for the Manhattan distance, 'euc'
+#'   for the Euclidean distance, 'max' for the maximum absolute distance, and
+#'   'cos' for the cosine distance. The vector can be a single distance, or any
 #'   combination of these five distance measures.
 #'
 #' @return A data frame of distances
@@ -42,33 +42,33 @@
 #'
 #' @examples
 #' # calculate maximum and Euclidean distances between the first 3 documents in cfr.
-#' distances <- get_distances(df = cfr[1:3, ], distance_measures = c("max", "euc"))
+#' distances <- get_distances(df = cfr[1:3, ], distance_measures = c('max', 'euc'))
 #'
 #' \dontrun{
 #' # calculate absolute and Euclidean distances between all documents in cfr.
-#' distances <- get_distances(df = cfr, distance_measures = c("abs", "euc"))
+#' distances <- get_distances(df = cfr, distance_measures = c('abs', 'euc'))
 #' }
 get_distances <- function(df, distance_measures) {
   dists <- list()
 
   for (method in distance_measures) {
-    if (method == "abs") {
-      dists[["abs"]] <- absolute_dist(df)
-    } else if (method == "man") {
-      dists[["man"]] <- manhattan_dist(df)
-    } else if (method == "euc") {
-      dists[["euc"]] <- euclidean_dist(df)
-    } else if (method == "max") {
-      dists[["max"]] <- maximum_dist(df)
-    } else if (method == "cos") {
-      dists[["cos"]] <- cosine_dist(df)
+    if (method == 'abs') {
+      dists[['abs']] <- absolute_dist(df)
+    } else if (method == 'man') {
+      dists[['man']] <- manhattan_dist(df)
+    } else if (method == 'euc') {
+      dists[['euc']] <- euclidean_dist(df)
+    } else if (method == 'max') {
+      dists[['max']] <- maximum_dist(df)
+    } else if (method == 'cos') {
+      dists[['cos']] <- cosine_dist(df)
     }
     # remove method from list
     distance_measures <- distance_measures[which(distance_measures != method)]
   }
 
   # combine data frames
-  dists <- purrr::reduce(dists, dplyr::left_join, by = c("docname1" = "docname1", "docname2" = "docname2"))
+  dists <- purrr::reduce(dists, dplyr::left_join, by = c('docname1' = 'docname1', 'docname2' = 'docname2'))
 
   return(dists)
 }
@@ -82,8 +82,8 @@ get_distances <- function(df, distance_measures) {
 #' documents in a data frame.
 #'
 #' @param df A data frame of cluster will rates created with
-#'   `get_cluster_fill_rates`.
-#' @param k The name of a cluster. E.g., "cluster1"
+#'   \code{\link{get_cluster_fill_rates}}.
+#' @param k The name of a cluster. E.g., 'cluster1'
 #'
 #' @return A matrix
 #'
@@ -110,7 +110,7 @@ absolute_dist_for_single_cluster <- function(df, k) {
 #' frame.
 #'
 #' @param df A data frame of cluster will rates created with
-#'   `get_cluster_fill_rates`.
+#'   \code{\link{get_cluster_fill_rates}}.
 #'
 #' @return A data frame
 #'
@@ -124,11 +124,11 @@ absolute_dist <- function(df) {
     absolute_dist_for_single_cluster(df, k)
   })
   dists <- lapply(1:length(dists), function(i) {
-    dist_matrix2df(dists[[i]], docnames, paste0("cluster", i))
+    dist_matrix2df(dists[[i]], docnames, paste0('cluster', i))
   })
 
   # combine data frames
-  dists <- purrr::reduce(dists, dplyr::left_join, by = c("docname1" = "docname1", "docname2" = "docname2"))
+  dists <- purrr::reduce(dists, dplyr::left_join, by = c('docname1' = 'docname1', 'docname2' = 'docname2'))
 
   return(dists)
 }
@@ -139,7 +139,7 @@ absolute_dist <- function(df) {
 #' frame.
 #'
 #' @param df A data frame of cluster will rates created with
-#'   `get_cluster_fill_rates`.
+#'   \code{\link{get_cluster_fill_rates}}.
 #'
 #' @return A data frame
 #'
@@ -156,7 +156,7 @@ manhattan_dist <- function(df) {
     }
   )
 
-  df <- dist_matrix2df(d, docnames, "man")
+  df <- dist_matrix2df(d, docnames, 'man')
 
   return(df)
 }
@@ -167,7 +167,7 @@ manhattan_dist <- function(df) {
 #' frame.
 #'
 #' @param df A data frame of cluster will rates created with
-#'   `get_cluster_fill_rates`.
+#'   \code{\link{get_cluster_fill_rates}}.
 #'
 #' @return A data frame
 #'
@@ -184,7 +184,7 @@ euclidean_dist <- function(df) {
     }
   )
 
-  df <- dist_matrix2df(d, docnames, "euc")
+  df <- dist_matrix2df(d, docnames, 'euc')
 
   return(df)
 }
@@ -195,7 +195,7 @@ euclidean_dist <- function(df) {
 #' frame.
 #'
 #' @param df A data frame of cluster will rates created with
-#'   `get_cluster_fill_rates`.
+#'   \code{\link{get_cluster_fill_rates}}.
 #'
 #' @return A data frame
 #'
@@ -212,7 +212,7 @@ maximum_dist <- function(df) {
     }
   )
 
-  df <- dist_matrix2df(d, docnames, "max")
+  df <- dist_matrix2df(d, docnames, 'max')
 
   return(df)
 }
@@ -223,7 +223,7 @@ maximum_dist <- function(df) {
 #' frame.
 #'
 #' @param df A data frame of cluster will rates created with
-#'   `get_cluster_fill_rates`.
+#'   \code{\link{get_cluster_fill_rates}}.
 #'
 #' @return A data frame
 #'
@@ -240,18 +240,18 @@ cosine_dist <- function(df) {
     }
   )
 
-  df <- dist_matrix2df(d, docnames, "cos")
+  df <- dist_matrix2df(d, docnames, 'cos')
 
   return(df)
 }
 
 #' Select the Cluster Columns
 #'
-#' For a data frame created with `get_cluster_fill_rates`, create
+#' For a data frame created with \code{\link{get_cluster_fill_rates}}, create
 #' a data frame that consists solely of the cluster columns.
 #'
 #' @param df A data frame of cluster will rates created with
-#'   `get_cluster_fill_rates`.
+#'   \code{\link{get_cluster_fill_rates}}.
 #'
 #' @return A data frame
 #'
@@ -260,7 +260,7 @@ get_cluster_cols <- function(df) {
   # drop all columns except clusters
   df <- df %>%
     dplyr::ungroup() %>%
-    dplyr::select(dplyr::starts_with("cluster"))
+    dplyr::select(dplyr::starts_with('cluster'))
   return(df)
 }
 
@@ -279,7 +279,7 @@ get_cluster_cols <- function(df) {
 #'
 #' @noRd
 dist_matrix2df <- function(m, docnames, dist_col_label) {
-  # Prevent note "no visible binding for global variable"
+  # Prevent note 'no visible binding for global variable'
   docname <- docname2 <- NULL
 
   # set lower triangle as NA because they are duplicates of upper triangle. Set
@@ -292,12 +292,12 @@ dist_matrix2df <- function(m, docnames, dist_col_label) {
   df <- as.data.frame(m)
   colnames(df) <- docnames
   df$docname <- docnames
-  df <- df %>% dplyr::select(tidyselect::all_of(c("docname")), tidyselect::everything())
+  df <- df %>% dplyr::select(tidyselect::all_of(c('docname')), tidyselect::everything())
 
   # reshape matrix to three columns (docname1, docname2, distance name) and drop
   # NAs
-  colnames(df)[colnames(df) == "docname"] <- "docname1"
-  df <- reshape2::melt(df, id.vars = "docname1", variable.name = "docname2", value.name = dist_col_label, na.rm = TRUE)
+  colnames(df)[colnames(df) == 'docname'] <- 'docname1'
+  df <- reshape2::melt(df, id.vars = 'docname1', variable.name = 'docname2', value.name = dist_col_label, na.rm = TRUE)
 
   # change docname2 column from factor to character
   df <- df %>% dplyr::mutate(docname2 = as.character(docname2))

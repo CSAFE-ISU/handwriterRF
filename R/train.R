@@ -2,10 +2,10 @@
 
 #' Train a Random Forest
 #'
-#' Train a random forest with 'ranger' from a data frame of cluster fill rates.
+#' Train a random forest with \pkg{ranger} from a data frame of cluster fill rates.
 #'
 #' @param df A data frame of cluster fill rates created with
-#'   'get_cluster_fill_rates'
+#'   \code{\link{get_cluster_fill_rates}}
 #' @param ntrees An integer number of decision trees to use
 #' @param distance_measures A vector of distance measures. Any combination of
 #'   'abs', 'euc', 'man', 'max', and 'cos' may be used.
@@ -86,7 +86,7 @@ train_rf <- function(df,
 #' Handwriting Database.
 #'
 #' @param df A data frame of cluster fill rates created with
-#'   'get_cluster_fill_rates'
+#'   \code{\link{get_cluster_fill_rates}}
 #' @param train_prompt_codes A character vector of which prompt(s) to use in the
 #'   training set. Available prompts are 'pLND', 'pPHR', 'pWOZ', and 'pCMB'.
 #'
@@ -122,7 +122,7 @@ get_csafe_train_set <- function(df, train_prompt_codes) {
 #' Create densities of 'same writer' and 'different writer' scores produced by a
 #' trained random forest.
 #'
-#' @param rforest A 'ranger' random forest created with 'train_rf'.
+#' @param rforest A \pkg{ranger} random forest created with \code{\link{train_rf}}.
 #'
 #' @return A list of densities
 #'
@@ -199,7 +199,7 @@ label_same_different_writer <- function(dists) {
 
 #' Which Distances were Used in a Random Forest
 #'
-#' @param rforest A random forest created with 'train_rf'.
+#' @param rforest A \pkg{ranger} random forest created with \code{\link{train_rf}}.
 #'
 #' @return A character vector of distance measures
 #'

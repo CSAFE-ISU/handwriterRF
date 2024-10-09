@@ -58,9 +58,10 @@ A data frame with 1200 rows and 42 variables:
 cfr
 }
 \description{
-A dataset containing cluster fill rates for for 1,200 handwriting samples from
-the CSAFE Handwriting Database. The dataset was created by running
-'get_cluster_fill_rates' on the cluster fill counts data frame 'cfc'. Cluster
-fill rates are the proportion of total graphs assigned to each cluster.
+A dataset containing cluster fill rates for for 1,200 handwriting samples
+from the CSAFE Handwriting Database. The dataset was created by running
+\code{\link{get_cluster_fill_rates}} on the cluster
+fill counts data frame cfc. Cluster fill rates are the proportion of total
+graphs assigned to each cluster.
 }
 \keyword{datasets}

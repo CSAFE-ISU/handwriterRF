@@ -68,8 +68,8 @@ cfc
 \description{
 A dataset containing cluster fill counts for for 1,200 handwriting samples
 from the CSAFE Handwriting Database. The documents were split into graphs
-with 'handwriter::process_batch_dir'. The graphs were grouped into clusters
-with 'handwriter::get_clusterassignment'. The cluster fill counts were
-calculated with 'handwriter::get_cluster_fill_counts'.
+with \code{\link[handwriter]{process_batch_dir}}. The graphs were grouped into clusters
+with \code{\link[handwriter]{get_clusters_batch}}. The cluster fill counts were
+calculated with \code{\link[handwriter]{get_cluster_fill_counts}}.
 }
 \keyword{datasets}

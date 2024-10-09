@@ -1,10 +1,10 @@
 #' Get Cluster Fill Rates
 #'
 #' Calculate cluster fill rates from a data frame of cluster fill counts created
-#' with 'handwriter::get_cluster_fill_counts'.
+#' with \code{\link[handwriter]{get_cluster_fill_counts}}.
 #'
 #' @param df A data frame of cluster fill rates created with
-#'   'handwriter::get_cluster_fill_counts'.
+#'   \code{\link[handwriter]{get_cluster_fill_counts}}.
 #'
 #' @return A data frame of cluster fill rates.
 #'

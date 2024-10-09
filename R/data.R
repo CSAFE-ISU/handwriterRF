@@ -2,9 +2,9 @@
 #'
 #' A dataset containing cluster fill counts for for 1,200 handwriting samples
 #' from the CSAFE Handwriting Database. The documents were split into graphs
-#' with 'handwriter::process_batch_dir'. The graphs were grouped into clusters
-#' with 'handwriter::get_clusterassignment'. The cluster fill counts were
-#' calculated with 'handwriter::get_cluster_fill_counts'.
+#' with \code{\link[handwriter]{process_batch_dir}}. The graphs were grouped into clusters
+#' with \code{\link[handwriter]{get_clusters_batch}}. The cluster fill counts were
+#' calculated with \code{\link[handwriter]{get_cluster_fill_counts}}.
 #'
 #' @format A data frame with 1200 rows and 41 variables:
 #' \describe{
@@ -64,10 +64,11 @@
 
 #' Cluster Fill Rates for 1200 CSAFE Handwriting Database Samples
 #'
-#' A dataset containing cluster fill rates for for 1,200 handwriting samples from
-#' the CSAFE Handwriting Database. The dataset was created by running
-#' 'get_cluster_fill_rates' on the cluster fill counts data frame 'cfc'. Cluster
-#' fill rates are the proportion of total graphs assigned to each cluster.
+#' A dataset containing cluster fill rates for for 1,200 handwriting samples
+#' from the CSAFE Handwriting Database. The dataset was created by running
+#' \code{\link{get_cluster_fill_rates}} on the cluster
+#' fill counts data frame cfc. Cluster fill rates are the proportion of total
+#' graphs assigned to each cluster.
 #'
 #' @format A data frame with 1200 rows and 42 variables:
 #' \describe{
@@ -119,12 +120,11 @@
 
 #' Cluster Template with 40 Clusters
 #'
-#' A cluster template created by 'handwriter' with 40 clusters. This template
+#' A cluster template created by \pkg{handwriter} with 40 clusters. This template
 #' was created from 120 handwriting samples from the CSAFE Handwriting Database.
 #'
-#' 'handwriter' splits handwriting samples into component shapes called
-#' *graphs*. The graphs are sorted into 40 clusters with a K-Means algorithm.
-#' See 'handwriter' for more details.
+#' \pkg{handwriter} splits handwriting samples into component shapes called
+#' graphs. The graphs are sorted into 40 clusters with a K-Means algorithm.
 #'
 #' @format A list containing the contents of the cluster template.
 #' \describe{
@@ -148,7 +148,7 @@
 #' \item{wcd}{The within cluster
 #'   distances on the final iteration of the K-means algorithm. More specifically,
 #'   the distance between each graph and the center of the cluster to which it
-#'   was assigned  on each iteration. The output of 'handwriter::make_clustering_template' stores
+#'   was assigned  on each iteration. The output of \code{\link[handwriter]{make_clustering_template}}' stores
 #'   the within cluster distances on each iteration, but the previous iterations were removed here to reduce the file size.}
 #' \item{wcss}{A vector of the
 #'   within-cluster sum of squares on each iteration of the K-means algorithm.}}
@@ -167,9 +167,9 @@
 "templateK40"
 
 
-#' A 'ranger' Random Forest, Distances, and Densities
+#' A \pkg{ranger} Random Forest, Distances, and Densities
 #'
-#' A list that contains a trained random forest created with 'ranger', the data
+#' A list that contains a trained random forest created with \pkg{ranger}, the data
 #' frame of distances used to train the random forest, and two densities
 #' obtained from the random forest.
 #'
@@ -181,14 +181,14 @@
 #' from the same writer, the class is 'same'. If the handwriting samples are from
 #' different writers, the class is 'different'. There are 300 'same' distances and
 #' 300 'different' distances in the data frame.}
-#' \item{rf}{A random forest created with 'ranger' with settings:
-#' importance = "permutation", scale.permutation.importance = TRUE, and num.trees = 200.}
+#' \item{rf}{A random forest created with \pkg{ranger} with settings:
+#' importance = 'permutation', scale.permutation.importance = TRUE, and num.trees = 200.}
 #' \item{densities}{A similarity score was obtained for each pair of handwriting samples in the
 #' training data frame, dists, by calculating the proportion of decision trees that voted 'same'
-#' class for the pair. The 'same_writer' density was created by applying the 'density' function
+#' class for the pair. The 'same_writer' density was created by applying \code{\link[stats]{density}}
 #' to the similarity scores for the 300 same writer pairs in dists. Similarly, the 'diff_writer'
-#' density was created by applying the 'density' function to the similarity scores for the 300
-#' different writer pairs in dists. The default settings were used with the 'density' function.}
+#' density was created by applying the \code{\link[stats]{density}} function to the similarity scores for the 300
+#' different writer pairs in dists. The default settings were used with \code{\link[stats]{density}}.}
 #' }
 #'
 #' @examples
