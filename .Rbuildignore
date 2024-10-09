@@ -12,3 +12,4 @@
 ^docs$
 ^altdoc$
 ^_quarto$
+^cran-comments\.md$
