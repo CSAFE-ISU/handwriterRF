@@ -20,8 +20,32 @@ combination of these five distance measures.}
 A data frame of distances
 }
 \description{
-Calculate distances using 'stats::dist' between all pairs of cluster fill
-rates using one or more distance measures
+Calculate distances using between all pairs of cluster fill rates in a data
+frame using one or more distance measures. The available distance measures
+absolute distance, Manhattan distance, Euclidean distance, maximum distance,
+and cosine distance.
+}
+\details{
+The absolute distance between two n-length vectors of cluster fill rates, a
+and b, is a vector of the same length as a and b. It can be calculated as
+'abs(a-b)' where subtraction is performed element-wise, then the absolute
+value of each element is returned. More specifically, element i of the vector is \eqn{|a_i
+- b_i|} for \eqn{i=1,2,...,n}.
+
+The Manhattan distance between two  n-length vectors of cluster fill rates, a and b, is
+\eqn{\sum_{i=1}^n |a_i - b_i|}. In other words, it is the sum of the absolute
+distance vector.
+
+The Euclidean distance between two  n-length vectors of cluster fill rates, a and b, is
+\eqn{\sqrt{\sum_{i=1}^n (a_i - b_i)^2}}. In other words, it is the sum of the elements of the
+absolute distance vector.
+
+The maximum distance between two n-length vectors of cluster fill rates, a and b, is
+\eqn{\max_{1 \leq i \leq n}{\{|a_i - b_i|\}}}. In other words, it is the sum of the elements of the
+absolute distance vector.
+
+The cosine distance between two n-length vectors of cluster fill rates, a and b, is
+\eqn{\sum_{i=1}^n (a_i - b_i)^2 / (\sqrt{\sum_{i=1}^n a_i^2}\sqrt{\sum_{i=1}^n b_i^2})}.
 }
 \examples{
 # calculate maximum and Euclidean distances between the first 3 documents in cfr.

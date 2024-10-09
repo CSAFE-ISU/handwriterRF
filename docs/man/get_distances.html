@@ -101,6 +101,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../csafe.css">
 </head>
@@ -166,7 +195,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="unnumbered anchored" data-anchor-id="get-distances">Get Distances</h2>
 <section id="description" class="level3">
 <h3 class="anchored" data-anchor-id="description">Description</h3>
-<p>Calculate distances using ‘stats::dist’ between all pairs of cluster fill rates using one or more distance measures</p>
+<p>Calculate distances using between all pairs of cluster fill rates in a data frame using one or more distance measures. The available distance measures absolute distance, Manhattan distance, Euclidean distance, maximum distance, and cosine distance.</p>
 </section>
 <section id="usage" class="level3">
 <h3 class="anchored" data-anchor-id="usage">Usage</h3>
@@ -193,6 +222,14 @@ A vector of distance measures. Use "abs" to calculate the absolute difference, "
 </td>
 </tr>
 </tbody></table>
+</section>
+<section id="details" class="level3">
+<h3 class="anchored" data-anchor-id="details">Details</h3>
+<p>The absolute distance between two n-length vectors of cluster fill rates, a and b, is a vector of the same length as a and b. It can be calculated as ‘abs(a-b)’ where subtraction is performed element-wise, then the absolute value of each element is returned. More specifically, element i of the vector is <code class="reqn">|a_i - b_i|</code> for <span class="math inline">\(i=1,2,...,n\)</span>.</p>
+<p>The Manhattan distance between two n-length vectors of cluster fill rates, a and b, is <span class="math inline">\(\sum_{i=1}^n |a_i - b_i|\)</span>. In other words, it is the sum of the absolute distance vector.</p>
+<p>The Euclidean distance between two n-length vectors of cluster fill rates, a and b, is <span class="math inline">\(\sqrt{\sum_{i=1}^n (a_i - b_i)^2}\)</span>. In other words, it is the sum of the elements of the absolute distance vector.</p>
+<p>The maximum distance between two n-length vectors of cluster fill rates, a and b, is <span class="math inline">\(\max_{1 \leq i \leq n}{\{|a_i - b_i|\}}\)</span>. In other words, it is the sum of the elements of the absolute distance vector.</p>
+<p>The cosine distance between two n-length vectors of cluster fill rates, a and b, is <span class="math inline">\(\sum_{i=1}^n (a_i - b_i)^2 / (\sqrt{\sum_{i=1}^n a_i^2}\sqrt{\sum_{i=1}^n b_i^2})\)</span>.</p>
 </section>
 <section id="value" class="level3">
 <h3 class="anchored" data-anchor-id="value">Value</h3>

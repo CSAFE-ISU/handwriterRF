@@ -7,14 +7,14 @@
 \format{
 A list with the following components:
 \describe{
-\item{rf}{A random forest created with 'ranger' with settings:
-importance = "permutation", scale.permutation.importance = TRUE, and num.trees = 200.}
 \item{dists}{The data frame used to train the random forest. The data frame has
 600 rows. Each row contains the absolute and Euclidean distances between the
 cluster fill rates of two handwriting samples. If both handwriting samples are
 from the same writer, the class is 'same'. If the handwriting samples are from
 different writers, the class is 'different'. There are 300 'same' distances and
 300 'different' distances in the data frame.}
+\item{rf}{A random forest created with 'ranger' with settings:
+importance = "permutation", scale.permutation.importance = TRUE, and num.trees = 200.}
 \item{densities}{A similarity score was obtained for each pair of handwriting samples in the
 training data frame, dists, by calculating the proportion of decision trees that voted 'same'
 class for the pair. The 'same_writer' density was created by applying the 'density' function

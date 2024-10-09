@@ -4,9 +4,9 @@
 #' with 'handwriter::get_cluster_fill_counts'.
 #'
 #' @param cfc A data frame of cluster fill rates created with
-#'   'handwriter::get_cluster_fill_counts'
+#'   'handwriter::get_cluster_fill_counts'.
 #'
-#' @return A data frame of cluster fill rates
+#' @return A data frame of cluster fill rates.
 #'
 #' @export
 #'

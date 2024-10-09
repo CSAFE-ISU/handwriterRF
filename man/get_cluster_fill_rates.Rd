@@ -8,10 +8,10 @@ get_cluster_fill_rates(cfc)
 }
 \arguments{
 \item{cfc}{A data frame of cluster fill rates created with
-'handwriter::get_cluster_fill_counts'}
+'handwriter::get_cluster_fill_counts'.}
 }
 \value{
-A data frame of cluster fill rates
+A data frame of cluster fill rates.
 }
 \description{
 Calculate cluster fill rates from a data frame of cluster fill counts created

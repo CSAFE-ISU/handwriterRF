@@ -20,14 +20,14 @@ with 'handwriter::get_cluster_fill_counts'.
 <tr><td style = "white-space: nowrap; font-family: monospace; vertical-align: top"><code id="cfc">cfc</code></td>
 <td>
 A data frame of cluster fill rates created with
-'handwriter::get_cluster_fill_counts'
+'handwriter::get_cluster_fill_counts'.
 </td></tr>
 </table>
 
 
 ### Value
 
-A data frame of cluster fill rates
+A data frame of cluster fill rates.
 
 
 

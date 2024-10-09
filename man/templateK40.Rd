@@ -36,14 +36,13 @@ within-cluster sum of squares on each iteration of the K-means algorithm.}}
 templateK40
 }
 \description{
-A cluster template created by 'handwriter' with K=40
-clusters. This template was created from 100 handwriting samples from the
-CSAFE Handwriting Database. This template is suitable for casework.
+A cluster template created by 'handwriter' with 40 clusters. This template
+was created from 120 handwriting samples from the CSAFE Handwriting Database.
 }
 \details{
-'handwriter' splits handwriting samples into component shapes
-called \emph{graphs}. The graphs are sorted into 40 clusters with a K-Means
-algorithm. See 'handwriter' for more details.
+'handwriter' splits handwriting samples into component shapes called
+\emph{graphs}. The graphs are sorted into 40 clusters with a K-Means algorithm.
+See 'handwriter' for more details.
 }
 \examples{
 # view number of clusters
