@@ -13,10 +13,11 @@
 #' compared to reference distributions of 'same writer' and 'different writer'
 #' similarity scores. The result is a score-based likelihood ratio that conveys
 #' the strength of the evidence in favor of 'same writer' or 'different writer'.
+#' For more details, see Madeline Johnson and Danica Ommen (2021) <doi:10.1002/sam.11566>.
 #'
-#' @param sample1_path File path to a handwriting sample saved in PNG file
+#' @param sample1_path A file path to a handwriting sample saved in PNG file
 #'   format.
-#' @param sample2_path File path to a second handwriting sample saved in PNG
+#' @param sample2_path A file path to a second handwriting sample saved in PNG
 #'   file format.
 #' @param rforest Optional. A random forest trained with 'ranger'. If rforest is
 #'   not given, the data object random_forest is used.
@@ -25,7 +26,7 @@
 #'   to 'tempdir()' and deleted before the function terminates.
 #' @param copy_samples TRUE or FALSE. If TRUE, the PNG files will be copied to
 #'   the project directory. If a project directory is not given, the samples
-#'   will not be copied.
+#'   will not be copied even if copy_samples is TRUE.
 #'
 #' @return A number
 #'
@@ -54,7 +55,8 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
   }
 
   skip_if_processed <- function(sample_path, project_dir) {
-    # process file if it hasn't already been processed and saved in project_dir > graph
+    # process file if it hasn't already been processed and saved in project_dir
+    # > graph
     outfile <- gsub(".png", "_proclist.rds", basename(sample_path))
     outfile_path <- file.path(project_dir, "graphs", outfile)
     if (!file.exists(outfile_path)) {
@@ -97,12 +99,14 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
     )
   }
 
+  # process
   process_and_save_samples(
     sample1_path = sample1_path,
     sample2_path = sample2_path,
     project_dir = project_dir
   )
 
+  # cluster
   clusters <- handwriter::get_clusters_batch(
     template = templateK40,
     input_dir = file.path(project_dir, "graphs"),
@@ -114,12 +118,12 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
   counts <- handwriter::get_cluster_fill_counts(clusters)
   rates <- get_cluster_fill_rates(counts)
 
-  # Distance
+  # distance
   message("Calculating distance between samples...\n")
   dist_measures <- which_dists(rforest = rforest)
   d <- get_distances(df = rates, distance_measures = dist_measures)
 
-  # Score
+  # score
   message("Calculating similarity score between samples...\n")
   score <- get_score(rforest = rforest, d = d)
 
@@ -128,12 +132,11 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
   numerator <- eval_density_at_point(den = rforest$densities$same_writer, x = score, type = "numerator")
   denominator <- eval_density_at_point(den = rforest$densities$diff_writer, x = score, type = "denominator")
   slr <- numerator / denominator
-
   df <- data.frame("sample1_path" = sample1_path, "sample2_path" = sample2_path,
                    "docname1" = basename(sample1_path), "docname2" = basename(sample2_path),
                    "slr" = slr)
 
-  # Delete project folder from temp directory or save SLR to project folder
+  # delete project folder from temp directory or save SLR to project folder
   if (project_dir == file.path(tempdir(), "comparison")) {
     unlink(project_dir, recursive = TRUE)
   } else {

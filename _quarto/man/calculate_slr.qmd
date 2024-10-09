@@ -14,6 +14,7 @@ samples using a random forest trained with 'ranger'. The similarity score is
 compared to reference distributions of 'same writer' and 'different writer'
 similarity scores. The result is a score-based likelihood ratio that conveys
 the strength of the evidence in favor of 'same writer' or 'different writer'.
+For more details, see Madeline Johnson and Danica Ommen (2021) &lt;doi:10.1002/sam.11566&gt;.
 
 
 
@@ -34,12 +35,12 @@ the strength of the evidence in favor of 'same writer' or 'different writer'.
 <table>
 <tr><td style = "white-space: nowrap; font-family: monospace; vertical-align: top"><code id="sample1_path">sample1_path</code></td>
 <td>
-File path to a handwriting sample saved in PNG file
+A file path to a handwriting sample saved in PNG file
 format.
 </td></tr>
 <tr><td style = "white-space: nowrap; font-family: monospace; vertical-align: top"><code id="sample2_path">sample2_path</code></td>
 <td>
-File path to a second handwriting sample saved in PNG
+A file path to a second handwriting sample saved in PNG
 file format.
 </td></tr>
 <tr><td style = "white-space: nowrap; font-family: monospace; vertical-align: top"><code id="rforest">rforest</code></td>
@@ -57,7 +58,7 @@ to 'tempdir()' and deleted before the function terminates.
 <td>
 TRUE or FALSE. If TRUE, the PNG files will be copied to
 the project directory. If a project directory is not given, the samples
-will not be copied.
+will not be copied even if copy_samples is TRUE.
 </td></tr>
 </table>
 

@@ -13,10 +13,10 @@ calculate_slr(
 )
 }
 \arguments{
-\item{sample1_path}{File path to a handwriting sample saved in PNG file
+\item{sample1_path}{A file path to a handwriting sample saved in PNG file
 format.}
 
-\item{sample2_path}{File path to a second handwriting sample saved in PNG
+\item{sample2_path}{A file path to a second handwriting sample saved in PNG
 file format.}
 
 \item{rforest}{Optional. A random forest trained with 'ranger'. If rforest is
@@ -28,7 +28,7 @@ to 'tempdir()' and deleted before the function terminates.}
 
 \item{copy_samples}{TRUE or FALSE. If TRUE, the PNG files will be copied to
 the project directory. If a project directory is not given, the samples
-will not be copied.}
+will not be copied even if copy_samples is TRUE.}
 }
 \value{
 A number
@@ -45,6 +45,7 @@ samples using a random forest trained with 'ranger'. The similarity score is
 compared to reference distributions of 'same writer' and 'different writer'
 similarity scores. The result is a score-based likelihood ratio that conveys
 the strength of the evidence in favor of 'same writer' or 'different writer'.
+For more details, see Madeline Johnson and Danica Ommen (2021) <doi:10.1002/sam.11566>.
 }
 \examples{
 \dontrun{
