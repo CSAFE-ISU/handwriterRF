@@ -3,7 +3,7 @@
 #' Calculate cluster fill rates from a data frame of cluster fill counts created
 #' with 'handwriter::get_cluster_fill_counts'.
 #'
-#' @param cfc A data frame of cluster fill rates created with
+#' @param df A data frame of cluster fill rates created with
 #'   'handwriter::get_cluster_fill_counts'.
 #'
 #' @return A data frame of cluster fill rates.
@@ -11,19 +11,19 @@
 #' @export
 #'
 #' @examples
-#' rates <- get_cluster_fill_rates(cfc)
+#' rates <- get_cluster_fill_rates(df = cfc)
 #'
-get_cluster_fill_rates <- function(cfc) {
+get_cluster_fill_rates <- function(df) {
   # Prevent note "no visible binding for global variable"
   docname <- writer <- doc <- NULL
 
   # drop label columns and calculate cluster fill rates: each row sums to 1.
-  cfc_clusters_only <- cfc %>%
+  df_clusters_only <- df %>%
     dplyr::ungroup() %>%
     dplyr::select(-docname, -writer, -doc)
-  cfc_clusters_only <- as.matrix(cfc_clusters_only)
-  total_graphs <- rowSums(cfc_clusters_only)
-  cfr <- diag(1 / total_graphs) %*% cfc_clusters_only
+  df_clusters_only <- as.matrix(df_clusters_only)
+  total_graphs <- rowSums(df_clusters_only)
+  cfr <- diag(1 / total_graphs) %*% df_clusters_only
 
   # add missing clusters
   missing_labels <- setdiff(1:40, colnames(cfr))
@@ -45,7 +45,7 @@ get_cluster_fill_rates <- function(cfc) {
   }
 
   # add label columns and total_graphs column
-  cfr <- cbind(cfc[, 1], data.frame(total_graphs = total_graphs), cfr)
+  cfr <- cbind(df[, 1], data.frame(total_graphs = total_graphs), cfr)
 
   return(cfr)
 }

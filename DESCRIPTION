@@ -23,7 +23,6 @@ Imports:
     handwriter,
     magrittr,
     purrr,
-    randomForest,
     ranger,
     reshape2,
     tidyr,

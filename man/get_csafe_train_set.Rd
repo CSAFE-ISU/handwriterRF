@@ -11,16 +11,16 @@ get_csafe_train_set(df, train_prompt_codes)
 'get_cluster_fill_rates'}
 
 \item{train_prompt_codes}{A character vector of which prompt(s) to use in the
-training set. Available prompts are "pLND", "pPHR", "pWOZ", and "pCMB".}
+training set. Available prompts are 'pLND', 'pPHR', 'pWOZ', and 'pCMB'.}
 }
 \value{
 A data frame
 }
 \description{
-Create a training set from a data frame of cluster fill rates created with
-'get_cluster_fill_rates'.
+Create a training set from a data frame of cluster fill rates from the CSAFE
+Handwriting Database.
 }
 \examples{
-train <- get_csafe_train_set(df = cfr, train_prompt_codes = "pCMB")
+train <- get_csafe_train_set(df = cfr, train_prompt_codes = 'pCMB')
 
 }

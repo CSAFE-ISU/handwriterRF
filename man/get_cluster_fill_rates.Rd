@@ -4,10 +4,10 @@
 \alias{get_cluster_fill_rates}
 \title{Get Cluster Fill Rates}
 \usage{
-get_cluster_fill_rates(cfc)
+get_cluster_fill_rates(df)
 }
 \arguments{
-\item{cfc}{A data frame of cluster fill rates created with
+\item{df}{A data frame of cluster fill rates created with
 'handwriter::get_cluster_fill_counts'.}
 }
 \value{
@@ -18,6 +18,6 @@ Calculate cluster fill rates from a data frame of cluster fill counts created
 with 'handwriter::get_cluster_fill_counts'.
 }
 \examples{
-rates <- get_cluster_fill_rates(cfc)
+rates <- get_cluster_fill_rates(df = cfc)
 
 }
