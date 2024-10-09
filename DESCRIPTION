@@ -1,11 +1,11 @@
 Package: handwriterRF
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Handwriting Analysis with Random Forests
 Version: 0.1.0
-Author: Who wrote it
+Authors@R: c(person("Iowa State University of Science and Technology on behalf of its Center for Statistics and Applications in Forensic Evidence", role = c("aut", "cph", "fnd")),
+          person("Stephanie", "Reinders", role = c("aut", "cre"), email = "srein@iastate.edu"))
 Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: Perform forensic handwriting analysis of two scanned handwritten documents. A statistical method using random forests and similarity measures, produces a score-based likelihood ratio that quantifies the strength of the evidence in favor of 'same writer' or 'different writer.'
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -29,3 +29,5 @@ Imports:
     tidyr,
     tidyselect
 Config/testthat/edition: 3
+URL: https://github.com/CSAFE-ISU/handwriterRF
+BugReports: https://github.com/CSAFE-ISU/handwriterRF/issues

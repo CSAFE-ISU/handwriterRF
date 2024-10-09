@@ -4,7 +4,7 @@
     "href": "CITATION.html",
     "title": "Citation",
     "section": "",
-    "text": "Citation\nTo cite package ‘handwriterRF’ in publications use:\n\n  it Ww (????). _handwriterRF: What the Package Does (Title Case)_. R\n  package version 0.1.0.\n\nA BibTeX entry for LaTeX users is\n\n  @Manual{,\n    title = {handwriterRF: What the Package Does (Title Case)},\n    author = {Who wrote it},\n    note = {R package version 0.1.0},\n  }\n\nATTENTION: This citation information has been auto-generated from the\npackage DESCRIPTION file and may need manual editing, see\n‘help(\"citation\")’."
+    "text": "Citation\nTo cite package ‘handwriterRF’ in publications use:\n\n  Iowa State University of Science and Technology on behalf of its Center for\n  Statistics and Applications in Forensic Evidence, Reinders S (????).\n  _handwriterRF: Handwriting Analysis with Random Forests_. R package version\n  0.1.0, &lt;https://github.com/CSAFE-ISU/handwriterRF&gt;.\n\nA BibTeX entry for LaTeX users is\n\n  @Manual{,\n    title = {handwriterRF: Handwriting Analysis with Random Forests},\n    author = {{Iowa State University of Science and Technology on behalf of its Center for Statistics and Applications in Forensic Evidence} and Stephanie Reinders},\n    note = {R package version 0.1.0},\n    url = {https://github.com/CSAFE-ISU/handwriterRF},\n  }"
   },
   {
     "objectID": "NEWS.html",
