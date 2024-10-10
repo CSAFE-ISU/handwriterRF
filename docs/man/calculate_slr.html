@@ -166,7 +166,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="unnumbered anchored" data-anchor-id="calculate-a-score-based-likelihood-ratio">Calculate a Score-Based Likelihood Ratio</h2>
 <section id="description" class="level3">
 <h3 class="anchored" data-anchor-id="description">Description</h3>
-<p>Compares two handwriting samples scanned and saved a PNG images. The writing in both samples is split into component shapes, or graphs, with ‘handwriter::processDocument’. The graphs are grouped into clusters of similar shapes with ‘handwriter::get_clusterassignment’. The proportion of graphs assigned to each cluster, called the cluster fill rates, are used as writer profiles. The cluster fill rates are calculated with ‘get_cluster_fill_rates’. A similarity score is calculated between the two samples using a random forest trained with ‘ranger’. The similarity score is compared to reference distributions of ‘same writer’ and ‘different writer’ similarity scores. The result is a score-based likelihood ratio that conveys the strength of the evidence in favor of ‘same writer’ or ‘different writer’.</p>
+<p>Compares two handwriting samples scanned and saved a PNG images. The writing in both samples is split into component shapes, or graphs, with ‘handwriter::processDocument’. The graphs are grouped into clusters of similar shapes with ‘handwriter::get_clusterassignment’. The proportion of graphs assigned to each cluster, called the cluster fill rates, are used as writer profiles. The cluster fill rates are calculated with ‘get_cluster_fill_rates’. A similarity score is calculated between the two samples using a random forest trained with ‘ranger’. The similarity score is compared to reference distributions of ‘same writer’ and ‘different writer’ similarity scores. The result is a score-based likelihood ratio that conveys the strength of the evidence in favor of ‘same writer’ or ‘different writer’. For more details, see Madeline Johnson and Danica Ommen (2021) &lt;doi:10.1002/sam.11566&gt;.</p>
 </section>
 <section id="usage" class="level3">
 <h3 class="anchored" data-anchor-id="usage">Usage</h3>
@@ -187,7 +187,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <code id="sample1_path">sample1_path</code>
 </td>
 <td>
-File path to a handwriting sample saved in PNG file format.
+A file path to a handwriting sample saved in PNG file format.
 </td>
 </tr>
 <tr>
@@ -195,7 +195,7 @@ File path to a handwriting sample saved in PNG file format.
 <code id="sample2_path">sample2_path</code>
 </td>
 <td>
-File path to a second handwriting sample saved in PNG file format.
+A file path to a second handwriting sample saved in PNG file format.
 </td>
 </tr>
 <tr>
@@ -219,7 +219,7 @@ Optional. A path to a directory where helper files will be saved. If no project 
 <code id="copy_samples">copy_samples</code>
 </td>
 <td>
-TRUE or FALSE. If TRUE, the PNG files will be copied to the project directory. If a project directory is not given, the samples will not be copied.
+TRUE or FALSE. If TRUE, the PNG files will be copied to the project directory. If a project directory is not given, the samples will not be copied even if copy_samples is TRUE.
 </td>
 </tr>
 </tbody></table>

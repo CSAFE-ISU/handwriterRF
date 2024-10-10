@@ -29,12 +29,7 @@ create_dir <- function(folder) {
 #'
 #' @return A data frame with new columns: writer, session, prompt, and repetition.
 #'
-#' @export
-#'
-#' @examples
-#' df <- expand_docnames(cfr, "docname", "")
-#' df <- expand_docnames(cfr, "docname", "_1")
-#'
+#' @noRd
 expand_docnames <- function(df, docname_col = "docname", suffix = "") {
   df <- df %>% tidyr::separate_wider_delim(tidyselect::all_of(docname_col),
     delim = "_",

@@ -15,12 +15,12 @@ train_rf(
 }
 \arguments{
 \item{df}{A data frame of cluster fill rates created with
-'get_cluster_fill_rates'}
+\code{\link{get_cluster_fill_rates}}}
 
 \item{ntrees}{An integer number of decision trees to use}
 
 \item{distance_measures}{A vector of distance measures. Any combination of
-"abs", "euc", "man", "max", and "cos" may be used.}
+'abs', 'euc', 'man', 'max', and 'cos' may be used.}
 
 \item{output_dir}{A path to a directory where the random forest will be
 saved.}
@@ -28,7 +28,7 @@ saved.}
 \item{run_number}{An integer used for both the set.seed function and to
 distinguish between different runs on the same input data frame.}
 
-\item{downsample}{Whether to downsample the number of "different writer"
+\item{downsample}{Whether to downsample the number of 'different writer'
 distances before training the random forest. If TRUE, the different writer
 distances will be randomly sampled, resulting in the same number of
 different writer and same writer pairs.}
@@ -37,14 +37,14 @@ different writer and same writer pairs.}
 A random forest
 }
 \description{
-Train a random forest with 'ranger' from a data frame of cluster fill rates.
+Train a random forest with \pkg{ranger} from a data frame of cluster fill rates.
 }
 \examples{
-train <- get_csafe_train_set(df = cfr, train_prompt_code = "pCMB")
+train <- get_csafe_train_set(df = cfr, train_prompt_code = 'pCMB')
 rforest <- train_rf(
   df = train,
   ntrees = 200,
-  distance_measures = c("euc"),
+  distance_measures = c('euc'),
   run_number = 1,
   downsample = TRUE
 )

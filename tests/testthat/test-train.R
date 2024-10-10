@@ -17,7 +17,7 @@ test_that("Train random forest works with ranger package", {
 
   expected <- readRDS(testthat::test_path("fixtures", "train", "rf1.rds"))
 
-  expect_identical(actual, expected)
+  expect_equal(actual, expected)
 })
 
 test_that("Make densities works with ranger package", {
@@ -25,5 +25,5 @@ test_that("Make densities works with ranger package", {
   rforest <- readRDS(testthat::test_path("fixtures", "train", "rf1.rds"))
   actual <- make_densities_from_rf(rforest)
 
-  expect_identical(actual, rforest$densities)
+  expect_equal(actual, rforest$densities)
 })

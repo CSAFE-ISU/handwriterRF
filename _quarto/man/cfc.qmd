@@ -37,85 +37,85 @@ and repetition number of the handwriting sample. There are 12 distinct
 document codes. Each writer has a writing sample for each of the 12 document
 codes.
 </dd>
-<dt>1</dt><dd>number of graphs in cluster 1
+<dt>1</dt><dd>The number of graphs in cluster 1
 </dd>
-<dt>2</dt><dd>number of graphs in cluster 2
+<dt>2</dt><dd>The number of graphs in cluster 2
 </dd>
-<dt>3</dt><dd>number of graphs in cluster 3
+<dt>3</dt><dd>The number of graphs in cluster 3
 </dd>
-<dt>4</dt><dd>number of graphs in cluster 4
+<dt>4</dt><dd>The number of graphs in cluster 4
 </dd>
-<dt>5</dt><dd>number of graphs in cluster 5
+<dt>5</dt><dd>The number of graphs in cluster 5
 </dd>
-<dt>6</dt><dd>number of graphs in cluster 6
+<dt>6</dt><dd>The number of graphs in cluster 6
 </dd>
-<dt>7</dt><dd>number of graphs in cluster 7
+<dt>7</dt><dd>The number of graphs in cluster 7
 </dd>
-<dt>8</dt><dd>number of graphs in cluster 8
+<dt>8</dt><dd>The number of graphs in cluster 8
 </dd>
-<dt>9</dt><dd>number of graphs in cluster 9
+<dt>9</dt><dd>The number of graphs in cluster 9
 </dd>
-<dt>10</dt><dd>number of graphs in cluster 10
+<dt>10</dt><dd>The number of graphs in cluster 10
 </dd>
-<dt>11</dt><dd>number of graphs in cluster 11
+<dt>11</dt><dd>The number of graphs in cluster 11
 </dd>
-<dt>12</dt><dd>number of graphs in cluster 12
+<dt>12</dt><dd>The number of graphs in cluster 12
 </dd>
-<dt>13</dt><dd>number of graphs in cluster 13
+<dt>13</dt><dd>The number of graphs in cluster 13
 </dd>
-<dt>14</dt><dd>number of graphs in cluster 14
+<dt>14</dt><dd>The number of graphs in cluster 14
 </dd>
-<dt>15</dt><dd>number of graphs in cluster 15
+<dt>15</dt><dd>The number of graphs in cluster 15
 </dd>
-<dt>16</dt><dd>number of graphs in cluster 16
+<dt>16</dt><dd>The number of graphs in cluster 16
 </dd>
-<dt>17</dt><dd>number of graphs in cluster 17
+<dt>17</dt><dd>The number of graphs in cluster 17
 </dd>
-<dt>18</dt><dd>number of graphs in cluster 18
+<dt>18</dt><dd>The number of graphs in cluster 18
 </dd>
-<dt>19</dt><dd>number of graphs in cluster 19
+<dt>19</dt><dd>The number of graphs in cluster 19
 </dd>
-<dt>20</dt><dd>number of graphs in cluster 20
+<dt>20</dt><dd>The number of graphs in cluster 20
 </dd>
-<dt>21</dt><dd>number of graphs in cluster 21
+<dt>21</dt><dd>The number of graphs in cluster 21
 </dd>
-<dt>22</dt><dd>number of graphs in cluster 22
+<dt>22</dt><dd>The number of graphs in cluster 22
 </dd>
-<dt>23</dt><dd>number of graphs in cluster 23
+<dt>23</dt><dd>The number of graphs in cluster 23
 </dd>
-<dt>24</dt><dd>number of graphs in cluster 24
+<dt>24</dt><dd>The number of graphs in cluster 24
 </dd>
-<dt>25</dt><dd>number of graphs in cluster 25
+<dt>25</dt><dd>The number of graphs in cluster 25
 </dd>
-<dt>26</dt><dd>number of graphs in cluster 26
+<dt>26</dt><dd>The number of graphs in cluster 26
 </dd>
-<dt>27</dt><dd>number of graphs in cluster 27
+<dt>27</dt><dd>The number of graphs in cluster 27
 </dd>
-<dt>28</dt><dd>number of graphs in cluster 28
+<dt>28</dt><dd>The number of graphs in cluster 28
 </dd>
-<dt>29</dt><dd>number of graphs in cluster 29
+<dt>29</dt><dd>The number of graphs in cluster 29
 </dd>
-<dt>30</dt><dd>number of graphs in cluster 30
+<dt>30</dt><dd>The number of graphs in cluster 30
 </dd>
-<dt>31</dt><dd>number of graphs in cluster 31
+<dt>31</dt><dd>The number of graphs in cluster 31
 </dd>
-<dt>32</dt><dd>number of graphs in cluster 32
+<dt>32</dt><dd>The number of graphs in cluster 32
 </dd>
-<dt>33</dt><dd>number of graphs in cluster 33
+<dt>33</dt><dd>The number of graphs in cluster 33
 </dd>
-<dt>34</dt><dd>number of graphs in cluster 34
+<dt>34</dt><dd>The number of graphs in cluster 34
 </dd>
-<dt>35</dt><dd>number of graphs in cluster 35
+<dt>35</dt><dd>The number of graphs in cluster 35
 </dd>
-<dt>36</dt><dd>number of graphs in cluster 36
+<dt>36</dt><dd>The number of graphs in cluster 36
 </dd>
-<dt>37</dt><dd>number of graphs in cluster 37
+<dt>37</dt><dd>The number of graphs in cluster 37
 </dd>
-<dt>38</dt><dd>number of graphs in cluster 38
+<dt>38</dt><dd>The number of graphs in cluster 38
 </dd>
-<dt>39</dt><dd>number of graphs in cluster 39
+<dt>39</dt><dd>The number of graphs in cluster 39
 </dd>
-<dt>40</dt><dd>number of graphs in cluster 40
+<dt>40</dt><dd>The number of graphs in cluster 40
 </dd>
 </dl>
 

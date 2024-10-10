@@ -3,31 +3,31 @@
 \docType{data}
 \name{random_forest}
 \alias{random_forest}
-\title{A 'ranger' Random Forest, Distances, and Densities}
+\title{A \pkg{ranger} Random Forest, Distances, and Densities}
 \format{
 A list with the following components:
 \describe{
-\item{rf}{A random forest created with 'ranger' with settings:
-importance = "permutation", scale.permutation.importance = TRUE, and num.trees = 200.}
 \item{dists}{The data frame used to train the random forest. The data frame has
 600 rows. Each row contains the absolute and Euclidean distances between the
 cluster fill rates of two handwriting samples. If both handwriting samples are
 from the same writer, the class is 'same'. If the handwriting samples are from
 different writers, the class is 'different'. There are 300 'same' distances and
 300 'different' distances in the data frame.}
+\item{rf}{A random forest created with \pkg{ranger} with settings:
+importance = 'permutation', scale.permutation.importance = TRUE, and num.trees = 200.}
 \item{densities}{A similarity score was obtained for each pair of handwriting samples in the
 training data frame, dists, by calculating the proportion of decision trees that voted 'same'
-class for the pair. The 'same_writer' density was created by applying the 'density' function
+class for the pair. The 'same_writer' density was created by applying \code{\link[stats]{density}}
 to the similarity scores for the 300 same writer pairs in dists. Similarly, the 'diff_writer'
-density was created by applying the 'density' function to the similarity scores for the 300
-different writer pairs in dists. The default settings were used with the 'density' function.}
+density was created by applying the \code{\link[stats]{density}} function to the similarity scores for the 300
+different writer pairs in dists. The default settings were used with \code{\link[stats]{density}}.}
 }
 }
 \usage{
 random_forest
 }
 \description{
-A list that contains a trained random forest created with 'ranger', the data
+A list that contains a trained random forest created with \pkg{ranger}, the data
 frame of distances used to train the random forest, and two densities
 obtained from the random forest.
 }

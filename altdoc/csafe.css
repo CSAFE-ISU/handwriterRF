@@ -267,6 +267,21 @@ h6, .h6 {
     border-left-color: var(--bs-gray-dark);
 }
 
+/* Inactive tab color */
+.navbar-nav .nav-link {
+    color: var(--bs-gray); /* Color for inactive links */
+}
+
+/* Active tab color */
+.navbar-nav .nav-link.active, .navbar-nav .nav-link.show {
+  color: var(--bs-gray-dark); /* Color for active links */
+}
+
+/* Hover tab color */
+.navbar-nav .nav-link:hover {
+    color: var(--bs-gray-dark); /* Color on hover */
+}
+
 p {
   margin-top: 0;
   margin-bottom: 1rem;
@@ -3890,9 +3905,7 @@ textarea.form-control-lg {
   margin-bottom: 0;
   list-style: none;
 }
-.navbar-nav .nav-link.active, .navbar-nav .nav-link.show {
-  color: var(--bs-gray-dark);
-}
+
 .navbar-nav .dropdown-menu {
   position: static;
 }
