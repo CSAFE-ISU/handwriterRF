@@ -51,9 +51,9 @@ test_that("SLRs throws error if samples are the same file in the same folder", {
 
 test_that("SLRs works if samples in different folders have the same file name", {
     actual <- calculate_slr(
-      sample1_path = testthat::test_path("fixtures", "samples", "w0030_s01_pWOZ_r01.png"),
-      sample2_path = testthat::test_path("fixtures", "samples2", "w0030_s01_pWOZ_r01.png"),
-      project_dir = testthat::test_path("fixtures", "slrs_sample_name")
+      sample1_path = testthat::test_path("fixtures", "samples", "0.png"),
+      sample2_path = testthat::test_path("fixtures", "samples2", "0.png"),
+      project_dir = testthat::test_path("fixtures", "slrs_same_filename")
     )
 
     expect_equal(actual, 96831846345)
