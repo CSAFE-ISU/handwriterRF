@@ -20,14 +20,11 @@
 #'   format.
 #' @param sample2_path A file path to a second handwriting sample saved in PNG
 #'   file format.
-#' @param rforest Optional. A random forest trained with \pkg{ranger}. If rforest is
-#'   not given, the data object random_forest is used.
+#' @param rforest Optional. A random forest trained with \pkg{ranger}. If
+#'   rforest is not given, the data object random_forest is used.
 #' @param project_dir Optional. A path to a directory where helper files will be
 #'   saved. If no project directory is specified, the helper files will be saved
 #'   to tempdir() and deleted before the function terminates.
-#' @param copy_samples TRUE or FALSE. If TRUE, the PNG files will be copied to
-#'   the project directory. If a project directory is not given, the samples
-#'   will not be copied even if copy_samples is TRUE.
 #'
 #' @return A number
 #'
@@ -46,13 +43,24 @@
 #' calculate_slr(sample1, sample2)
 #' }
 #'
-calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, project_dir = NULL, copy_samples = FALSE) {
+calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, project_dir = NULL) {
   copy_samples_to_project_dir <- function(sample1_path, sample2_path, project_dir) {
     # Copy samples to project_dir > docs
     message("Copying samples to output directory > docs...\n")
     create_dir(file.path(project_dir, "docs"))
-    file.copy(sample1_path, file.path(project_dir, "docs", basename(sample1_path)))
-    file.copy(sample2_path, file.path(project_dir, "docs", basename(sample2_path)))
+
+    # rename samples if file paths are different but file names are the same
+    if (identical(basename(sample1_path), basename(sample2_path))){
+      file.copy(sample1_path, file.path(project_dir, "docs", "sample1.png"))
+      file.copy(sample2_path, file.path(project_dir, "docs", "sample2.png"))
+    } else {
+      file.copy(sample1_path, file.path(project_dir, "docs", basename(sample1_path)))
+      file.copy(sample2_path, file.path(project_dir, "docs", basename(sample2_path)))
+    }
+
+    # get the sample paths in the project directory
+    sample_paths <- list.files(file.path(project_dir, "docs"), full.names = TRUE)
+    return(sample_paths)
   }
 
   skip_if_processed <- function(sample_path, project_dir) {
@@ -87,18 +95,21 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
   # set output directory as temp directory if NULL
   if (is.null(project_dir)) {
     project_dir <- file.path(tempdir(), "comparison")
-    # the project directory will be deleted from the temp directory so copying
-    # samples to the project directory is useless.
-    copy_samples <- FALSE
   }
 
-  if (copy_samples) {
-    copy_samples_to_project_dir(
+  # keep original sample paths so they can be recorded in the data frame at the
+  # end
+  sample1_path_org <- sample1_path
+  sample2_path_org <- sample2_path
+
+  # copy samples
+  sample_paths <- copy_samples_to_project_dir(
       sample1_path = sample1_path,
       sample2_path = sample2_path,
       project_dir = project_dir
-    )
-  }
+  )
+  sample1_path <- sample_paths[1]
+  sample2_path <- sample_paths[2]
 
   # process
   process_and_save_samples(
@@ -133,8 +144,8 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
   numerator <- eval_density_at_point(den = rforest$densities$same_writer, x = score, type = "numerator")
   denominator <- eval_density_at_point(den = rforest$densities$diff_writer, x = score, type = "denominator")
   slr <- numerator / denominator
-  df <- data.frame("sample1_path" = sample1_path, "sample2_path" = sample2_path,
-                   "docname1" = basename(sample1_path), "docname2" = basename(sample2_path),
+  df <- data.frame("sample1_path" = sample1_path_org, "sample2_path" = sample2_path_org,
+                   "docname1" = basename(sample1_path_org), "docname2" = basename(sample2_path_org),
                    "slr" = slr)
 
   # delete project folder from temp directory or save SLR to project folder

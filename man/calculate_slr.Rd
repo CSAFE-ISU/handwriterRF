@@ -8,8 +8,7 @@ calculate_slr(
   sample1_path,
   sample2_path,
   rforest = random_forest,
-  project_dir = NULL,
-  copy_samples = FALSE
+  project_dir = NULL
 )
 }
 \arguments{
@@ -19,16 +18,12 @@ format.}
 \item{sample2_path}{A file path to a second handwriting sample saved in PNG
 file format.}
 
-\item{rforest}{Optional. A random forest trained with \pkg{ranger}. If rforest is
-not given, the data object random_forest is used.}
+\item{rforest}{Optional. A random forest trained with \pkg{ranger}. If
+rforest is not given, the data object random_forest is used.}
 
 \item{project_dir}{Optional. A path to a directory where helper files will be
 saved. If no project directory is specified, the helper files will be saved
 to tempdir() and deleted before the function terminates.}
-
-\item{copy_samples}{TRUE or FALSE. If TRUE, the PNG files will be copied to
-the project directory. If a project directory is not given, the samples
-will not be copied even if copy_samples is TRUE.}
 }
 \value{
 A number
