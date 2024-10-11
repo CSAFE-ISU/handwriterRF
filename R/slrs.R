@@ -146,6 +146,7 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
   slr <- numerator / denominator
   df <- data.frame("sample1_path" = sample1_path_org, "sample2_path" = sample2_path_org,
                    "docname1" = basename(sample1_path_org), "docname2" = basename(sample2_path_org),
+                   "score" = score, "numerator" = numerator, "denominator" = denominator,
                    "slr" = slr)
 
   # delete project folder from temp directory or save SLR to project folder
@@ -155,7 +156,44 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
     saveRDS(df, file.path(project_dir, "slr.rds"))
   }
 
-  return(slr)
+  return(df)
+}
+
+#' Interpret an SLR Value
+#'
+#' Verbally interprent an SLR value.
+#'
+#' @param df A data frame created by \code{\link{calculate_slr}}.
+#'
+#' @return A string
+#'
+#' @export
+#'
+#' @examples
+#' df <- data.frame("score" = 5, "slr" = 20)
+#' interpret_slr(df)
+#'
+#' df <- data.frame("score" = 0.12, "slr" = 0.5)
+#' interpret_slr(df)
+#'
+#' df <- data.frame("score" = 1, "slr" = 1)
+#' interpret_slr(df)
+#'
+#' df <- data.frame("score" = 0, "slr" = 0)
+#' interpret_slr(df)
+#'
+interpret_slr <- function(df){
+  if (df$slr > 1) {
+    x <- paste("The likelihood of observing a similarity score of", df$score, "if the documents were written by the same person is", format(round(df$slr, 1), big.mark=","), "times greater than the likelihood of observing this score if the documents were written by different writers." )
+  } else if (df$slr > 0 && df$slr < 1) {
+    x <- paste("The likelihood of observing a similarity score of", df$score, "if the documents were written by different people is", format(round(1 / df$slr, 2), nsmall=2, big.mark=","), "times greater than the likelihood of observing this score if the documents were written by the same writer." )
+  } else if (df$slr == 1) {
+    x <- paste("The likelihood of observing a similarity score of", df$score, "if the documents were written by different people is equal to the likelihood of observing the score if the documents were written by the same writer." )
+  } else if (df$slr == 0){
+    x <- "Ask Alicia or Danica how to interpret an SLR of 0."
+  } else {
+    stop("The slr value is invalid.")
+  }
 }
 
 
