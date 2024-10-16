@@ -5,6 +5,11 @@ test_that("Get train set works", {
 })
 
 test_that("Train random forest works with ranger package", {
+  # Despite setting the seed, the random forest created on Windows has
+  # reasonable values but is not equal to the fixture random forest created on
+  # Stephanie's Mac
+  skip_on_os(os = "windows", arch = NULL)
+
   train <- get_csafe_train_set(df = cfr, train_prompt_codes = "pLND")
   actual <- train_rf(
     df = train,
