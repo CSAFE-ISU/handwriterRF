@@ -184,13 +184,13 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
 #'
 interpret_slr <- function(df){
   if (df$slr > 1) {
-    x <- paste("The likelihood of observing a similarity score of", df$score, "if the documents were written by the same person is", format(round(df$slr, 1), big.mark=","), "times greater than the likelihood of observing this score if the documents were written by different writers." )
+    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark=","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by the same person is", format(round(df$slr, 1), big.mark=","), "times greater than the likelihood of observing this score if the documents were written by different writers." )
   } else if (df$slr > 0 && df$slr < 1) {
-    x <- paste("The likelihood of observing a similarity score of", df$score, "if the documents were written by different people is", format(round(1 / df$slr, 2), nsmall=2, big.mark=","), "times greater than the likelihood of observing this score if the documents were written by the same writer." )
+    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark=","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by different people is", format(round(1 / df$slr, 2), nsmall=2, big.mark=","), "times greater than the likelihood of observing this score if the documents were written by the same writer." )
   } else if (df$slr == 1) {
-    x <- paste("The likelihood of observing a similarity score of", df$score, "if the documents were written by different people is equal to the likelihood of observing the score if the documents were written by the same writer." )
+    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark=","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by different people is equal to the likelihood of observing the score if the documents were written by the same writer." )
   } else if (df$slr == 0){
-    x <- "Ask Alicia or Danica how to interpret an SLR of 0."
+    x <- paste("A score-based likelihood ratio of 0 means it is virtually impossible that the documents were written by the same person.")
   } else {
     stop("The slr value is invalid.")
   }
