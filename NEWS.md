@@ -1,3 +1,3 @@
-# handwriterRF 0.1.0
+# handwriterRF 1.0.0
 
 * Initial CRAN submission.
