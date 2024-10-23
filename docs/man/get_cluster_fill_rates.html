@@ -166,11 +166,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="unnumbered anchored" data-anchor-id="get-cluster-fill-rates">Get Cluster Fill Rates</h2>
 <section id="description" class="level3">
 <h3 class="anchored" data-anchor-id="description">Description</h3>
-<p>Calculate cluster fill rates from a data frame of cluster fill counts created with ‘handwriter::get_cluster_fill_counts’.</p>
+<p>Calculate cluster fill rates from a data frame of cluster fill counts created with <code>get_cluster_fill_counts</code>.</p>
 </section>
 <section id="usage" class="level3">
 <h3 class="anchored" data-anchor-id="usage">Usage</h3>
-<pre><code class="language-R">get_cluster_fill_rates(cfc)
+<pre><code class="language-R">get_cluster_fill_rates(df)
 </code></pre>
 </section>
 <section id="arguments" class="level3">
@@ -178,10 +178,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <table>
 <tbody><tr>
 <td style="white-space: nowrap; font-family: monospace; vertical-align: top">
-<code id="cfc">cfc</code>
+<code id="df">df</code>
 </td>
 <td>
-A data frame of cluster fill rates created with ‘handwriter::get_cluster_fill_counts’.
+A data frame of cluster fill rates created with <code>get_cluster_fill_counts</code>.
 </td>
 </tr>
 </tbody></table>
@@ -195,7 +195,7 @@ A data frame of cluster fill rates created with ‘handwriter::get_cluster_fill_
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(handwriterRF)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>rates <span class="ot">&lt;-</span> <span class="fu">get_cluster_fill_rates</span>(cfc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>rates <span class="ot">&lt;-</span> <span class="fu">get_cluster_fill_rates</span>(<span class="at">df =</span> cfc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

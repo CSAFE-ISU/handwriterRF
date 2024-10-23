@@ -166,7 +166,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="unnumbered anchored" data-anchor-id="calculate-a-score-based-likelihood-ratio">Calculate a Score-Based Likelihood Ratio</h2>
 <section id="description" class="level3">
 <h3 class="anchored" data-anchor-id="description">Description</h3>
-<p>Compares two handwriting samples scanned and saved a PNG images. The writing in both samples is split into component shapes, or graphs, with ‘handwriter::processDocument’. The graphs are grouped into clusters of similar shapes with ‘handwriter::get_clusterassignment’. The proportion of graphs assigned to each cluster, called the cluster fill rates, are used as writer profiles. The cluster fill rates are calculated with ‘get_cluster_fill_rates’. A similarity score is calculated between the two samples using a random forest trained with ‘ranger’. The similarity score is compared to reference distributions of ‘same writer’ and ‘different writer’ similarity scores. The result is a score-based likelihood ratio that conveys the strength of the evidence in favor of ‘same writer’ or ‘different writer’. For more details, see Madeline Johnson and Danica Ommen (2021) &lt;doi:10.1002/sam.11566&gt;.</p>
+<p>Compares two handwriting samples scanned and saved a PNG images with the following steps:</p>
+<ol>
+<li>
+<p><code>processDocument</code> splits the writing in both samples into component shapes, or graphs.</p>
+</li>
+<li>
+<p><code>get_clusters_batch</code> groups the graphs into clusters of similar shapes.</p>
+</li>
+<li>
+<p><code>get_cluster_fill_counts</code> counts the number of graphs assigned to each cluster.</p>
+</li>
+<li>
+<p><code>get_cluster_fill_rates</code> calculates the proportion of graphs assigned to each cluster. The cluster fill rates serve as a writer profile.</p>
+</li>
+<li>
+<p>A similarity score is calculated between the cluster fill rates of the two documents using a random forest trained with <span class="pkg">ranger</span>.</p>
+</li>
+<li>
+<p>The similarity score is compared to reference distributions of ‘same writer’ and ‘different writer’ similarity scores. The result is a score-based likelihood ratio that conveys the strength of the evidence in favor of ‘same writer’ or ‘different writer’. For more details, see Madeline Johnson and Danica Ommen (2021) &lt;doi:10.1002/sam.11566&gt;.</p>
+</li>
+</ol>
 </section>
 <section id="usage" class="level3">
 <h3 class="anchored" data-anchor-id="usage">Usage</h3>
@@ -174,8 +194,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   sample1_path,
   sample2_path,
   rforest = random_forest,
-  project_dir = NULL,
-  copy_samples = FALSE
+  project_dir = NULL
 )
 </code></pre>
 </section>
@@ -203,7 +222,7 @@ A file path to a second handwriting sample saved in PNG file format.
 <code id="rforest">rforest</code>
 </td>
 <td>
-Optional. A random forest trained with ‘ranger’. If rforest is not given, the data object random_forest is used.
+Optional. A random forest trained with <span class="pkg">ranger</span>. If rforest is not given, the data object random_forest is used.
 </td>
 </tr>
 <tr>
@@ -211,15 +230,7 @@ Optional. A random forest trained with ‘ranger’. If rforest is not given, th
 <code id="project_dir">project_dir</code>
 </td>
 <td>
-Optional. A path to a directory where helper files will be saved. If no project directory is specified, the helper files will be saved to ‘tempdir()’ and deleted before the function terminates.
-</td>
-</tr>
-<tr>
-<td style="white-space: nowrap; font-family: monospace; vertical-align: top">
-<code id="copy_samples">copy_samples</code>
-</td>
-<td>
-TRUE or FALSE. If TRUE, the PNG files will be copied to the project directory. If a project directory is not given, the samples will not be copied even if copy_samples is TRUE.
+Optional. A path to a directory where helper files will be saved. If no project directory is specified, the helper files will be saved to tempdir() and deleted before the function terminates.
 </td>
 </tr>
 </tbody></table>

@@ -210,7 +210,7 @@ window.Quarto = {
 <code id="df">df</code>
 </td>
 <td>
-A data frame of cluster fill rates created with ‘get_cluster_fill_rates’
+A data frame of cluster fill rates created with <code>get_cluster_fill_rates</code>
 </td>
 </tr>
 <tr>
@@ -218,14 +218,14 @@ A data frame of cluster fill rates created with ‘get_cluster_fill_rates’
 <code id="distance_measures">distance_measures</code>
 </td>
 <td>
-A vector of distance measures. Use "abs" to calculate the absolute difference, "man" for the Manhattan distance, "euc" for the Euclidean distance, "max" for the maximum absolute distance, and "cos" for the cosine distance. The vector can be a single distance, or any combination of these five distance measures.
+A vector of distance measures. Use ‘abs’ to calculate the absolute difference, ‘man’ for the Manhattan distance, ‘euc’ for the Euclidean distance, ‘max’ for the maximum absolute distance, and ‘cos’ for the cosine distance. The vector can be a single distance, or any combination of these five distance measures.
 </td>
 </tr>
 </tbody></table>
 </section>
 <section id="details" class="level3">
 <h3 class="anchored" data-anchor-id="details">Details</h3>
-<p>The absolute distance between two n-length vectors of cluster fill rates, a and b, is a vector of the same length as a and b. It can be calculated as ‘abs(a-b)’ where subtraction is performed element-wise, then the absolute value of each element is returned. More specifically, element i of the vector is <code class="reqn">|a_i - b_i|</code> for <span class="math inline">\(i=1,2,...,n\)</span>.</p>
+<p>The absolute distance between two n-length vectors of cluster fill rates, a and b, is a vector of the same length as a and b. It can be calculated as abs(a-b) where subtraction is performed element-wise, then the absolute value of each element is returned. More specifically, element i of the vector is <code class="reqn">|a_i - b_i|</code> for <span class="math inline">\(i=1,2,...,n\)</span>.</p>
 <p>The Manhattan distance between two n-length vectors of cluster fill rates, a and b, is <span class="math inline">\(\sum_{i=1}^n |a_i - b_i|\)</span>. In other words, it is the sum of the absolute distance vector.</p>
 <p>The Euclidean distance between two n-length vectors of cluster fill rates, a and b, is <span class="math inline">\(\sqrt{\sum_{i=1}^n (a_i - b_i)^2}\)</span>. In other words, it is the sum of the elements of the absolute distance vector.</p>
 <p>The maximum distance between two n-length vectors of cluster fill rates, a and b, is <span class="math inline">\(\max_{1 \leq i \leq n}{\{|a_i - b_i|\}}\)</span>. In other words, it is the sum of the elements of the absolute distance vector.</p>
@@ -241,10 +241,10 @@ A vector of distance measures. Use "abs" to calculate the absolute difference, "
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(handwriterRF)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate maximum and Euclidean distances between the first 3 documents in cfr.</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>distances <span class="ot">&lt;-</span> <span class="fu">get_distances</span>(<span class="at">df =</span> cfr[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, ], <span class="at">distance_measures =</span> <span class="fu">c</span>(<span class="st">"max"</span>, <span class="st">"euc"</span>))</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>distances <span class="ot">&lt;-</span> <span class="fu">get_distances</span>(<span class="at">df =</span> cfr[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, ], <span class="at">distance_measures =</span> <span class="fu">c</span>(<span class="st">'max'</span>, <span class="st">'euc'</span>))</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate absolute and Euclidean distances between all documents in cfr.</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>distances <span class="ot">&lt;-</span> <span class="fu">get_distances</span>(<span class="at">df =</span> cfr, <span class="at">distance_measures =</span> <span class="fu">c</span>(<span class="st">"abs"</span>, <span class="st">"euc"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>distances <span class="ot">&lt;-</span> <span class="fu">get_distances</span>(<span class="at">df =</span> cfr, <span class="at">distance_measures =</span> <span class="fu">c</span>(<span class="st">'abs'</span>, <span class="st">'euc'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

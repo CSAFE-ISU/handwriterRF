@@ -3,10 +3,11 @@
 ```verbatim
 To cite package ‘handwriterRF’ in publications use:
 
-  Iowa State University of Science and Technology on behalf of its Center for
-  Statistics and Applications in Forensic Evidence, Reinders S (????).
-  _handwriterRF: Handwriting Analysis with Random Forests_. R package version
-  0.1.0, <https://github.com/CSAFE-ISU/handwriterRF>.
+  Iowa State University of Science and Technology on behalf of its
+  Center for Statistics and Applications in Forensic Evidence,
+  Reinders S (????). _handwriterRF: Handwriting Analysis with Random
+  Forests_. R package version 0.1.0,
+  <https://github.com/CSAFE-ISU/handwriterRF>.
 
 A BibTeX entry for LaTeX users is
 

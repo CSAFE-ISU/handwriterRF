@@ -194,6 +194,7 @@ interpret_slr <- function(df){
   } else {
     stop("The slr value is invalid.")
   }
+  return(x)
 }
 
 

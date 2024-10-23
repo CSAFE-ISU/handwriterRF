@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>train_rf</title>
+<title>interpret_slr</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -148,7 +148,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul class="collapse">
-  <li><a href="#train-a-random-forest" id="toc-train-a-random-forest" class="nav-link active" data-scroll-target="#train-a-random-forest">Train a Random Forest</a></li>
+  <li><a href="#interpret-an-slr-value" id="toc-interpret-an-slr-value" class="nav-link active" data-scroll-target="#interpret-an-slr-value">Interpret an SLR Value</a></li>
   </ul>
 </nav>
 </nav>
@@ -162,22 +162,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="train-a-random-forest" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="train-a-random-forest">Train a Random Forest</h2>
+<section id="interpret-an-slr-value" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="interpret-an-slr-value">Interpret an SLR Value</h2>
 <section id="description" class="level3">
 <h3 class="anchored" data-anchor-id="description">Description</h3>
-<p>Train a random forest with <span class="pkg">ranger</span> from a data frame of cluster fill rates.</p>
+<p>Verbally interprent an SLR value.</p>
 </section>
 <section id="usage" class="level3">
 <h3 class="anchored" data-anchor-id="usage">Usage</h3>
-<pre><code class="language-R">train_rf(
-  df,
-  ntrees,
-  distance_measures,
-  output_dir = NULL,
-  run_number = 1,
-  downsample = TRUE
-)
+<pre><code class="language-R">interpret_slr(df)
 </code></pre>
 </section>
 <section id="arguments" class="level3">
@@ -188,68 +181,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <code id="df">df</code>
 </td>
 <td>
-A data frame of cluster fill rates created with <code>get_cluster_fill_rates</code>
-</td>
-</tr>
-<tr>
-<td style="white-space: nowrap; font-family: monospace; vertical-align: top">
-<code id="ntrees">ntrees</code>
-</td>
-<td>
-An integer number of decision trees to use
-</td>
-</tr>
-<tr>
-<td style="white-space: nowrap; font-family: monospace; vertical-align: top">
-<code id="distance_measures">distance_measures</code>
-</td>
-<td>
-A vector of distance measures. Any combination of ‘abs’, ‘euc’, ‘man’, ‘max’, and ‘cos’ may be used.
-</td>
-</tr>
-<tr>
-<td style="white-space: nowrap; font-family: monospace; vertical-align: top">
-<code id="output_dir">output_dir</code>
-</td>
-<td>
-A path to a directory where the random forest will be saved.
-</td>
-</tr>
-<tr>
-<td style="white-space: nowrap; font-family: monospace; vertical-align: top">
-<code id="run_number">run_number</code>
-</td>
-<td>
-An integer used for both the set.seed function and to distinguish between different runs on the same input data frame.
-</td>
-</tr>
-<tr>
-<td style="white-space: nowrap; font-family: monospace; vertical-align: top">
-<code id="downsample">downsample</code>
-</td>
-<td>
-Whether to downsample the number of ‘different writer’ distances before training the random forest. If TRUE, the different writer distances will be randomly sampled, resulting in the same number of different writer and same writer pairs.
+A data frame created by <code>calculate_slr</code>.
 </td>
 </tr>
 </tbody></table>
 </section>
 <section id="value" class="level3">
 <h3 class="anchored" data-anchor-id="value">Value</h3>
-<p>A random forest</p>
+<p>A string</p>
 </section>
 <section id="examples" class="level3">
 <h3 class="anchored" data-anchor-id="examples">Examples</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(handwriterRF)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">get_csafe_train_set</span>(<span class="at">df =</span> cfr, <span class="at">train_prompt_code =</span> <span class="st">'pCMB'</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>rforest <span class="ot">&lt;-</span> <span class="fu">train_rf</span>(</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">df =</span> train,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">ntrees =</span> <span class="dv">200</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">distance_measures =</span> <span class="fu">c</span>(<span class="st">'euc'</span>),</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">run_number =</span> <span class="dv">1</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">downsample =</span> <span class="cn">TRUE</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="st">"score"</span> <span class="ot">=</span> <span class="dv">5</span>, <span class="st">"slr"</span> <span class="ot">=</span> <span class="dv">20</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">interpret_slr</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "A score-based likelihood ratio of 20 means the likelihood of observing a similarity score of 5 if the documents were written by the same person is 20 times greater than the likelihood of observing this score if the documents were written by different writers."</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="st">"score"</span> <span class="ot">=</span> <span class="fl">0.12</span>, <span class="st">"slr"</span> <span class="ot">=</span> <span class="fl">0.5</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">interpret_slr</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "A score-based likelihood ratio of 0.5 means the likelihood of observing a similarity score of 0.12 if the documents were written by different people is 2.00 times greater than the likelihood of observing this score if the documents were written by the same writer."</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="st">"score"</span> <span class="ot">=</span> <span class="dv">1</span>, <span class="st">"slr"</span> <span class="ot">=</span> <span class="dv">1</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">interpret_slr</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "A score-based likelihood ratio of 1 means the likelihood of observing a similarity score of 1 if the documents were written by different people is equal to the likelihood of observing the score if the documents were written by the same writer."</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="st">"score"</span> <span class="ot">=</span> <span class="dv">0</span>, <span class="st">"slr"</span> <span class="ot">=</span> <span class="dv">0</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">interpret_slr</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "A score-based likelihood ratio of 0 means it is virtually impossible that the documents were written by the same person."</code></pre>
+</div>
 </div>
 
 
