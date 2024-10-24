@@ -108,7 +108,7 @@ test_that("Interpret SLR returns the correct message for values greater than 1",
   df <- data.frame("score" = 0.87, "slr" = 4582274302)
   actual <- interpret_slr(df)
 
-  expected <- "The likelihood of observing a similarity score of 0.87 if the documents were written by the same person is 4,582,274,302 times greater than the likelihood of observing this score if the documents were written by different writers."
+  expected <- "A score-based likelihood ratio of 4,582,274,302 means the likelihood of observing a similarity score of 0.87 if the documents were written by the same person is 4,582,274,302 times greater than the likelihood of observing this score if the documents were written by different writers."
 
   expect_identical(actual, expected)
 })
@@ -117,7 +117,7 @@ test_that("Interpret SLR returns the correct message for values greater than 0 a
   df <- data.frame("score" = 0.5, "slr" = 0.75)
   actual <- interpret_slr(df)
 
-  expected <- "The likelihood of observing a similarity score of 0.5 if the documents were written by different people is 1.33 times greater than the likelihood of observing this score if the documents were written by the same writer."
+  expected <- "A score-based likelihood ratio of 0.8 means the likelihood of observing a similarity score of 0.5 if the documents were written by different people is 1.33 times greater than the likelihood of observing this score if the documents were written by the same writer."
 
   expect_identical(actual, expected)
 })
@@ -126,7 +126,7 @@ test_that("Interpret SLR returns the correct message for a value of 1", {
   df <- data.frame("score" = 0.75, "slr" = 1)
   actual <- interpret_slr(df)
 
-  expected <- "The likelihood of observing a similarity score of 0.75 if the documents were written by different people is equal to the likelihood of observing the score if the documents were written by the same writer."
+  expected <- "A score-based likelihood ratio of 1 means the likelihood of observing a similarity score of 0.75 if the documents were written by different people is equal to the likelihood of observing the score if the documents were written by the same writer."
 
   expect_identical(actual, expected)
 })
@@ -135,7 +135,7 @@ test_that("Interpret SLR returns the correct message for a value of 0", {
   df <- data.frame("score" = 0.575, "slr" = 0)
   actual <- interpret_slr(df)
 
-  expected <- "Ask Alicia or Danica how to interpret an SLR of 0."
+  expected <- "A score-based likelihood ratio of 0 means it is virtually impossible that the documents were written by the same person."
 
   expect_identical(actual, expected)
 })

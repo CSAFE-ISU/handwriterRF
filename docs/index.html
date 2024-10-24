@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Welcome</title>
+<title>handwriterRF</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -194,7 +194,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Welcome</h1>
+<h1 class="title">handwriterRF</h1>
 </div>
 
 
@@ -211,7 +211,7 @@ window.Quarto = {
 </header>
 
 
-<p>HandwriterRF is designed to assist forensic document examiners by performing a statistical analysis on two handwriting samples of unknown origin. Two hypotheses are considered:</p>
+<p>HandwriterRF is designed to assist forensic document examiners by performing a statistical analysis on two handwriting samples. One or both of the samples could be from unknown writers. Two hypotheses are considered:</p>
 <p><span class="math inline">\(H_p: \text{The two documents were written by the same writer.}\)</span> <span class="math inline">\(H_d: \text{The two documents were written by different writers.}\)</span></p>
 <p>The statistical analysis produces a <em>score-based likelihood ratio (SLR)</em>. An SLR greater than one, indicates that the evidence supports <span class="math inline">\(H_p\)</span> over <span class="math inline">\(H_d\)</span>, and the larger the SLR, the stronger the support. An SLR less than one, indicates that the evidence supports <span class="math inline">\(H_d\)</span> over <span class="math inline">\(H_p\)</span>, and the closer the SLR is to zero, the stronger the support.</p>
 <section id="quick-start" class="level1">
@@ -225,22 +225,63 @@ window.Quarto = {
 </ul>
 <p>Install the handwriterRF R package. Open RStudio, navigate to the console window, and type</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"devtools"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"CSAFE-ISU/handwriterRF"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"handwriterRF"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="compare-two-handwriting-samples" class="level2">
 <h2 class="anchored" data-anchor-id="compare-two-handwriting-samples">Compare Two Handwriting Samples</h2>
-<p>Scan and save two handwriting samples as PNG images. Open RStudio, navigate to the console window, and type:</p>
+<section id="calculate-a-score-base-likelihood-ratio" class="level3">
+<h3 class="anchored" data-anchor-id="calculate-a-score-base-likelihood-ratio">Calculate a Score-base Likelihood Ratio</h3>
+<p>Open RStudio, navigate to the console window, and load handwriterRF.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(handwriterRF)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_slr</span>(<span class="at">sample1_path =</span> <span class="st">"path/to/handwriting_sample1.png"</span>,</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">sample2_path =</span> <span class="st">"path/to/handwriting_sample2.png"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(handwriterRF)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The result is a <em>score-based likelihood ratio (SLR)</em> that quantifies the strength of evidence in favor of “same writer” or “different writer.”</p>
+<p>The package includes 4 example handwriting samples from the <a href="https://forensicstats.org/handwritingdatabase/">CSAFE Handwriting Database</a>. Compare 2 of these samples. In this case, both samples are from writer 30.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>sample1 <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="fu">file.path</span>(<span class="st">"extdata"</span>, <span class="st">"w0030_s01_pWOZ_r01.png"</span>), <span class="at">package =</span> <span class="st">"handwriterRF"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>sample2 <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="fu">file.path</span>(<span class="st">"extdata"</span>, <span class="st">"w0030_s01_pWOZ_r02.png"</span>), <span class="at">package =</span> <span class="st">"handwriterRF"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>slr <span class="ot">&lt;-</span> <span class="fu">calculate_slr</span>(sample1, sample2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If you would like to use your own handwriting samples, scan and save them as PNG images.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>sample1 <span class="ot">&lt;-</span> <span class="st">"path/to/your_sample1.png"</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>sample2 <span class="ot">&lt;-</span> <span class="st">"path/to/your_sample2.png"</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>slr <span class="ot">&lt;-</span> <span class="fu">calculate_slr</span>(sample1, sample2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The result is a data frame:</p>
+<ul>
+<li><em>sample1_path</em> is the file path of the first sample.</li>
+<li><em>sample2_path</em> is the file path of the second sample.</li>
+<li><em>docname1</em> is the file name of the first sample.</li>
+<li><em>docname2</em> is the file name of the second sample.</li>
+<li><em>score</em> is the similarity score between the two samples.</li>
+<li><em>numerator</em> is the numerator value of the score-based likelihood ratio. Intuitively, the larger the value the more the similarity score looks like the reference ‘same writer’ similarity scores.</li>
+<li><em>denominator</em> is the denominator value of the score-based likelihood ratio. Intuitively, the larger the value the more the similarity score looks like the reference ‘different writers’ similarity scores.</li>
+<li><em>slr</em> is a score-based likelihood ratio that quantifies the strength of evidence in favor of ‘same writer’ or ‘different writer.’</li>
+</ul>
+<p>Display the slr data frame. We hide the file path columns here so that the data frame fits on this page.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>slr <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>sample1_path, <span class="sc">-</span>sample2_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                docname1               docname2 score numerator denominator
+1 w0030_s01_pWOZ_r01.png w0030_s01_pWOZ_r02.png  0.87 0.4582274       1e-10
+         slr
+1 4582274302</code></pre>
+</div>
+</div>
+</section>
+<section id="interpret-the-score-base-likelihood-ratio" class="level3">
+<h3 class="anchored" data-anchor-id="interpret-the-score-base-likelihood-ratio">Interpret the Score-base Likelihood Ratio</h3>
+<p>View a verbal interpretation of the score-based likelihood ratio.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">interpret_slr</span>(slr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "A score-based likelihood ratio of 4,582,274,302 means the likelihood of observing a similarity score of 0.87 if the documents were written by the same person is 4,582,274,302 times greater than the likelihood of observing this score if the documents were written by different writers."</code></pre>
+</div>
+</div>
 
 
+</section>
 </section>
 </section>
 

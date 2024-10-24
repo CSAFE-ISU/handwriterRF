@@ -6,9 +6,9 @@
 
 A dataset containing cluster fill counts for for 1,200 handwriting samples
 from the CSAFE Handwriting Database. The documents were split into graphs
-with 'handwriter::process_batch_dir'. The graphs were grouped into clusters
-with 'handwriter::get_clusterassignment'. The cluster fill counts were
-calculated with 'handwriter::get_cluster_fill_counts'.
+with <code>process_batch_dir</code>. The graphs were grouped into clusters
+with <code>get_clusters_batch</code>. The cluster fill counts were
+calculated with <code>get_cluster_fill_counts</code>.
 
 
 

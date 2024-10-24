@@ -166,7 +166,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="unnumbered anchored" data-anchor-id="cluster-template-with-40-clusters">Cluster Template with 40 Clusters</h2>
 <section id="description" class="level3">
 <h3 class="anchored" data-anchor-id="description">Description</h3>
-<p>A cluster template created by ‘handwriter’ with 40 clusters. This template was created from 120 handwriting samples from the CSAFE Handwriting Database.</p>
+<p>A cluster template created by <span class="pkg">handwriter</span> with 40 clusters. This template was created from 120 handwriting samples from the CSAFE Handwriting Database.</p>
 </section>
 <section id="usage" class="level3">
 <h3 class="anchored" data-anchor-id="usage">Usage</h3>
@@ -247,7 +247,7 @@ The reason the K-means algorithm terminated.
 wcd
 </dt>
 <dd>
-The within cluster distances on the final iteration of the K-means algorithm. More specifically, the distance between each graph and the center of the cluster to which it was assigned on each iteration. The output of ‘handwriter::make_clustering_template’ stores the within cluster distances on each iteration, but the previous iterations were removed here to reduce the file size.
+The within cluster distances on the final iteration of the K-means algorithm. More specifically, the distance between each graph and the center of the cluster to which it was assigned on each iteration. The output of <code>make_clustering_template</code>’ stores the within cluster distances on each iteration, but the previous iterations were removed here to reduce the file size.
 </dd>
 <dt>
 wcss
@@ -259,7 +259,7 @@ A vector of the within-cluster sum of squares on each iteration of the K-means a
 </section>
 <section id="details" class="level3">
 <h3 class="anchored" data-anchor-id="details">Details</h3>
-<p>‘handwriter’ splits handwriting samples into component shapes called <em>graphs</em>. The graphs are sorted into 40 clusters with a K-Means algorithm. See ‘handwriter’ for more details.</p>
+<p><span class="pkg">handwriter</span> splits handwriting samples into component shapes called graphs. The graphs are sorted into 40 clusters with a K-Means algorithm.</p>
 </section>
 <section id="examples" class="level3">
 <h3 class="anchored" data-anchor-id="examples">Examples</h3>

@@ -3,7 +3,7 @@
 
 ### Description
 
-A cluster template created by 'handwriter' with 40 clusters. This template
+A cluster template created by <span class="pkg">handwriter</span> with 40 clusters. This template
 was created from 120 handwriting samples from the CSAFE Handwriting Database.
 
 
@@ -51,7 +51,7 @@ K-means algorithm terminated.
 <dt>wcd</dt><dd>The within cluster
 distances on the final iteration of the K-means algorithm. More specifically,
 the distance between each graph and the center of the cluster to which it
-was assigned  on each iteration. The output of 'handwriter::make_clustering_template' stores
+was assigned  on each iteration. The output of <code>make_clustering_template</code>' stores
 the within cluster distances on each iteration, but the previous iterations were removed here to reduce the file size.
 </dd>
 <dt>wcss</dt><dd>A vector of the
@@ -62,9 +62,8 @@ within-cluster sum of squares on each iteration of the K-means algorithm.
 
 ### Details
 
-'handwriter' splits handwriting samples into component shapes called
-<em>graphs</em>. The graphs are sorted into 40 clusters with a K-Means algorithm.
-See 'handwriter' for more details.
+<span class="pkg">handwriter</span> splits handwriting samples into component shapes called
+graphs. The graphs are sorted into 40 clusters with a K-Means algorithm.
 
 
 

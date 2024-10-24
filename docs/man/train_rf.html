@@ -166,7 +166,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="unnumbered anchored" data-anchor-id="train-a-random-forest">Train a Random Forest</h2>
 <section id="description" class="level3">
 <h3 class="anchored" data-anchor-id="description">Description</h3>
-<p>Train a random forest with ‘ranger’ from a data frame of cluster fill rates.</p>
+<p>Train a random forest with <span class="pkg">ranger</span> from a data frame of cluster fill rates.</p>
 </section>
 <section id="usage" class="level3">
 <h3 class="anchored" data-anchor-id="usage">Usage</h3>
@@ -188,7 +188,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <code id="df">df</code>
 </td>
 <td>
-A data frame of cluster fill rates created with ‘get_cluster_fill_rates’
+A data frame of cluster fill rates created with <code>get_cluster_fill_rates</code>
 </td>
 </tr>
 <tr>
@@ -204,7 +204,7 @@ An integer number of decision trees to use
 <code id="distance_measures">distance_measures</code>
 </td>
 <td>
-A vector of distance measures. Any combination of "abs", "euc", "man", "max", and "cos" may be used.
+A vector of distance measures. Any combination of ‘abs’, ‘euc’, ‘man’, ‘max’, and ‘cos’ may be used.
 </td>
 </tr>
 <tr>
@@ -228,7 +228,7 @@ An integer used for both the set.seed function and to distinguish between differ
 <code id="downsample">downsample</code>
 </td>
 <td>
-Whether to downsample the number of "different writer" distances before training the random forest. If TRUE, the different writer distances will be randomly sampled, resulting in the same number of different writer and same writer pairs.
+Whether to downsample the number of ‘different writer’ distances before training the random forest. If TRUE, the different writer distances will be randomly sampled, resulting in the same number of different writer and same writer pairs.
 </td>
 </tr>
 </tbody></table>
@@ -242,11 +242,11 @@ Whether to downsample the number of "different writer" distances before training
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(handwriterRF)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">get_csafe_train_set</span>(<span class="at">df =</span> cfr, <span class="at">train_prompt_code =</span> <span class="st">"pCMB"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">get_csafe_train_set</span>(<span class="at">df =</span> cfr, <span class="at">train_prompt_code =</span> <span class="st">'pCMB'</span>)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>rforest <span class="ot">&lt;-</span> <span class="fu">train_rf</span>(</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">df =</span> train,</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">ntrees =</span> <span class="dv">200</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">distance_measures =</span> <span class="fu">c</span>(<span class="st">"euc"</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">distance_measures =</span> <span class="fu">c</span>(<span class="st">'euc'</span>),</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">run_number =</span> <span class="dv">1</span>,</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">downsample =</span> <span class="cn">TRUE</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>

@@ -4,23 +4,23 @@
 ### Description
 
 Calculate cluster fill rates from a data frame of cluster fill counts created
-with 'handwriter::get_cluster_fill_counts'.
+with <code>get_cluster_fill_counts</code>.
 
 
 
 ### Usage
 
-<pre><code class='language-R'>get_cluster_fill_rates(cfc)
+<pre><code class='language-R'>get_cluster_fill_rates(df)
 </code></pre>
 
 
 ### Arguments
 
 <table>
-<tr><td style = "white-space: nowrap; font-family: monospace; vertical-align: top"><code id="cfc">cfc</code></td>
+<tr><td style = "white-space: nowrap; font-family: monospace; vertical-align: top"><code id="df">df</code></td>
 <td>
 A data frame of cluster fill rates created with
-'handwriter::get_cluster_fill_counts'.
+<code>get_cluster_fill_counts</code>.
 </td></tr>
 </table>
 
@@ -35,7 +35,7 @@ A data frame of cluster fill rates.
 ```{r, warning=FALSE, message=FALSE, eval=TRUE}
 library(handwriterRF)
 
-rates <- get_cluster_fill_rates(cfc)
+rates <- get_cluster_fill_rates(df = cfc)
 
 
 

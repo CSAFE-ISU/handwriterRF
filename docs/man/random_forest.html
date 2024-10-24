@@ -148,7 +148,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul class="collapse">
-  <li><a href="#a-ranger-random-forest-distances-and-densities" id="toc-a-ranger-random-forest-distances-and-densities" class="nav-link active" data-scroll-target="#a-ranger-random-forest-distances-and-densities">A ‘ranger’ Random Forest, Distances, and Densities</a></li>
+  <li><a href="#a-ranger-random-forest-distances-and-densities" id="toc-a-ranger-random-forest-distances-and-densities" class="nav-link active" data-scroll-target="#a-ranger-random-forest-distances-and-densities">A <span class="pkg">ranger</span> Random Forest, Distances, and Densities</a></li>
   </ul>
 </nav>
 </nav>
@@ -163,10 +163,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <section id="a-ranger-random-forest-distances-and-densities" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="a-ranger-random-forest-distances-and-densities">A ‘ranger’ Random Forest, Distances, and Densities</h2>
+<h2 class="unnumbered anchored" data-anchor-id="a-ranger-random-forest-distances-and-densities">A <span class="pkg">ranger</span> Random Forest, Distances, and Densities</h2>
 <section id="description" class="level3">
 <h3 class="anchored" data-anchor-id="description">Description</h3>
-<p>A list that contains a trained random forest created with ‘ranger’, the data frame of distances used to train the random forest, and two densities obtained from the random forest.</p>
+<p>A list that contains a trained random forest created with <span class="pkg">ranger</span>, the data frame of distances used to train the random forest, and two densities obtained from the random forest.</p>
 </section>
 <section id="usage" class="level3">
 <h3 class="anchored" data-anchor-id="usage">Usage</h3>
@@ -187,13 +187,13 @@ The data frame used to train the random forest. The data frame has 600 rows. Eac
 rf
 </dt>
 <dd>
-A random forest created with ‘ranger’ with settings: importance = "permutation", scale.permutation.importance = TRUE, and num.trees = 200.
+A random forest created with <span class="pkg">ranger</span> with settings: importance = ‘permutation’, scale.permutation.importance = TRUE, and num.trees = 200.
 </dd>
 <dt>
 densities
 </dt>
 <dd>
-A similarity score was obtained for each pair of handwriting samples in the training data frame, dists, by calculating the proportion of decision trees that voted ‘same’ class for the pair. The ‘same_writer’ density was created by applying the ‘density’ function to the similarity scores for the 300 same writer pairs in dists. Similarly, the ‘diff_writer’ density was created by applying the ‘density’ function to the similarity scores for the 300 different writer pairs in dists. The default settings were used with the ‘density’ function.
+A similarity score was obtained for each pair of handwriting samples in the training data frame, dists, by calculating the proportion of decision trees that voted ‘same’ class for the pair. The ‘same_writer’ density was created by applying <code>density</code> to the similarity scores for the 300 same writer pairs in dists. Similarly, the ‘diff_writer’ density was created by applying the <code>density</code> function to the similarity scores for the 300 different writer pairs in dists. The default settings were used with <code>density</code>.
 </dd>
 </dl>
 </section>

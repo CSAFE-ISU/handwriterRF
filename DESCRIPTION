@@ -1,11 +1,11 @@
 Package: handwriterRF
 Type: Package
 Title: Handwriting Analysis with Random Forests
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: c(person("Iowa State University of Science and Technology on behalf of its Center for Statistics and Applications in Forensic Evidence", role = c("aut", "cph", "fnd")),
           person("Stephanie", "Reinders", role = c("aut", "cre"), email = "reinders.stephanie@gmail.com"))
 Maintainer: Stephanie Reinders <reinders.stephanie@gmail.com>
-Description: Perform forensic handwriting analysis of two scanned handwritten documents. This package implements the statistical method described by Madeline Johnson and Danica Ommen (2021) <doi:10.1002/sam.11566>. Similarity measures and a random forest produce a score-based likelihood ratio that quantifies the strength of the evidence in favor of 'same writer' or 'different writer.'
+Description: Perform forensic handwriting analysis of two scanned handwritten documents. This package implements the statistical method described by Madeline Johnson and Danica Ommen (2021) <doi:10.1002/sam.11566>. Similarity measures and a random forest produce a score-based likelihood ratio that quantifies the strength of the evidence in favor of the documents being written by the 'same writer' or 'different writers.'
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

@@ -1,3 +1,21 @@
+# The handwriterRF R package performs writership analysis of handwritten
+# documents. Copyright (C) 2024 Iowa State University of Science and Technology
+# on behalf of its Center for Statistics and Applications in Forensic Evidence
+#
+# This program is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, either version 3 of the License, or (at your option) any later
+# version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
 # External Functions ------------------------------------------------------
 
 #' Calculate a Score-Based Likelihood Ratio
@@ -184,16 +202,17 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
 #'
 interpret_slr <- function(df){
   if (df$slr > 1) {
-    x <- paste("The likelihood of observing a similarity score of", df$score, "if the documents were written by the same person is", format(round(df$slr, 1), big.mark=","), "times greater than the likelihood of observing this score if the documents were written by different writers." )
+    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark=","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by the same person is", format(round(df$slr, 1), big.mark=","), "times greater than the likelihood of observing this score if the documents were written by different writers." )
   } else if (df$slr > 0 && df$slr < 1) {
-    x <- paste("The likelihood of observing a similarity score of", df$score, "if the documents were written by different people is", format(round(1 / df$slr, 2), nsmall=2, big.mark=","), "times greater than the likelihood of observing this score if the documents were written by the same writer." )
+    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark=","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by different people is", format(round(1 / df$slr, 2), nsmall=2, big.mark=","), "times greater than the likelihood of observing this score if the documents were written by the same writer." )
   } else if (df$slr == 1) {
-    x <- paste("The likelihood of observing a similarity score of", df$score, "if the documents were written by different people is equal to the likelihood of observing the score if the documents were written by the same writer." )
+    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark=","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by different people is equal to the likelihood of observing the score if the documents were written by the same writer." )
   } else if (df$slr == 0){
-    x <- "Ask Alicia or Danica how to interpret an SLR of 0."
+    x <- paste("A score-based likelihood ratio of 0 means it is virtually impossible that the documents were written by the same person.")
   } else {
     stop("The slr value is invalid.")
   }
+  return(x)
 }
 
 
