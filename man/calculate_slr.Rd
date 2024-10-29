@@ -44,6 +44,7 @@ following steps:
 }
 }
 \examples{
+\donttest{
 # Compare two samples from the same writer
 sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
 sample2 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r02.png"), package = "handwriterRF")
@@ -53,5 +54,6 @@ calculate_slr(sample1, sample2)
 sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
 sample2 <- system.file(file.path("extdata", "w0238_s01_pWOZ_r02.png"), package = "handwriterRF")
 calculate_slr(sample1, sample2)
+}
 
 }
