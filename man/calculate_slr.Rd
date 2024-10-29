@@ -37,14 +37,13 @@ following steps:
     \item \code{\link[handwriter]{get_cluster_fill_counts}} counts the number of graphs assigned to each cluster.
     \item \code{\link{get_cluster_fill_rates}} calculates the proportion of graphs assigned to each cluster. The cluster fill rates serve as a writer profile.
     \item A similarity score is calculated between the cluster fill rates of the two documents using a random forest trained with \pkg{ranger}.
-    \item The similarity score is compared to reference distributions of 'same writer' and 'different
-    writer' similarity scores. The result is a score-based likelihood ratio that conveys the strength
-    of the evidence in favor of 'same writer' or 'different writer'. For more details, see Madeline
+    \item The similarity score is compared to reference distributions of same writer and different
+    writer similarity scores. The result is a score-based likelihood ratio that conveys the strength
+    of the evidence in favor of same writer or different writer. For more details, see Madeline
     Johnson and Danica Ommen (2021) <doi:10.1002/sam.11566>.
 }
 }
 \examples{
-\dontrun{
 # Compare two samples from the same writer
 sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
 sample2 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r02.png"), package = "handwriterRF")
@@ -54,6 +53,5 @@ calculate_slr(sample1, sample2)
 sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
 sample2 <- system.file(file.path("extdata", "w0238_s01_pWOZ_r02.png"), package = "handwriterRF")
 calculate_slr(sample1, sample2)
-}
 
 }

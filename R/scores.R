@@ -35,7 +35,7 @@
 get_score <- function(d, rforest) {
   get_prop_same_votes <- function(preds) {
     # Get the proportion of decision trees in the trained random forest that
-    # predict, or vote, 'same writer'.
+    # predict (vote) same writer.
     preds <- as.data.frame(preds)
     ntrees <- ncol(preds)
     prop <- rowSums(preds == 2) / ntrees
