@@ -1,10 +1,9 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* Fixed error in test "Train random forest works with ranger package" that 
-occurred on Debian. Despite setting the random number generator seed, 
-the random forest created on Debian has reasonable values but is not equal to the random forest created on a Mac and used in the test as the expected output. Now the 
-test instead checks that the function runs without error.
+* Removed quotes around "same writer" and "different writer" in documentation.
+
+* Removed dontrun{} from the examples for random_forest. Changed example for get_distances() to something that runs in less than 5 seconds and removed dontrun{} from this example. The examples for calculate_slr() take longer than 5 seconds to run so dontrun{} was changed to donttest{} for these examples.
 
 
 ## R CMD check results

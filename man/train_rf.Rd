@@ -28,7 +28,7 @@ saved.}
 \item{run_number}{An integer used for both the set.seed function and to
 distinguish between different runs on the same input data frame.}
 
-\item{downsample}{Whether to downsample the number of 'different writer'
+\item{downsample}{Whether to downsample the number of different writer
 distances before training the random forest. If TRUE, the different writer
 distances will be randomly sampled, resulting in the same number of
 different writer and same writer pairs.}

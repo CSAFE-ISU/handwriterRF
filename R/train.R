@@ -31,7 +31,7 @@
 #'   saved.
 #' @param run_number An integer used for both the set.seed function and to
 #'   distinguish between different runs on the same input data frame.
-#' @param downsample Whether to downsample the number of 'different writer'
+#' @param downsample Whether to downsample the number of different writer
 #'   distances before training the random forest. If TRUE, the different writer
 #'   distances will be randomly sampled, resulting in the same number of
 #'   different writer and same writer pairs.
@@ -137,7 +137,7 @@ get_csafe_train_set <- function(df, train_prompt_codes) {
 
 #' Make Densities from a Trained Random Forest
 #'
-#' Create densities of 'same writer' and 'different writer' scores produced by a
+#' Create densities of same writer and different writer scores produced by a
 #' trained random forest.
 #'
 #' @param rforest A \pkg{ranger} random forest created with \code{\link{train_rf}}.

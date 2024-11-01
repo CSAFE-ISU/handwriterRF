@@ -58,9 +58,9 @@ The result is a data frame:
 -   *docname1* is the file name of the first sample.
 -   *docname2* is the file name of the second sample.
 -   *score* is the similarity score between the two samples.
--   *numerator* is the numerator value of the score-based likelihood ratio. Intuitively, the larger the value the more the similarity score looks like the reference 'same writer' similarity scores.
--   *denominator* is the denominator value of the score-based likelihood ratio. Intuitively, the larger the value the more the similarity score looks like the reference 'different writers' similarity scores.
--   *slr* is a score-based likelihood ratio that quantifies the strength of evidence in favor of 'same writer' or 'different writer.'
+-   *numerator* is the numerator value of the score-based likelihood ratio. Intuitively, the larger the value the more the similarity score looks like the reference same writer similarity scores.
+-   *denominator* is the denominator value of the score-based likelihood ratio. Intuitively, the larger the value the more the similarity score looks like the reference different writers similarity scores.
+-   *slr* is a score-based likelihood ratio that quantifies the strength of evidence in favor of same writer or different writer.
 
 Display the slr data frame. We hide the file path columns here so that the data frame fits on this page.
 

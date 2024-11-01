@@ -38,13 +38,11 @@ random_forest$rf
 # view the distances data frame
 random_forest$dists
 
-\dontrun{
 # plot the same writer density
 plot(random_forest$densities$same_writer)
 
 # plot the different writer density
 plot(random_forest$densities$diff_writer)
-}
 
 }
 \keyword{datasets}
