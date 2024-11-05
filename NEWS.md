@@ -1,3 +1,5 @@
+# handwriterRF (development version)
+
 # handwriterRF 1.0.2
 
 * Removed quotes around "same writer" and "different writer" in documentation.
