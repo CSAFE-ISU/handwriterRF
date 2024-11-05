@@ -139,3 +139,13 @@ test_that("Interpret SLR returns the correct message for a value of 0", {
 
   expect_identical(actual, expected)
 })
+
+test_that("Make densities works with ranger package", {
+  # load random forest from test fixtures
+  rforest <- readRDS(testthat::test_path("fixtures", "train", "rf1.rds"))
+  actual <- make_densities_from_rf(scores = rforest$scores)
+
+  expected <- readRDS(testthat::test_path("fixtures", "slr", "densities.csv"))
+
+  expect_equal(actual, expected)
+})

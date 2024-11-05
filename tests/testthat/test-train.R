@@ -21,11 +21,3 @@ test_that("Train random forest works with ranger package", {
     downsample = TRUE
   ), NA)
 })
-
-test_that("Make densities works with ranger package", {
-  # load random forest from test fixtures
-  rforest <- readRDS(testthat::test_path("fixtures", "train", "rf1.rds"))
-  actual <- make_densities_from_rf(rforest)
-
-  expect_equal(actual, rforest$densities)
-})

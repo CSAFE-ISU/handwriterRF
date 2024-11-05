@@ -159,6 +159,7 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
 
   # SLR
   message("Calculating SLR for samples...\n")
+  rforest$densities <- make_densities_from_rf(scores = rforest$scores)
   numerator <- eval_density_at_point(den = rforest$densities$same_writer, x = score, type = "numerator")
   denominator <- eval_density_at_point(den = rforest$densities$diff_writer, x = score, type = "denominator")
   slr <- numerator / denominator
@@ -255,3 +256,23 @@ eval_density_at_point <- function(den, x, type, zero_correction = 1e-10) {
 
   return(y)
 }
+
+
+#' Make Densities from a Trained Random Forest
+#'
+#' Create densities of same writer and different writer scores produced by a
+#' trained random forest.
+#'
+#' @param scores A list of reference scores created with \code{\link{make_scores_from_rf()}}.
+#'
+#' @return A list of densities
+#'
+#' @noRd
+make_densities_from_rf <- function(scores) {
+  pdfs <- list()
+  pdfs$same_writer <- stats::density(scores$same_writer, kernel = 'gaussian', n = 10000)
+  pdfs$diff_writer <- stats::density(scores$diff_writer, kernel = 'gaussian', n = 10000)
+
+  return(pdfs)
+}
+
