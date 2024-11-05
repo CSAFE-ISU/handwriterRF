@@ -34,9 +34,22 @@
 #' @export
 #'
 #' @examples
-#' plot_histograms(rforest = random_forest, score = 0.9)
+#' plot_histograms(rforest = random_forest)
 #'
-plot_histograms <- function(rforest, score) {
+#' # Add a vertical line 0.1 on the horizontal axis.
+#' plot_histograms(rforest = random_forest, score = 0.1)
+#'
+plot_histograms <- function(rforest, score = NULL) {
+  # Prevent note "no visible binding for global variable"
+  Score <- Group <- NULL
+
+  if (!requireNamespace("ggplot2", quietly = TRUE)) {
+    stop(
+      "Package \"ggplot2\" must be installed to use this function.",
+      call. = FALSE
+    )
+  }
+
   scores <- rforest$scores
 
   df <- data.frame(
@@ -49,21 +62,26 @@ plot_histograms <- function(rforest, score) {
                             ggplot2::aes(fill = Group),
                             alpha = 0.4,
                             bins = 30) +  # Histograms with transparency
-    ggplot2::geom_vline(xintercept = score,
-                        color = "black",
-                        linetype = "dashed") +  # Add vertical line
-    ggplot2::annotate("text",
-                      x = score,
-                      y = 75,  # Dynamically position the label
-                      label = paste("similarity score", score),
-                      color = "black",
-                      size = 3,
-                      angle = 90,
-                      vjust = -1,
-                      hjust = 0.5) +  # Add text annotation
     ggplot2::scale_fill_manual(values = c("same writer" = "#6BA4B8", "different writers" = "#F68D2E")) +  # Customize colors
     ggplot2::labs(title = "Reference Similarity Scores", x = "Score", y = "Frequency") +
     ggplot2::theme_bw()
+
+  # Optional - add vertical line at score
+  if (!is.null(score)) {
+    p <- p +
+      ggplot2::geom_vline(xintercept = score,
+                          color = "black",
+                          linetype = "dashed") +  # Add vertical line
+      ggplot2::annotate("text",
+                        x = score,
+                        y = 75,  # Dynamically position the label
+                        label = paste("similarity score", score),
+                        color = "black",
+                        size = 3,
+                        angle = 90,
+                        vjust = -1,
+                        hjust = 0.5)  # Add text annotation
+  }
 
   return(p)
 }

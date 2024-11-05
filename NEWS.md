@@ -1,5 +1,9 @@
 # handwriterRF (development version)
 
+## Minor improvements and bug fixes
+
+* Created `plot_histograms()` to plot histograms of the reference same writer and different writer similarity scores in `random_forest$scores`.
+
 # handwriterRF 1.0.2
 
 * Removed quotes around "same writer" and "different writer" in documentation.
