@@ -50,14 +50,18 @@
 #' @examples
 #' \donttest{
 #' # Compare two samples from the same writer
-#' sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
-#' sample2 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r02.png"), package = "handwriterRF")
-#' calculate_slr(sample1, sample2)
+#' s1 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r01.png"),
+#'                   package = "handwriterRF")
+#' s2 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r02.png"),
+#'                   package = "handwriterRF")
+#' calculate_slr(s1, s2)
 #'
 #' # Compare samples from two writers
-#' sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
-#' sample2 <- system.file(file.path("extdata", "w0238_s01_pWOZ_r02.png"), package = "handwriterRF")
-#' calculate_slr(sample1, sample2)
+#' s1 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r01.png"),
+#'                   package = "handwriterRF")
+#' s2 <- system.file(file.path("extdata", "docs", "w0238_s01_pWOZ_r02.png"),
+#'                   package = "handwriterRF")
+#' calculate_slr(s1, s2)
 #' }
 #'
 calculate_percent_rank <- function(sample1_path, sample2_path, rforest = random_forest, project_dir = NULL) {
