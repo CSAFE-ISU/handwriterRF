@@ -51,14 +51,18 @@
 #' @examples
 #' \donttest{
 #' # Compare two samples from the same writer
-#' sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
-#' sample2 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r02.png"), package = "handwriterRF")
-#' calculate_slr(sample1, sample2)
+#' s1 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r01.png"),
+#'                   package = "handwriterRF")
+#' s2 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r02.png"),
+#'                   package = "handwriterRF")
+#' calculate_slr(s1, s2)
 #'
 #' # Compare samples from two writers
-#' sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
-#' sample2 <- system.file(file.path("extdata", "w0238_s01_pWOZ_r02.png"), package = "handwriterRF")
-#' calculate_slr(sample1, sample2)
+#' s1 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r01.png"),
+#'                   package = "handwriterRF")
+#' s2 <- system.file(file.path("extdata", "docs", "w0238_s01_pWOZ_r02.png"),
+#'                   package = "handwriterRF")
+#' calculate_slr(s1, s2)
 #' }
 #'
 calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, project_dir = NULL) {
@@ -122,9 +126,9 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
 
   # copy samples
   sample_paths <- copy_samples_to_project_dir(
-      sample1_path = sample1_path,
-      sample2_path = sample2_path,
-      project_dir = project_dir
+    sample1_path = sample1_path,
+    sample2_path = sample2_path,
+    project_dir = project_dir
   )
   sample1_path <- sample_paths[1]
   sample2_path <- sample_paths[2]
@@ -177,6 +181,177 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
 
   return(df)
 }
+
+
+#' Calculate a Similarity Score from Cluster Assignments
+#'
+#' Calculates a similarity score between the cluster assignments of two
+#' handwriting samples with these steps:
+#' \enumerate{
+#'     \item \code{\link[handwriter]{get_cluster_fill_counts}} counts the number of graphs assigned to each cluster.
+#'     \item \code{\link{get_cluster_fill_rates}} calculates the proportion of graphs assigned to each cluster. The cluster fill rates serve as a writer profile.
+#'     \item A similarity score is calculated between the cluster fill rates of the two documents using a random forest trained with \pkg{ranger}.
+#' }
+#'
+#' This function is primarily useful for users who want to calculate similarity
+#' scores between large numbers of handwriting samples. Follow these steps:
+#' \enumerate{
+#'    \item Run \code{\link[handwriter]{process_batch_dir}} on the folder containing the scanned handwriting samples.
+#'    This splits the writing in the samples into component shapes, or graphs.
+#'     \item Run \code{\link[handwriter]{get_clusters_batch}} on the output folder that contains the graphs. This groups the graphs from each sample
+#'    into clusters of similar shapes.
+#'    \item Run `calculate_score_with_clusters()` on pairs of files output in the previous step.
+#' }
+#'
+#' @param sample1_clusters A file path to cluster assignments created with
+#'   [handwriter::get_clusters_batch()]
+#' @param sample2_clusters A file path to cluster assignments created with
+#'   [handwriter::get_clusters_batch()]
+#' @param rforest Optional. A random forest trained with \pkg{ranger}. If
+#'   rforest is not given, the data object random_forest is used.
+#' @param project_dir Optional. A path to a directory where the output data
+#'   frame will be saved. If no project directory is specified, the output data
+#'   frame will be returned but not saved.
+#'
+#' @return A number between 0 and 1
+#'
+#' @export
+#'
+#' @examples
+#' # Compare two samples from the same writer
+#' c1 <- system.file(file.path("extdata", "clusters", "w0030_s01_pWOZ_r01.rds"),
+#'                   package = "handwriterRF")
+#' c2 <- system.file(file.path("extdata", "clusters", "w0030_s01_pWOZ_r02.rds"),
+#'                   package = "handwriterRF")
+#' calculate_score_with_clusters(c1, c2)
+#'
+#' # Compare samples from two writers
+#' c1 <- system.file(file.path("extdata", "clusters", "w0030_s01_pWOZ_r01.rds"),
+#'                   package = "handwriterRF")
+#' c2 <- system.file(file.path("extdata", "clusters", "w0238_s01_pWOZ_r02.rds"),
+#'                   package = "handwriterRF")
+#' calculate_score_with_clusters(c1, c2)
+#'
+calculate_score_with_clusters <- function(sample1_clusters, sample2_clusters, rforest = random_forest, project_dir = NULL) {
+  # error if sample1_clusters == sample2_clusters
+  if (identical(sample1_clusters, sample2_clusters)) {
+    stop("sample1_clusters and sample2_clusters cannot be identical.")
+  }
+
+  clusters <- load_clusters(sample1_clusters, sample2_clusters)
+  counts <- handwriter::get_cluster_fill_counts(clusters)
+  rates <- get_cluster_fill_rates(counts)
+
+  # distance
+  message("Calculating distance between samples...\n")
+  dist_measures <- which_dists(rforest = rforest)
+  d <- get_distances(df = rates, distance_measures = dist_measures)
+
+  # score
+  message("Calculating similarity score between samples...\n")
+  score <- get_score(rforest = rforest, d = d)
+
+  # result
+  df <- data.frame("sample1_clusters" = sample1_clusters, "sample2_clusters" = sample2_clusters,
+                   "docname1" = basename(sample1_clusters), "docname2" = basename(sample2_clusters),
+                   "score" = score)
+
+  # save (optional) ----
+  if (!is.null(project_dir)) {
+    message(paste0("Saving results to ", project_dir, "..."))
+    saveRDS(df, file.path(project_dir, "score.rds"))
+  }
+
+  return(df)
+}
+
+#' Calculate a Score-Based Likelihood Ratio from Cluster Assignments
+#'
+#' Calculates a score-based likelihood ratio between the cluster assignments of two
+#' handwriting samples with these steps:
+#' \enumerate{
+#'     \item \code{\link[handwriter]{get_cluster_fill_counts}} counts the number of graphs assigned to each cluster.
+#'     \item \code{\link{get_cluster_fill_rates}} calculates the proportion of graphs assigned to each cluster. The cluster fill rates serve as a writer profile.
+#'     \item A similarity score is calculated between the cluster fill rates of the two documents using a random forest trained with \pkg{ranger}.
+#'     \item The similarity score is compared to reference distributions of same writer and different
+#'     writer similarity scores. The result is a score-based likelihood ratio that conveys the strength
+#'     of the evidence in favor of same writer or different writer. For more details, see Madeline
+#'     Johnson and Danica Ommen (2021) <doi:10.1002/sam.11566>.
+#' }
+#'
+#' This function is primarily useful for users who want to calculate score-based
+#' likelihood ratios between large numbers of handwriting samples. Follow these
+#' steps:
+#' \enumerate{
+#'    \item Run \code{\link[handwriter]{process_batch_dir}} on the folder containing the scanned handwriting samples.
+#'    This splits the writing in the samples into component shapes, or graphs.
+#'     \item Run \code{\link[handwriter]{get_clusters_batch}} on the output folder that contains the graphs. This groups the graphs from each sample
+#'    into clusters of similar shapes.
+#'    \item Run `calculate_slr_with_clusters()` on pairs of files output in the previous step.
+#' }
+#'
+#' @param sample1_clusters A file path to cluster assignments created with
+#'   [handwriter::get_clusters_batch()]
+#' @param sample2_clusters A file path to cluster assignments created with
+#'   [handwriter::get_clusters_batch()]
+#' @param rforest Optional. A random forest trained with \pkg{ranger}. If
+#'   rforest is not given, the data object random_forest is used.
+#' @param project_dir Optional. A path to a directory where helper files will be
+#'   saved. If no project directory is specified, the helper files will be saved
+#'   to tempdir() and deleted before the function terminates.
+#'
+#' @return A number great than or equal to zero
+#'
+#' @export
+#'
+#' @examples
+#' # Compare two samples from the same writer
+#' c1 <- system.file(file.path("extdata", "clusters", "w0030_s01_pWOZ_r01.rds"),
+#'                   package = "handwriterRF")
+#' c2 <- system.file(file.path("extdata", "clusters", "w0030_s01_pWOZ_r02.rds"),
+#'                   package = "handwriterRF")
+#' calculate_slr_with_clusters(c1, c2)
+#'
+#' # Compare samples from two writers
+#' c2 <- system.file(file.path("extdata", "clusters", "w0030_s01_pWOZ_r01.rds"),
+#'                   package = "handwriterRF")
+#' c2 <- system.file(file.path("extdata", "clusters", "w0238_s01_pWOZ_r02.rds"),
+#'                   package = "handwriterRF")
+#' calculate_slr_with_clusters(c1, c2)
+#'
+calculate_slr_with_clusters <- function(sample1_clusters, sample2_clusters, rforest = random_forest, project_dir = NULL) {
+
+  # score ----
+  message("Calculating similarity score between samples...\n")
+  # Set project dir to NULL in argument so that score.rds is not saved to file.
+  # The contents of score.rds will be saved later in slr.rds.
+  score_df <- calculate_score_with_clusters(sample1_clusters = sample1_clusters,
+                                            sample2_clusters = sample2_clusters,
+                                            rforest = rforest,
+                                            project_dir = NULL)
+  score <- score_df$score
+
+  # SLR ----
+  message("Calculating SLR for samples...\n")
+  rforest$densities <- make_densities_from_rf(scores = rforest$scores)
+  numerator <- eval_density_at_point(den = rforest$densities$same_writer, x = score, type = "numerator")
+  denominator <- eval_density_at_point(den = rforest$densities$diff_writer, x = score, type = "denominator")
+  slr <- numerator / denominator
+
+  # results ----
+  df <- data.frame("sample1_clusters" = sample1_clusters, "sample2_clusters" = sample2_clusters,
+                   "docname1" = basename(sample1_clusters), "docname2" = basename(sample2_clusters),
+                   "score" = score, "numerator" = numerator, "denominator" = denominator,
+                   "slr" = slr)
+
+  # delete project folder from temp directory or save SLR to project folder
+  if (!is.null(project_dir)) {
+    saveRDS(df, file.path(project_dir, "slr.rds"))
+  }
+
+  return(df)
+}
+
 
 #' Interpret an SLR Value
 #'
@@ -274,4 +449,12 @@ make_densities_from_rf <- function(scores) {
   pdfs$diff_writer <- stats::density(scores$diff_writer, kernel = 'gaussian', n = 10000)
 
   return(pdfs)
+}
+
+load_clusters <- function(sample1_clusters, sample2_clusters){
+  # load clusters from file
+  clusters1 <- readRDS(sample1_clusters)
+  clusters2 <- readRDS(sample2_clusters)
+  clusters <- rbind(clusters1, clusters2)
+  return(clusters)
 }
