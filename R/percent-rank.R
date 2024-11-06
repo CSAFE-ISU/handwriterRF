@@ -18,7 +18,7 @@
 
 # External Functions ------------------------------------------------------
 
-#' Calculate a Score-Based Likelihood Ratio
+#' Calculate Percent Ranks
 #'
 #' Compares two handwriting samples scanned and saved a PNG images with the
 #' following steps:
@@ -28,10 +28,9 @@
 #'     \item \code{\link[handwriter]{get_cluster_fill_counts}} counts the number of graphs assigned to each cluster.
 #'     \item \code{\link{get_cluster_fill_rates}} calculates the proportion of graphs assigned to each cluster. The cluster fill rates serve as a writer profile.
 #'     \item A similarity score is calculated between the cluster fill rates of the two documents using a random forest trained with \pkg{ranger}.
-#'     \item The similarity score is compared to reference distributions of same writer and different
-#'     writer similarity scores. The result is a score-based likelihood ratio that conveys the strength
-#'     of the evidence in favor of same writer or different writer. For more details, see Madeline
-#'     Johnson and Danica Ommen (2021) <doi:10.1002/sam.11566>.
+#'     \item The similarity score is compared to reference samples of same writer and different
+#'     writer similarity scores. The percent rank of the observed similarity score is returned for each sample. The percent rank for score x is
+#'     calculated as the number of scores in the sample less than or equal to x divided by the total number of scores.
 #' }
 #'
 #' @param sample1_path A file path to a handwriting sample saved in PNG file
@@ -44,7 +43,7 @@
 #'   saved. If no project directory is specified, the helper files will be saved
 #'   to tempdir() and deleted before the function terminates.
 #'
-#' @return A number
+#' @return A list of two numbers
 #'
 #' @export
 #'
@@ -61,7 +60,7 @@
 #' calculate_slr(sample1, sample2)
 #' }
 #'
-calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, project_dir = NULL) {
+calculate_percent_rank <- function(sample1_path, sample2_path, rforest = random_forest, project_dir = NULL) {
   copy_samples_to_project_dir <- function(sample1_path, sample2_path, project_dir) {
     # Copy samples to project_dir > docs
     message("Copying samples to output directory > docs...\n")
@@ -105,6 +104,12 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
     return()
   }
 
+  get_percent_rank <- function(score, ref_scores) {
+    # Calculate the percent rank of score for a sample of reference scores
+    pr <- 100 * sum(ref_scores <= score) / length(ref_scores)
+    return(pr)
+  }
+
   # error if sample1_path == sample2_path
   if (identical(sample1_path, sample2_path)) {
     stop("sample1_path and sample2_path cannot be identical.")
@@ -122,9 +127,9 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
 
   # copy samples
   sample_paths <- copy_samples_to_project_dir(
-      sample1_path = sample1_path,
-      sample2_path = sample2_path,
-      project_dir = project_dir
+    sample1_path = sample1_path,
+    sample2_path = sample2_path,
+    project_dir = project_dir
   )
   sample1_path <- sample_paths[1]
   sample2_path <- sample_paths[2]
@@ -157,121 +162,24 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
   message("Calculating similarity score between samples...\n")
   score <- get_score(rforest = rforest, d = d)
 
-  # SLR
-  message("Calculating SLR for samples...\n")
-  rforest$densities <- make_densities_from_rf(scores = rforest$scores)
-  numerator <- eval_density_at_point(den = rforest$densities$same_writer, x = score, type = "numerator")
-  denominator <- eval_density_at_point(den = rforest$densities$diff_writer, x = score, type = "denominator")
-  slr <- numerator / denominator
+  # percent rank
+  message("Calculating percent ranks for samples...\n")
+  browser()
+  percent_rank_same_writer <- get_percent_rank(score = score, ref_scores = random_forest$scores$same_writer)
+  percent_rank_diff_writer <- get_percent_rank(score = score, ref_scores = random_forest$scores$diff_writer)
+
+  # make data frame of results
   df <- data.frame("sample1_path" = sample1_path_org, "sample2_path" = sample2_path_org,
                    "docname1" = basename(sample1_path_org), "docname2" = basename(sample2_path_org),
-                   "score" = score, "numerator" = numerator, "denominator" = denominator,
-                   "slr" = slr)
+                   "score" = score, "percent_rank_same_writer" = percent_rank_same_writer,
+                   "percent_rank_diff_writer" = percent_rank_diff_writer)
 
-  # delete project folder from temp directory or save SLR to project folder
+  # delete project folder from temp directory or save results to project folder
   if (project_dir == file.path(tempdir(), "comparison")) {
     unlink(project_dir, recursive = TRUE)
   } else {
-    saveRDS(df, file.path(project_dir, "slr.rds"))
+    saveRDS(df, file.path(project_dir, "percent_rank.rds"))
   }
 
   return(df)
-}
-
-#' Interpret an SLR Value
-#'
-#' Verbally interprent an SLR value.
-#'
-#' @param df A data frame created by \code{\link{calculate_slr}}.
-#'
-#' @return A string
-#'
-#' @export
-#'
-#' @examples
-#' df <- data.frame("score" = 5, "slr" = 20)
-#' interpret_slr(df)
-#'
-#' df <- data.frame("score" = 0.12, "slr" = 0.5)
-#' interpret_slr(df)
-#'
-#' df <- data.frame("score" = 1, "slr" = 1)
-#' interpret_slr(df)
-#'
-#' df <- data.frame("score" = 0, "slr" = 0)
-#' interpret_slr(df)
-#'
-interpret_slr <- function(df){
-  if (df$slr > 1) {
-    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark=","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by the same person is", format(round(df$slr, 1), big.mark=","), "times greater than the likelihood of observing this score if the documents were written by different writers." )
-  } else if (df$slr > 0 && df$slr < 1) {
-    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark=","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by different people is", format(round(1 / df$slr, 2), nsmall=2, big.mark=","), "times greater than the likelihood of observing this score if the documents were written by the same writer." )
-  } else if (df$slr == 1) {
-    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark=","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by different people is equal to the likelihood of observing the score if the documents were written by the same writer." )
-  } else if (df$slr == 0){
-    x <- paste("A score-based likelihood ratio of 0 means it is virtually impossible that the documents were written by the same person.")
-  } else {
-    stop("The slr value is invalid.")
-  }
-  return(x)
-}
-
-
-# Internal Functions ------------------------------------------------------
-
-#' Evaluate Density at a Point
-#'
-#' @param den A density created with \code{\link[stats]{density}}
-#' @param x A number at which to evaluate the density. I.e., calculate the
-#'   height of the density at the point.
-#' @param type Use 'numerator' or 'denominator' to specify whether the density
-#'   is for the numerator or denominator of the score-based likelihood ratio.
-#'   This is used to determine how to handle NAs or zeros. If the density is for
-#'   the numerator and the density evaluated at the point is NA, the output
-#'   value is 0. If the density is for the denominator and the density evaluated
-#'   at the point is NA or zero, the output is the value input for zero
-#'   correction, to avoid dividing by zero when the score-based likelihood is
-#'   calculated. If the density
-#' @param zero_correction A small number to be used in place of zero in the
-#'   denominator of the score-based likelihood ratio.
-#'
-#' @return A number
-#'
-#' @noRd
-eval_density_at_point <- function(den, x, type, zero_correction = 1e-10) {
-  y <- stats::approx(den$x, den$y, xout = x, n = 10000)$y
-
-  # correct NA
-  if (is.na(y) && (type == "numerator")) {
-    y <- 0
-  }
-  if (is.na(y) && (type == "denominator")) {
-    y <- zero_correction
-  }
-
-  # correct zero in denominator
-  if ((y == 0) && (type == "denominator")) {
-    y <- zero_correction
-  }
-
-  return(y)
-}
-
-
-#' Make Densities from a Trained Random Forest
-#'
-#' Create densities of same writer and different writer scores produced by a
-#' trained random forest.
-#'
-#' @param scores A list of reference scores created with \code{\link{make_scores_from_rf()}}.
-#'
-#' @return A list of densities
-#'
-#' @noRd
-make_densities_from_rf <- function(scores) {
-  pdfs <- list()
-  pdfs$same_writer <- stats::density(scores$same_writer, kernel = 'gaussian', n = 10000)
-  pdfs$diff_writer <- stats::density(scores$diff_writer, kernel = 'gaussian', n = 10000)
-
-  return(pdfs)
 }

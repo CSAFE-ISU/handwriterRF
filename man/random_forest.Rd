@@ -3,7 +3,7 @@
 \docType{data}
 \name{random_forest}
 \alias{random_forest}
-\title{A \pkg{ranger} Random Forest, Distances, and Densities}
+\title{A \pkg{ranger} Random Forest, Distances, and Similarity Scores}
 \format{
 A list with the following components:
 \describe{
@@ -15,21 +15,18 @@ different writers, the class is 'different'. There are 300 'same' distances and
 300 'different' distances in the data frame.}
 \item{rf}{A random forest created with \pkg{ranger} with settings:
 importance = 'permutation', scale.permutation.importance = TRUE, and num.trees = 200.}
-\item{densities}{A similarity score was obtained for each pair of handwriting samples in the
+\item{scores}{A similarity score was obtained for each pair of handwriting samples in the
 training data frame, dists, by calculating the proportion of decision trees that voted 'same'
-class for the pair. The 'same_writer' density was created by applying \code{\link[stats]{density}}
-to the similarity scores for the 300 same writer pairs in dists. Similarly, the 'diff_writer'
-density was created by applying the \code{\link[stats]{density}} function to the similarity scores for the 300
-different writer pairs in dists. The default settings were used with \code{\link[stats]{density}}.}
+class for the pair.}
 }
 }
 \usage{
 random_forest
 }
 \description{
-A list that contains a trained random forest created with \pkg{ranger}, the data
-frame of distances used to train the random forest, and two densities
-obtained from the random forest.
+A list that contains a trained random forest created with \pkg{ranger}, the
+data frame of distances used to train the random forest, and similarity
+scores calculated from the training data.
 }
 \examples{
 # view the random forest
@@ -38,11 +35,9 @@ random_forest$rf
 # view the distances data frame
 random_forest$dists
 
-# plot the same writer density
-plot(random_forest$densities$same_writer)
-
-# plot the different writer density
-plot(random_forest$densities$diff_writer)
+# plot histograms of the similarity scores and place a vertical
+# line at similarity score 0.9.
+plot_histograms(random_forest, 0.9)
 
 }
 \keyword{datasets}

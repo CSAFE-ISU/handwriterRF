@@ -90,7 +90,7 @@ train_rf <- function(df,
   rforest$dists <- dists
 
   # get densities from training data
-  rforest$densities <- make_densities_from_rf(rforest = rforest)
+  rforest$scores <- make_scores_from_rf(rforest = rforest)
 
   saveRDS(rforest, file.path(output_dir, paste0('rf', run_number, '.rds')))
 
@@ -135,17 +135,17 @@ get_csafe_train_set <- function(df, train_prompt_codes) {
 
 # Internal Functions ------------------------------------------------------
 
-#' Make Densities from a Trained Random Forest
+#' Make Reference Scores from a Trained Random Forest
 #'
-#' Create densities of same writer and different writer scores produced by a
+#' Create reference scores of same writer and different writer scores produced by a
 #' trained random forest.
 #'
 #' @param rforest A \pkg{ranger} random forest created with \code{\link{train_rf}}.
 #'
-#' @return A list of densities
+#' @return A list scores
 #'
 #' @noRd
-make_densities_from_rf <- function(rforest) {
+make_scores_from_rf <- function(rforest) {
   # Prevent note 'no visible binding for global variable'
   score <- session <- prompt <- rep <- total_graphs <- NULL
 
@@ -164,11 +164,7 @@ make_densities_from_rf <- function(rforest) {
     dplyr::filter(match == 'different') %>%
     dplyr::pull(score)
 
-  pdfs <- list()
-  pdfs$same_writer <- stats::density(scores$same_writer, kernel = 'gaussian', n = 10000)
-  pdfs$diff_writer <- stats::density(scores$diff_writer, kernel = 'gaussian', n = 10000)
-
-  return(pdfs)
+  return(scores)
 }
 
 
