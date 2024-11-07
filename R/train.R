@@ -194,10 +194,7 @@ downsample_diff_pairs <- function(df) {
 #' @noRd
 label_same_different_writer <- function(dists) {
   # prevent note 'no visible binding for global variable'
-  writer1 <- writer2 <- session1 <- prompt1 <- rep1 <- session2 <- prompt2 <- rep2 <- NULL
-
-  dists <- expand_docnames(dists, 'docname1', '1')
-  dists <- expand_docnames(dists, 'docname2', '2')
+  writer1 <- writer2 <- NULL
 
   dists <- dists %>% dplyr::mutate(match = ifelse(writer1 == writer2, 'same', 'different'))
 
@@ -205,7 +202,7 @@ label_same_different_writer <- function(dists) {
   dists$match <- as.factor(dists$match)
 
   # drop columns in prep for rf
-  dists <- dists %>% dplyr::select(-writer1, -session1, -prompt1, -rep1, -writer2, -session2, -prompt2, -rep2)
+  dists <- dists %>% dplyr::select(-writer1, -writer2)
 
   return(dists)
 }

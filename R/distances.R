@@ -47,7 +47,7 @@
 #' \eqn{\sum_{i=1}^n (a_i - b_i)^2 / (\sqrt{\sum_{i=1}^n a_i^2}\sqrt{\sum_{i=1}^n b_i^2})}.
 #'
 #' @param df A data frame of cluster fill rates created with
-#'   \code{\link{get_cluster_fill_rates}}
+#'   \code{\link{get_cluster_fill_rates}} and an added column that contains a writer ID.
 #' @param distance_measures A vector of distance measures. Use 'abs' to
 #'   calculate the absolute difference, 'man' for the Manhattan distance, 'euc'
 #'   for the Euclidean distance, 'max' for the maximum absolute distance, and
@@ -84,7 +84,10 @@ get_distances <- function(df, distance_measures) {
   }
 
   # combine data frames
-  dists <- purrr::reduce(dists, dplyr::left_join, by = c('docname1' = 'docname1', 'docname2' = 'docname2'))
+  dists <- purrr::reduce(dists, dplyr::left_join, by = c('docname1' = 'docname1',
+                                                         'writer1' = 'writer1',
+                                                         'docname2' = 'docname2',
+                                                         'writer2' = 'writer2'))
 
   return(dists)
 }
@@ -134,17 +137,21 @@ absolute_dist_for_single_cluster <- function(df, k) {
 absolute_dist <- function(df) {
   # split docnames and clusters
   docnames <- df$docname
+  writers <- df$writer
   df <- get_cluster_cols(df)
 
   dists <- lapply(colnames(df), function(k) {
     absolute_dist_for_single_cluster(df, k)
   })
   dists <- lapply(1:length(dists), function(i) {
-    dist_matrix2df(dists[[i]], docnames, paste0('cluster', i))
+    dist_matrix2df(dists[[i]], docnames, writers, paste0('cluster', i))
   })
 
   # combine data frames
-  dists <- purrr::reduce(dists, dplyr::left_join, by = c('docname1' = 'docname1', 'docname2' = 'docname2'))
+  dists <- purrr::reduce(dists, dplyr::left_join, by = c('docname1' = 'docname1',
+                                                         'writer1' = 'writer1',
+                                                         'docname2' = 'docname2',
+                                                         'writer2' = 'writer2'))
 
   return(dists)
 }
@@ -163,6 +170,7 @@ absolute_dist <- function(df) {
 manhattan_dist <- function(df) {
   # split docnames and clusters
   docnames <- df$docname
+  writers <- df$writer
   df <- get_cluster_cols(df)
 
   d <- outer(
@@ -172,7 +180,7 @@ manhattan_dist <- function(df) {
     }
   )
 
-  df <- dist_matrix2df(d, docnames, 'man')
+  df <- dist_matrix2df(d, docnames, writers, 'man')
 
   return(df)
 }
@@ -191,6 +199,7 @@ manhattan_dist <- function(df) {
 euclidean_dist <- function(df) {
   # split docnames and clusters
   docnames <- df$docname
+  writers <- df$writer
   df <- get_cluster_cols(df)
 
   d <- outer(
@@ -200,7 +209,7 @@ euclidean_dist <- function(df) {
     }
   )
 
-  df <- dist_matrix2df(d, docnames, 'euc')
+  df <- dist_matrix2df(d, docnames, writers, 'euc')
 
   return(df)
 }
@@ -219,6 +228,7 @@ euclidean_dist <- function(df) {
 maximum_dist <- function(df) {
   # split docnames and clusters
   docnames <- df$docname
+  writers <- df$writer
   df <- get_cluster_cols(df)
 
   d <- outer(
@@ -228,7 +238,7 @@ maximum_dist <- function(df) {
     }
   )
 
-  df <- dist_matrix2df(d, docnames, 'max')
+  df <- dist_matrix2df(d, docnames, writers, 'max')
 
   return(df)
 }
@@ -247,6 +257,7 @@ maximum_dist <- function(df) {
 cosine_dist <- function(df) {
   # split docnames and clusters
   docnames <- df$docname
+  writers <- df$writer
   df <- get_cluster_cols(df)
 
   d <- outer(
@@ -256,7 +267,7 @@ cosine_dist <- function(df) {
     }
   )
 
-  df <- dist_matrix2df(d, docnames, 'cos')
+  df <- dist_matrix2df(d, docnames, writers, 'cos')
 
   return(df)
 }
@@ -282,21 +293,22 @@ get_cluster_cols <- function(df) {
 
 #' Convert a Matrix of Distances to a Data Frame
 #'
-#' Convert a matrix of distances to a data frame with three columns: docname1,
-#' docname2, and <dist_col_label>.
+#' Convert a matrix of distances to a data frame with five columns: docname1, writer1,
+#' docname2, writer2, and <dist_col_label>.
 #'
 #' @param m A matrix of distances
 #' @param docnames A vector of document names corresponding to rows and columns
 #'   of the distance matrix.
+#' @param writers A vector of writer IDs.
 #' @param dist_col_label A character string to name the distance column in the
 #'   returned data frame.
 #'
 #' @return A data frame
 #'
 #' @noRd
-dist_matrix2df <- function(m, docnames, dist_col_label) {
+dist_matrix2df <- function(m, docnames, writers, dist_col_label) {
   # Prevent note 'no visible binding for global variable'
-  docname <- docname2 <- NULL
+  docname <- docname2 <- writer1 <- writer2 <- NULL
 
   # set lower triangle as NA because they are duplicates of upper triangle. Set
   m[lower.tri(m)] <- NA
@@ -310,13 +322,21 @@ dist_matrix2df <- function(m, docnames, dist_col_label) {
   df$docname <- docnames
   df <- df %>% dplyr::select(tidyselect::all_of(c('docname')), tidyselect::everything())
 
-  # reshape matrix to three columns (docname1, docname2, distance name) and drop
+  # reshape matrix to five columns (docname1, writer1, docname2, writer2 distance name) and drop
   # NAs
   colnames(df)[colnames(df) == 'docname'] <- 'docname1'
   df <- reshape2::melt(df, id.vars = 'docname1', variable.name = 'docname2', value.name = dist_col_label, na.rm = TRUE)
 
   # change docname2 column from factor to character
   df <- df %>% dplyr::mutate(docname2 = as.character(docname2))
+
+  # add writer columns
+  lookup <- data.frame(docnames, writers)
+  df <- df %>% dplyr::left_join(lookup, by = dplyr::join_by("docname1" == "docnames"))
+  colnames(df)[colnames(df) == "writers"] <- "writer1"
+  df <- df %>% dplyr::left_join(lookup, by = dplyr::join_by("docname2" == "docnames"))
+  colnames(df)[colnames(df) == "writers"] <- "writer2"
+  df <- df %>% dplyr::select(tidyselect::all_of(c('docname1', 'writer1', 'docname2', 'writer2')), tidyselect::everything())
 
   # reset row names
   row.names(df) <- NULL

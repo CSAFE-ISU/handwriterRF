@@ -151,6 +151,8 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
   )
   counts <- handwriter::get_cluster_fill_counts(clusters)
   rates <- get_cluster_fill_rates(counts)
+  # get_distances requires a writer ID column
+  rates$writer <- c("unknown1", "unknown2")
 
   # distance
   message("Calculating distance between samples...\n")
@@ -241,6 +243,8 @@ calculate_score_with_clusters <- function(sample1_clusters, sample2_clusters, rf
   clusters <- load_clusters(sample1_clusters, sample2_clusters)
   counts <- handwriter::get_cluster_fill_counts(clusters)
   rates <- get_cluster_fill_rates(counts)
+  # get_distances requires a writer ID column
+  rates$writer <- c("unknown1", "unknown2")
 
   # distance
   message("Calculating distance between samples...\n")

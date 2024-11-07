@@ -149,3 +149,9 @@ test_that("Make densities works with ranger package", {
 
   expect_equal(actual, expected)
 })
+
+test_that("Calculate score with clusters works on w0030 samples", {
+  c1 <- testthat::test_path("fixtures", "clusters", "w0030_s01_pWOZ_r01.rds")
+  c2 <- testthat::test_path("fixtures", "clusters", "w0030_s01_pWOZ_r02.rds")
+  testthat::expect_snapshot(calculate_score_with_clusters(c1, c2))
+})

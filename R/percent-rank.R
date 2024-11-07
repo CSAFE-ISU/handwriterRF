@@ -168,7 +168,6 @@ calculate_percent_rank <- function(sample1_path, sample2_path, rforest = random_
 
   # percent rank
   message("Calculating percent ranks for samples...\n")
-  browser()
   percent_rank_same_writer <- get_percent_rank(score = score, ref_scores = random_forest$scores$same_writer)
   percent_rank_diff_writer <- get_percent_rank(score = score, ref_scores = random_forest$scores$diff_writer)
 

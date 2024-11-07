@@ -12,6 +12,7 @@ test_that("Train random forest works with ranger package", {
   # As a work around, test that the function runs without error.
 
   train <- get_csafe_train_set(df = cfr, train_prompt_codes = "pLND")
+  train$writer <- substr(train$docname, 2, 5)
   expect_error(train_rf(
     df = train,
     ntrees = 200,

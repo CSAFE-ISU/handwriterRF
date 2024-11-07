@@ -8,7 +8,7 @@ get_distances(df, distance_measures)
 }
 \arguments{
 \item{df}{A data frame of cluster fill rates created with
-\code{\link{get_cluster_fill_rates}}}
+\code{\link{get_cluster_fill_rates}} and an added column that contains a writer ID.}
 
 \item{distance_measures}{A vector of distance measures. Use 'abs' to
 calculate the absolute difference, 'man' for the Manhattan distance, 'euc'

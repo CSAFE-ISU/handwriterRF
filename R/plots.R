@@ -52,10 +52,9 @@ plot_histograms <- function(rforest, score = NULL) {
 
   scores <- rforest$scores
 
-  df <- data.frame(
-    Score = c(scores$same_writer, scores$diff_writer),
-    Group = rep(c("same writer", "different writers"), each = 300)
-  )
+  df1 <- data.frame(Score = scores$same_writer, Group = "same writer")
+  df2 <- data.frame(Score = scores$diff_writer, Group = "different writers")
+  df <- rbind(df1, df2)
 
   p <- df %>% ggplot2::ggplot(ggplot2::aes(x = Score)) +
     ggplot2::geom_histogram(position = "identity",
