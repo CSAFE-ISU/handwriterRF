@@ -40,8 +40,5 @@ A data frame
 ```{r, warning=FALSE, message=FALSE, eval=TRUE}
 library(handwriterRF)
 
-train <- get_csafe_train_set(df = cfr, train_prompt_codes = 'pCMB')
-
-
-
+train <- get_csafe_train_set(df = cfr, train_prompt_codes = "pCMB")
 ```

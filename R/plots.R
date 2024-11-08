@@ -57,29 +57,34 @@ plot_histograms <- function(rforest, score = NULL) {
   df <- rbind(df1, df2)
 
   p <- df %>% ggplot2::ggplot(ggplot2::aes(x = Score)) +
-    ggplot2::geom_histogram(position = "identity",
-                            ggplot2::aes(fill = Group),
-                            alpha = 0.4,
-                            bins = 30) +  # Histograms with transparency
-    ggplot2::scale_fill_manual(values = c("same writer" = "#6BA4B8", "different writers" = "#F68D2E")) +  # Customize colors
+    ggplot2::geom_histogram(
+      position = "identity",
+      ggplot2::aes(fill = Group),
+      alpha = 0.4,
+      bins = 30
+    ) + # Histograms with transparency
+    ggplot2::scale_fill_manual(values = c("same writer" = "#6BA4B8", "different writers" = "#F68D2E")) + # Customize colors
     ggplot2::labs(title = "Reference Similarity Scores", x = "Score", y = "Frequency") +
     ggplot2::theme_bw()
 
   # Optional - add vertical line at score
   if (!is.null(score)) {
     p <- p +
-      ggplot2::geom_vline(xintercept = score,
-                          color = "black",
-                          linetype = "dashed") +  # Add vertical line
+      ggplot2::geom_vline(
+        xintercept = score,
+        color = "black",
+        linetype = "dashed"
+      ) + # Add vertical line
       ggplot2::annotate("text",
-                        x = score,
-                        y = 75,  # Dynamically position the label
-                        label = paste("similarity score", score),
-                        color = "black",
-                        size = 3,
-                        angle = 90,
-                        vjust = -1,
-                        hjust = 0.5)  # Add text annotation
+        x = score,
+        y = 75, # Dynamically position the label
+        label = paste("similarity score", score),
+        color = "black",
+        size = 3,
+        angle = 90,
+        vjust = -1,
+        hjust = 0.5
+      ) # Add text annotation
   }
 
   return(p)

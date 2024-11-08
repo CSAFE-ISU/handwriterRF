@@ -79,7 +79,4 @@ templateK40$iters
 
 # view cluster centers
 templateK40$centers
-
-
-
 ```

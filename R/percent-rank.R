@@ -51,16 +51,20 @@
 #' \donttest{
 #' # Compare two samples from the same writer
 #' s1 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r01.png"),
-#'                   package = "handwriterRF")
+#'   package = "handwriterRF"
+#' )
 #' s2 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r02.png"),
-#'                   package = "handwriterRF")
+#'   package = "handwriterRF"
+#' )
 #' calculate_slr(s1, s2)
 #'
 #' # Compare samples from two writers
 #' s1 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r01.png"),
-#'                   package = "handwriterRF")
+#'   package = "handwriterRF"
+#' )
 #' s2 <- system.file(file.path("extdata", "docs", "w0238_s01_pWOZ_r02.png"),
-#'                   package = "handwriterRF")
+#'   package = "handwriterRF"
+#' )
 #' calculate_slr(s1, s2)
 #' }
 #'
@@ -71,7 +75,7 @@ calculate_percent_rank <- function(sample1_path, sample2_path, rforest = random_
     create_dir(file.path(project_dir, "docs"))
 
     # rename samples if file paths are different but file names are the same
-    if (identical(basename(sample1_path), basename(sample2_path))){
+    if (identical(basename(sample1_path), basename(sample2_path))) {
       file.copy(sample1_path, file.path(project_dir, "docs", "sample1.png"))
       file.copy(sample2_path, file.path(project_dir, "docs", "sample2.png"))
     } else {
@@ -172,10 +176,12 @@ calculate_percent_rank <- function(sample1_path, sample2_path, rforest = random_
   percent_rank_diff_writer <- get_percent_rank(score = score, ref_scores = random_forest$scores$diff_writer)
 
   # make data frame of results
-  df <- data.frame("sample1_path" = sample1_path_org, "sample2_path" = sample2_path_org,
-                   "docname1" = basename(sample1_path_org), "docname2" = basename(sample2_path_org),
-                   "score" = score, "percent_rank_same_writer" = percent_rank_same_writer,
-                   "percent_rank_diff_writer" = percent_rank_diff_writer)
+  df <- data.frame(
+    "sample1_path" = sample1_path_org, "sample2_path" = sample2_path_org,
+    "docname1" = basename(sample1_path_org), "docname2" = basename(sample2_path_org),
+    "score" = score, "percent_rank_same_writer" = percent_rank_same_writer,
+    "percent_rank_diff_writer" = percent_rank_diff_writer
+  )
 
   # delete project folder from temp directory or save results to project folder
   if (project_dir == file.path(tempdir(), "comparison")) {

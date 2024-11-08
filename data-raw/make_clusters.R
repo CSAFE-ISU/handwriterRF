@@ -6,15 +6,19 @@ create_dir(graphs_dir)
 create_dir(clusters_dir)
 
 # get graphs
-handwriter::process_batch_dir(system.file("extdata", package = "handwriterRF"),
-                              graphs_dir)
+handwriter::process_batch_dir(
+  system.file("extdata", package = "handwriterRF"),
+  graphs_dir
+)
 
 # get clusters
-handwriter::get_clusters_batch(template = templateK40,
-                               input_dir = graphs_dir,
-                               output_dir = clusters_dir,
-                               writer_indices = c(2, 5),
-                               doc_indices = c(7, 18))
+handwriter::get_clusters_batch(
+  template = templateK40,
+  input_dir = graphs_dir,
+  output_dir = clusters_dir,
+  writer_indices = c(2, 5),
+  doc_indices = c(7, 18)
+)
 
 # save
 w0030_s01_pWOZ_r01_clusters <- readRDS(file.path(clusters_dir, "w0030_s01_pWOZ_r01.rds"))

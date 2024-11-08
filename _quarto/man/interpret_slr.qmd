@@ -44,7 +44,4 @@ interpret_slr(df)
 
 df <- data.frame("score" = 0, "slr" = 0)
 interpret_slr(df)
-
-
-
 ```

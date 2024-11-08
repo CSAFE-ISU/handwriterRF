@@ -57,8 +57,4 @@ plot(random_forest$densities$same_writer)
 
 # plot the different writer density
 plot(random_forest$densities$diff_writer)
-
-
-
-
 ```

@@ -21,6 +21,6 @@ Create a training set from a data frame of cluster fill rates from the CSAFE
 Handwriting Database.
 }
 \examples{
-train <- get_csafe_train_set(df = cfr, train_prompt_codes = 'pCMB')
+train <- get_csafe_train_set(df = cfr, train_prompt_codes = "pCMB")
 
 }

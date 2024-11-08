@@ -52,16 +52,20 @@
 #' \donttest{
 #' # Compare two samples from the same writer
 #' s1 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r01.png"),
-#'                   package = "handwriterRF")
+#'   package = "handwriterRF"
+#' )
 #' s2 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r02.png"),
-#'                   package = "handwriterRF")
+#'   package = "handwriterRF"
+#' )
 #' calculate_slr(s1, s2)
 #'
 #' # Compare samples from two writers
 #' s1 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r01.png"),
-#'                   package = "handwriterRF")
+#'   package = "handwriterRF"
+#' )
 #' s2 <- system.file(file.path("extdata", "docs", "w0238_s01_pWOZ_r02.png"),
-#'                   package = "handwriterRF")
+#'   package = "handwriterRF"
+#' )
 #' calculate_slr(s1, s2)
 #' }
 #'
@@ -72,7 +76,7 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
     create_dir(file.path(project_dir, "docs"))
 
     # rename samples if file paths are different but file names are the same
-    if (identical(basename(sample1_path), basename(sample2_path))){
+    if (identical(basename(sample1_path), basename(sample2_path))) {
       file.copy(sample1_path, file.path(project_dir, "docs", "sample1.png"))
       file.copy(sample2_path, file.path(project_dir, "docs", "sample2.png"))
     } else {
@@ -169,10 +173,12 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
   numerator <- eval_density_at_point(den = rforest$densities$same_writer, x = score, type = "numerator")
   denominator <- eval_density_at_point(den = rforest$densities$diff_writer, x = score, type = "denominator")
   slr <- numerator / denominator
-  df <- data.frame("sample1_path" = sample1_path_org, "sample2_path" = sample2_path_org,
-                   "docname1" = basename(sample1_path_org), "docname2" = basename(sample2_path_org),
-                   "score" = score, "numerator" = numerator, "denominator" = denominator,
-                   "slr" = slr)
+  df <- data.frame(
+    "sample1_path" = sample1_path_org, "sample2_path" = sample2_path_org,
+    "docname1" = basename(sample1_path_org), "docname2" = basename(sample2_path_org),
+    "score" = score, "numerator" = numerator, "denominator" = denominator,
+    "slr" = slr
+  )
 
   # delete project folder from temp directory or save SLR to project folder
   if (project_dir == file.path(tempdir(), "comparison")) {
@@ -222,16 +228,20 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
 #' @examples
 #' # Compare two samples from the same writer
 #' c1 <- system.file(file.path("extdata", "clusters", "w0030_s01_pWOZ_r01.rds"),
-#'                   package = "handwriterRF")
+#'   package = "handwriterRF"
+#' )
 #' c2 <- system.file(file.path("extdata", "clusters", "w0030_s01_pWOZ_r02.rds"),
-#'                   package = "handwriterRF")
+#'   package = "handwriterRF"
+#' )
 #' calculate_score_with_clusters(c1, c2)
 #'
 #' # Compare samples from two writers
 #' c1 <- system.file(file.path("extdata", "clusters", "w0030_s01_pWOZ_r01.rds"),
-#'                   package = "handwriterRF")
+#'   package = "handwriterRF"
+#' )
 #' c2 <- system.file(file.path("extdata", "clusters", "w0238_s01_pWOZ_r02.rds"),
-#'                   package = "handwriterRF")
+#'   package = "handwriterRF"
+#' )
 #' calculate_score_with_clusters(c1, c2)
 #'
 calculate_score_with_clusters <- function(sample1_clusters, sample2_clusters, rforest = random_forest, project_dir = NULL) {
@@ -256,9 +266,11 @@ calculate_score_with_clusters <- function(sample1_clusters, sample2_clusters, rf
   score <- get_score(rforest = rforest, d = d)
 
   # result
-  df <- data.frame("sample1_clusters" = sample1_clusters, "sample2_clusters" = sample2_clusters,
-                   "docname1" = basename(sample1_clusters), "docname2" = basename(sample2_clusters),
-                   "score" = score)
+  df <- data.frame(
+    "sample1_clusters" = sample1_clusters, "sample2_clusters" = sample2_clusters,
+    "docname1" = basename(sample1_clusters), "docname2" = basename(sample2_clusters),
+    "score" = score
+  )
 
   # save (optional) ----
   if (!is.null(project_dir)) {
@@ -311,28 +323,33 @@ calculate_score_with_clusters <- function(sample1_clusters, sample2_clusters, rf
 #' @examples
 #' # Compare two samples from the same writer
 #' c1 <- system.file(file.path("extdata", "clusters", "w0030_s01_pWOZ_r01.rds"),
-#'                   package = "handwriterRF")
+#'   package = "handwriterRF"
+#' )
 #' c2 <- system.file(file.path("extdata", "clusters", "w0030_s01_pWOZ_r02.rds"),
-#'                   package = "handwriterRF")
+#'   package = "handwriterRF"
+#' )
 #' calculate_slr_with_clusters(c1, c2)
 #'
 #' # Compare samples from two writers
 #' c2 <- system.file(file.path("extdata", "clusters", "w0030_s01_pWOZ_r01.rds"),
-#'                   package = "handwriterRF")
+#'   package = "handwriterRF"
+#' )
 #' c2 <- system.file(file.path("extdata", "clusters", "w0238_s01_pWOZ_r02.rds"),
-#'                   package = "handwriterRF")
+#'   package = "handwriterRF"
+#' )
 #' calculate_slr_with_clusters(c1, c2)
 #'
 calculate_slr_with_clusters <- function(sample1_clusters, sample2_clusters, rforest = random_forest, project_dir = NULL) {
-
   # score ----
   message("Calculating similarity score between samples...\n")
   # Set project dir to NULL in argument so that score.rds is not saved to file.
   # The contents of score.rds will be saved later in slr.rds.
-  score_df <- calculate_score_with_clusters(sample1_clusters = sample1_clusters,
-                                            sample2_clusters = sample2_clusters,
-                                            rforest = rforest,
-                                            project_dir = NULL)
+  score_df <- calculate_score_with_clusters(
+    sample1_clusters = sample1_clusters,
+    sample2_clusters = sample2_clusters,
+    rforest = rforest,
+    project_dir = NULL
+  )
   score <- score_df$score
 
   # SLR ----
@@ -343,10 +360,12 @@ calculate_slr_with_clusters <- function(sample1_clusters, sample2_clusters, rfor
   slr <- numerator / denominator
 
   # results ----
-  df <- data.frame("sample1_clusters" = sample1_clusters, "sample2_clusters" = sample2_clusters,
-                   "docname1" = basename(sample1_clusters), "docname2" = basename(sample2_clusters),
-                   "score" = score, "numerator" = numerator, "denominator" = denominator,
-                   "slr" = slr)
+  df <- data.frame(
+    "sample1_clusters" = sample1_clusters, "sample2_clusters" = sample2_clusters,
+    "docname1" = basename(sample1_clusters), "docname2" = basename(sample2_clusters),
+    "score" = score, "numerator" = numerator, "denominator" = denominator,
+    "slr" = slr
+  )
 
   # delete project folder from temp directory or save SLR to project folder
   if (!is.null(project_dir)) {
@@ -380,14 +399,14 @@ calculate_slr_with_clusters <- function(sample1_clusters, sample2_clusters, rfor
 #' df <- data.frame("score" = 0, "slr" = 0)
 #' interpret_slr(df)
 #'
-interpret_slr <- function(df){
+interpret_slr <- function(df) {
   if (df$slr > 1) {
-    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark=","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by the same person is", format(round(df$slr, 1), big.mark=","), "times greater than the likelihood of observing this score if the documents were written by different writers." )
+    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark = ","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by the same person is", format(round(df$slr, 1), big.mark = ","), "times greater than the likelihood of observing this score if the documents were written by different writers.")
   } else if (df$slr > 0 && df$slr < 1) {
-    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark=","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by different people is", format(round(1 / df$slr, 2), nsmall=2, big.mark=","), "times greater than the likelihood of observing this score if the documents were written by the same writer." )
+    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark = ","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by different people is", format(round(1 / df$slr, 2), nsmall = 2, big.mark = ","), "times greater than the likelihood of observing this score if the documents were written by the same writer.")
   } else if (df$slr == 1) {
-    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark=","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by different people is equal to the likelihood of observing the score if the documents were written by the same writer." )
-  } else if (df$slr == 0){
+    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark = ","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by different people is equal to the likelihood of observing the score if the documents were written by the same writer.")
+  } else if (df$slr == 0) {
     x <- paste("A score-based likelihood ratio of 0 means it is virtually impossible that the documents were written by the same person.")
   } else {
     stop("The slr value is invalid.")
@@ -449,13 +468,13 @@ eval_density_at_point <- function(den, x, type, zero_correction = 1e-10) {
 #' @noRd
 make_densities_from_rf <- function(scores) {
   pdfs <- list()
-  pdfs$same_writer <- stats::density(scores$same_writer, kernel = 'gaussian', n = 10000)
-  pdfs$diff_writer <- stats::density(scores$diff_writer, kernel = 'gaussian', n = 10000)
+  pdfs$same_writer <- stats::density(scores$same_writer, kernel = "gaussian", n = 10000)
+  pdfs$diff_writer <- stats::density(scores$diff_writer, kernel = "gaussian", n = 10000)
 
   return(pdfs)
 }
 
-load_clusters <- function(sample1_clusters, sample2_clusters){
+load_clusters <- function(sample1_clusters, sample2_clusters) {
   # load clusters from file
   clusters1 <- readRDS(sample1_clusters)
   clusters2 <- readRDS(sample2_clusters)

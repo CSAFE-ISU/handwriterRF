@@ -40,11 +40,11 @@ A random forest
 Train a random forest with \pkg{ranger} from a data frame of cluster fill rates.
 }
 \examples{
-train <- get_csafe_train_set(df = cfr, train_prompt_code = 'pCMB')
+train <- get_csafe_train_set(df = cfr, train_prompt_code = "pCMB")
 rforest <- train_rf(
   df = train,
   ntrees = 200,
-  distance_measures = c('euc'),
+  distance_measures = c("euc"),
   run_number = 1,
   downsample = TRUE
 )

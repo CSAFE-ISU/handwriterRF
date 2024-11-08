@@ -36,7 +36,4 @@ A data frame of cluster fill rates.
 library(handwriterRF)
 
 rates <- get_cluster_fill_rates(df = cfc)
-
-
-
 ```

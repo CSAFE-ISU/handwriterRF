@@ -56,16 +56,20 @@ steps:
 \examples{
 # Compare two samples from the same writer
 c1 <- system.file(file.path("extdata", "clusters", "w0030_s01_pWOZ_r01.rds"),
-                  package = "handwriterRF")
+  package = "handwriterRF"
+)
 c2 <- system.file(file.path("extdata", "clusters", "w0030_s01_pWOZ_r02.rds"),
-                  package = "handwriterRF")
+  package = "handwriterRF"
+)
 calculate_slr_with_clusters(c1, c2)
 
 # Compare samples from two writers
 c2 <- system.file(file.path("extdata", "clusters", "w0030_s01_pWOZ_r01.rds"),
-                  package = "handwriterRF")
+  package = "handwriterRF"
+)
 c2 <- system.file(file.path("extdata", "clusters", "w0238_s01_pWOZ_r02.rds"),
-                  package = "handwriterRF")
+  package = "handwriterRF"
+)
 calculate_slr_with_clusters(c1, c2)
 
 }

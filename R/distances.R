@@ -59,35 +59,45 @@
 #' @export
 #'
 #' @examples
-#' # calculate maximum and Euclidean distances between the first 3 documents in cfr.
-#' distances <- get_distances(df = cfr[1:3, ], distance_measures = c('max', 'euc'))
 #'
-#' distances <- get_distances(df = cfr, distance_measures = c('man'))
+#' rates <- cfr[1:3, ]
+#' # extract the writer ID from the document name
+#' rates$writer <- substr(rates$docname, 2, 5)
+#' # calculate maximum and Euclidean distances between the first 3 documents in cfr.
+#' distances <- get_distances(df = rates, distance_measures = c("max", "euc"))
+#'
+#' rates <- cfr
+#' # extract the writer ID from the document name
+#' rates$writer <- substr(rates$docname, 2, 5)
+#' # calculate maximum and distances between all documents in cfr.
+#' distances <- get_distances(df = rates, distance_measures = c("man"))
 #'
 get_distances <- function(df, distance_measures) {
   dists <- list()
 
   for (method in distance_measures) {
-    if (method == 'abs') {
-      dists[['abs']] <- absolute_dist(df)
-    } else if (method == 'man') {
-      dists[['man']] <- manhattan_dist(df)
-    } else if (method == 'euc') {
-      dists[['euc']] <- euclidean_dist(df)
-    } else if (method == 'max') {
-      dists[['max']] <- maximum_dist(df)
-    } else if (method == 'cos') {
-      dists[['cos']] <- cosine_dist(df)
+    if (method == "abs") {
+      dists[["abs"]] <- absolute_dist(df)
+    } else if (method == "man") {
+      dists[["man"]] <- manhattan_dist(df)
+    } else if (method == "euc") {
+      dists[["euc"]] <- euclidean_dist(df)
+    } else if (method == "max") {
+      dists[["max"]] <- maximum_dist(df)
+    } else if (method == "cos") {
+      dists[["cos"]] <- cosine_dist(df)
     }
     # remove method from list
     distance_measures <- distance_measures[which(distance_measures != method)]
   }
 
   # combine data frames
-  dists <- purrr::reduce(dists, dplyr::left_join, by = c('docname1' = 'docname1',
-                                                         'writer1' = 'writer1',
-                                                         'docname2' = 'docname2',
-                                                         'writer2' = 'writer2'))
+  dists <- purrr::reduce(dists, dplyr::left_join, by = c(
+    "docname1" = "docname1",
+    "writer1" = "writer1",
+    "docname2" = "docname2",
+    "writer2" = "writer2"
+  ))
 
   return(dists)
 }
@@ -144,14 +154,16 @@ absolute_dist <- function(df) {
     absolute_dist_for_single_cluster(df, k)
   })
   dists <- lapply(1:length(dists), function(i) {
-    dist_matrix2df(dists[[i]], docnames, writers, paste0('cluster', i))
+    dist_matrix2df(dists[[i]], docnames, writers, paste0("cluster", i))
   })
 
   # combine data frames
-  dists <- purrr::reduce(dists, dplyr::left_join, by = c('docname1' = 'docname1',
-                                                         'writer1' = 'writer1',
-                                                         'docname2' = 'docname2',
-                                                         'writer2' = 'writer2'))
+  dists <- purrr::reduce(dists, dplyr::left_join, by = c(
+    "docname1" = "docname1",
+    "writer1" = "writer1",
+    "docname2" = "docname2",
+    "writer2" = "writer2"
+  ))
 
   return(dists)
 }
@@ -180,7 +192,7 @@ manhattan_dist <- function(df) {
     }
   )
 
-  df <- dist_matrix2df(d, docnames, writers, 'man')
+  df <- dist_matrix2df(d, docnames, writers, "man")
 
   return(df)
 }
@@ -209,7 +221,7 @@ euclidean_dist <- function(df) {
     }
   )
 
-  df <- dist_matrix2df(d, docnames, writers, 'euc')
+  df <- dist_matrix2df(d, docnames, writers, "euc")
 
   return(df)
 }
@@ -238,7 +250,7 @@ maximum_dist <- function(df) {
     }
   )
 
-  df <- dist_matrix2df(d, docnames, writers, 'max')
+  df <- dist_matrix2df(d, docnames, writers, "max")
 
   return(df)
 }
@@ -267,7 +279,7 @@ cosine_dist <- function(df) {
     }
   )
 
-  df <- dist_matrix2df(d, docnames, writers, 'cos')
+  df <- dist_matrix2df(d, docnames, writers, "cos")
 
   return(df)
 }
@@ -287,7 +299,7 @@ get_cluster_cols <- function(df) {
   # drop all columns except clusters
   df <- df %>%
     dplyr::ungroup() %>%
-    dplyr::select(dplyr::starts_with('cluster'))
+    dplyr::select(dplyr::starts_with("cluster"))
   return(df)
 }
 
@@ -320,12 +332,12 @@ dist_matrix2df <- function(m, docnames, writers, dist_col_label) {
   df <- as.data.frame(m)
   colnames(df) <- docnames
   df$docname <- docnames
-  df <- df %>% dplyr::select(tidyselect::all_of(c('docname')), tidyselect::everything())
+  df <- df %>% dplyr::select(tidyselect::all_of(c("docname")), tidyselect::everything())
 
   # reshape matrix to five columns (docname1, writer1, docname2, writer2 distance name) and drop
   # NAs
-  colnames(df)[colnames(df) == 'docname'] <- 'docname1'
-  df <- reshape2::melt(df, id.vars = 'docname1', variable.name = 'docname2', value.name = dist_col_label, na.rm = TRUE)
+  colnames(df)[colnames(df) == "docname"] <- "docname1"
+  df <- reshape2::melt(df, id.vars = "docname1", variable.name = "docname2", value.name = dist_col_label, na.rm = TRUE)
 
   # change docname2 column from factor to character
   df <- df %>% dplyr::mutate(docname2 = as.character(docname2))
@@ -336,7 +348,7 @@ dist_matrix2df <- function(m, docnames, writers, dist_col_label) {
   colnames(df)[colnames(df) == "writers"] <- "writer1"
   df <- df %>% dplyr::left_join(lookup, by = dplyr::join_by("docname2" == "docnames"))
   colnames(df)[colnames(df) == "writers"] <- "writer2"
-  df <- df %>% dplyr::select(tidyselect::all_of(c('docname1', 'writer1', 'docname2', 'writer2')), tidyselect::everything())
+  df <- df %>% dplyr::select(tidyselect::all_of(c("docname1", "writer1", "docname2", "writer2")), tidyselect::everything())
 
   # reset row names
   row.names(df) <- NULL

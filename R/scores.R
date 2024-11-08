@@ -47,7 +47,7 @@ get_score <- function(d, rforest) {
 
   d <- d %>%
     dplyr::ungroup() %>%
-    dplyr::select(-tidyselect::any_of(c('docname1', 'docname2', 'match')))
+    dplyr::select(-tidyselect::any_of(c("docname1", "docname2", "match")))
 
   preds <- ranger::predictions(stats::predict(rforest$rf, d, predict.all = TRUE))
   score <- get_prop_same_votes(preds = preds)
