@@ -89,9 +89,6 @@ train_rf <- function(df,
   # add distances to list
   rforest$dists <- dists
 
-  # get densities from training data
-  rforest$scores <- make_scores_from_rf(rforest = rforest)
-
   saveRDS(rforest, file.path(output_dir, paste0("rf", run_number, ".rds")))
 
   return(rforest)
@@ -135,37 +132,6 @@ get_csafe_train_set <- function(df, train_prompt_codes) {
 
 # Internal Functions ------------------------------------------------------
 
-#' Make Reference Scores from a Trained Random Forest
-#'
-#' Create reference scores of same writer and different writer scores produced by a
-#' trained random forest.
-#'
-#' @param rforest A \pkg{ranger} random forest created with \code{\link{train_rf}}.
-#'
-#' @return A list scores
-#'
-#' @noRd
-make_scores_from_rf <- function(rforest) {
-  # Prevent note 'no visible binding for global variable'
-  score <- session <- prompt <- rep <- total_graphs <- NULL
-
-  scores_df <- data.frame("score" = get_score(rforest$dists, rforest = rforest))
-
-  # add labels from train data frame
-  scores_df$match <- rforest$dists$match
-
-  # split the train and test sets into same and different writers to make it
-  # easier on the next step
-  scores <- list()
-  scores$same_writer <- scores_df %>%
-    dplyr::filter(match == "same") %>%
-    dplyr::pull(score)
-  scores$diff_writer <- scores_df %>%
-    dplyr::filter(match == "different") %>%
-    dplyr::pull(score)
-
-  return(scores)
-}
 
 
 #' Downsample Pairs of Different Writer Distances

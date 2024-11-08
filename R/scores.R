@@ -45,12 +45,51 @@ get_score <- function(d, rforest) {
   # Prevent note 'no visible binding for global variable'
   docname1 <- docname2 <- NULL
 
+  # Get only the distance columns
   d <- d %>%
     dplyr::ungroup() %>%
-    dplyr::select(-tidyselect::any_of(c("docname1", "docname2", "match")))
+    dplyr::select(-tidyselect::any_of(c("docname1", "writer1", "docname2", "writer2", "match")))
 
+  # Get predictions: a matrix with a row for each doc and a column for each
+  # decision tree. 1 = 'different', 2 = 'same'
   preds <- ranger::predictions(stats::predict(rforest$rf, d, predict.all = TRUE))
   score <- get_prop_same_votes(preds = preds)
 
   return(score)
+}
+
+#' Get Validation Scores
+#'
+#' Create reference scores of same writer and different writer scores from a
+#' validation set.
+#'
+#' @param rforest A \pkg{ranger} random forest created with
+#'   \code{\link{train_rf}}.
+#' @param df A data frame of cluster fill rates created with
+#'   \code{\link{get_cluster_fill_rates}} with an added writer ID column.
+#'
+#' @return A list scores
+#'
+#' @noRd
+get_validation_scores <- function(rforest, df) {
+  # Prevent note 'no visible binding for global variable'
+  score <- session <- prompt <- rep <- total_graphs <- NULL
+
+  dist_measures <- which_dists(rforest = rforest)
+  d <- get_distances(df = df, distance_measures = dist_measures)
+
+  scores_df <- get_score(d = d, rforest = rforest)
+  scores_df <- data.frame("score" = scores_df)
+  scores_df$match <- label_same_different_writer(dists = d)$match
+
+  # split into same and different writers to make it easier on the next step
+  scores <- list()
+  scores$same_writer <- scores_df %>%
+    dplyr::filter(match == "same") %>%
+    dplyr::pull(score)
+  scores$diff_writer <- scores_df %>%
+    dplyr::filter(match == "different") %>%
+    dplyr::pull(score)
+
+  return(scores)
 }
