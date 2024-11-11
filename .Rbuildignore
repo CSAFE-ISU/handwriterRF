@@ -5,12 +5,12 @@
 ^LICENSE\.md$
 ^README.qmd$
 ^scratch*
+^cran-comments\.md$
+^CRAN-SUBMISSION$
 
 # Folders
 ^data-raw$
 ^experiments$
 ^docs$
-^altdoc$
-^_quarto$
-^cran-comments\.md$
-^CRAN-SUBMISSION$
+^plots$
+
