@@ -7,7 +7,9 @@
 calculate_slr(
   sample1_path,
   sample2_path,
-  rforest = random_forest,
+  unknown_writers = TRUE,
+  rforest = NULL,
+  reference_scores = NULL,
   project_dir = NULL
 )
 }
@@ -18,15 +20,23 @@ format.}
 \item{sample2_path}{A file path to a second handwriting sample saved in PNG
 file format.}
 
-\item{rforest}{Optional. A random forest trained with \pkg{ranger}. If
-rforest is not given, the data object random_forest is used.}
+\item{unknown_writers}{TRUE if the true writer is known for both writing
+samples. Otherwise, FALSE. If TRUE, the writer IDs and a column that
+records the ground truth of whether the same person or different people
+wrote the samples will be added to the output data frame.}
 
-\item{project_dir}{Optional. A path to a directory where helper files will be
-saved. If no project directory is specified, the helper files will be saved
-to tempdir() and deleted before the function terminates.}
+\item{rforest}{Optional. A random forest trained with \pkg{ranger}. If no
+random forest is specified, `random_forest` will be used.}
+
+\item{reference_scores}{Optional. A data frame of reference similarity
+scores. If reference scores is not specified, `ref_scores` will be used.}
+
+\item{project_dir}{A path to a directory where helper files will be saved. If
+no project directory is specified, the helper files will be saved to
+tempdir() and deleted before the function terminates.}
 }
 \value{
-A number
+A data frame
 }
 \description{
 Compares two handwriting samples scanned and saved a PNG images with the

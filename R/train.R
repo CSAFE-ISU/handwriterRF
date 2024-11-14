@@ -41,7 +41,6 @@
 #' @export
 #'
 #' @examples
-#' train <- get_csafe_train_set(df = cfr, train_prompt_code = "pCMB")
 #' rforest <- train_rf(
 #'   df = train,
 #'   ntrees = 200,
@@ -95,44 +94,7 @@ train_rf <- function(df,
 }
 
 
-#' Get Training Set
-#'
-#' Create a training set from a data frame of cluster fill rates from the CSAFE
-#' Handwriting Database.
-#'
-#' @param df A data frame of cluster fill rates created with
-#'   \code{\link{get_cluster_fill_rates}}
-#' @param train_prompt_codes A character vector of which prompt(s) to use in the
-#'   training set. Available prompts are 'pLND', 'pPHR', 'pWOZ', and 'pCMB'.
-#'
-#' @return A data frame
-#'
-#' @export
-#'
-#' @examples
-#' train <- get_csafe_train_set(df = cfr, train_prompt_codes = "pCMB")
-#'
-get_csafe_train_set <- function(df, train_prompt_codes) {
-  # Prevent note 'no visible binding for global variable'
-  writer <- session <- prompt <- rep <- total_graphs <- NULL
-
-  df <- expand_docnames(df)
-
-  # build train set
-  train <- df %>%
-    dplyr::filter(prompt %in% train_prompt_codes) %>%
-    dplyr::select(-session, -prompt, -rep, -total_graphs)
-
-  # return data frame instead of tibble
-  train <- as.data.frame(train)
-
-  return(train)
-}
-
-
 # Internal Functions ------------------------------------------------------
-
-
 
 #' Downsample Pairs of Different Writer Distances
 #'

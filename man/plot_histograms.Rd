@@ -4,10 +4,11 @@
 \alias{plot_histograms}
 \title{Plot Histograms}
 \usage{
-plot_histograms(rforest, score = NULL)
+plot_histograms(scores, obs_score = NULL, downsample_size = NULL, n_bins = 50)
 }
 \arguments{
-\item{rforest}{A random forest created with [train_rf()]}
+\item{scores}{A data frame of scores calculated with
+[get_validation_scores()]}
 
 \item{score}{A similarity score calculated with [calculate_slr()]}
 }
@@ -16,10 +17,9 @@ A ggplot2 plot of histograms
 }
 \description{
 Plot histograms of same writer and different writers reference similarity
-scores from a random forest created with [train_rf()]. Plot a vertical,
-dashed line at a similarity score calculated with [calculate_slr()] to see
-whether the score is more typical of the same writer or different writers
-reference scores.
+scores from a validation set. Plot a vertical, dashed line at a similarity
+score calculated with [calculate_slr()] to see whether the score is more
+typical of the same writer or different writers reference scores.
 }
 \examples{
 plot_histograms(rforest = random_forest)

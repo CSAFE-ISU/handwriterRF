@@ -13,6 +13,5 @@ random_forest1 <- train_rf(
 )
 
 # save densities
-rforest <- readRDS(testthat::test_path("fixtures", "train", "rf1.rds"))
-densities <- make_densities_from_rf(scores = rforest$scores)
+densities <- make_densities(scores = ref_scores)
 saveRDS(densities, testthat::test_path("fixtures", "slr", "densities.csv"))

@@ -40,7 +40,7 @@ get_cluster_fill_rates <- function(df) {
   # drop label columns and calculate cluster fill rates: each row sums to 1.
   df_clusters_only <- df %>%
     dplyr::ungroup() %>%
-    dplyr::select(-docname, -writer, -doc)
+    dplyr::select(-tidyselect::any_of(c("docname", "writer", "doc")))
   df_clusters_only <- as.matrix(df_clusters_only)
   total_graphs <- rowSums(df_clusters_only)
   cfr <- diag(1 / total_graphs) %*% df_clusters_only

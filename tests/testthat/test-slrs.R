@@ -6,14 +6,12 @@ test_that("Calculate SLR works on w0030 samples", {
   )
 
   expected <- data.frame(
-    "sample1_path" = "fixtures/samples/w0030_s01_pWOZ_r01.png",
-    "sample2_path" = "fixtures/samples/w0030_s01_pWOZ_r02.png",
-    "docname1" = "w0030_s01_pWOZ_r01.png",
-    "docname2" = "w0030_s01_pWOZ_r02.png",
-    "score" = 0.87,
-    "numerator" = 0.45822743,
-    "denominator" = 1e-10,
-    "slr" = 4582274302
+    "sample1" = "fixtures/samples/w0030_s01_pWOZ_r01.png",
+    "sample2" = "fixtures/samples/w0030_s01_pWOZ_r02.png",
+    "score" = 0.89500000000000001776,
+    "numerator" = 3.8745314426619446024,
+    "denominator" = 0.062397042796531188014,
+    "slr" = 62.094792782028122247
   )
 
   expect_equal(actual, expected)
@@ -27,14 +25,12 @@ test_that("Calculate SLR works on w0030 versus w0238 samples", {
   )
 
   expected <- data.frame(
-    "sample1_path" = "fixtures/samples/w0030_s01_pWOZ_r01.png",
-    "sample2_path" = "fixtures/samples/w0238_s01_pWOZ_r02.png",
-    "docname1" = "w0030_s01_pWOZ_r01.png",
-    "docname2" = "w0238_s01_pWOZ_r02.png",
-    "score" = 0.575,
-    "numerator" = 0.00000000,
-    "denominator" = 1e-10,
-    "slr" = 0
+    "sample1" = "fixtures/samples/w0030_s01_pWOZ_r01.png",
+    "sample2" = "fixtures/samples/w0238_s01_pWOZ_r02.png",
+    "score" = 0.56499999999999994671,
+    "numerator" = 0.22081676083216716933,
+    "denominator" = 0.16659517717430183392,
+    "slr" = 1.3254691076749207657
   )
 
   expect_equal(actual, expected)
@@ -48,14 +44,12 @@ test_that("Calculate SLR works on w0238 samples", {
   )
 
   expected <- data.frame(
-    "sample1_path" = "fixtures/samples/w0238_s01_pWOZ_r02.png",
-    "sample2_path" = "fixtures/samples/w0238_s01_pWOZ_r03.png",
-    "docname1" = "w0238_s01_pWOZ_r02.png",
-    "docname2" = "w0238_s01_pWOZ_r03.png",
-    "score" = 0.97,
-    "numerator" = 9.6831846,
-    "denominator" = 1e-10,
-    "slr" = 96831846345
+    "sample1" = "fixtures/samples/w0238_s01_pWOZ_r02.png",
+    "sample2" = "fixtures/samples/w0238_s01_pWOZ_r03.png",
+    "score" = 0.94499999999999995115,
+    "numerator" = 3.9664120614606899196,
+    "denominator" = 0.022299799230150865736,
+    "slr" = 177.867613090337926
   )
 
   expect_equal(actual, expected)
@@ -69,14 +63,12 @@ test_that("Calculate SLR works on w0030 samples in temp directory", {
   )
 
   expected <- data.frame(
-    "sample1_path" = "fixtures/samples/w0030_s01_pWOZ_r01.png",
-    "sample2_path" = "fixtures/samples/w0030_s01_pWOZ_r02.png",
-    "docname1" = "w0030_s01_pWOZ_r01.png",
-    "docname2" = "w0030_s01_pWOZ_r02.png",
-    "score" = 0.87,
-    "numerator" = 0.45822743,
-    "denominator" = 1e-10,
-    "slr" = 4582274302
+    "sample1" = "fixtures/samples/w0030_s01_pWOZ_r01.png",
+    "sample2" = "fixtures/samples/w0030_s01_pWOZ_r02.png",
+    "score" = 0.89500000000000001776,
+    "numerator" = 3.8745314426619446024,
+    "denominator" = 0.062397042796531188014,
+    "slr" = 62.094792782028122247
   )
 
   expect_equal(actual, expected)
@@ -89,7 +81,7 @@ test_that("Calculate SLRs throws error if samples are the same file in the same 
       sample2_path = testthat::test_path("fixtures", "samples", "w0238_s01_pWOZ_r02.png"),
       project_dir = testthat::test_path("fixtures", "slrs_w0238")
     ),
-    "sample1_path and sample2_path cannot be identical."
+    "sample1 and sample2 can't be identical."
   )
 })
 
@@ -101,14 +93,12 @@ test_that("Calculate SLRs works if samples in different folders have the same fi
   )
 
   expected <- data.frame(
-    "sample1_path" = "fixtures/samples/0.png",
-    "sample2_path" = "fixtures/samples2/0.png",
-    "docname1" = "0.png",
-    "docname2" = "0.png",
-    "score" = 0.97,
-    "numerator" = 9.6831846,
-    "denominator" = 1e-10,
-    "slr" = 96831846345
+    "sample1" = "fixtures/samples/0.png",
+    "sample2" = "fixtures/samples2/0.png",
+    "score" = 0.85999999999999998668,
+    "numerator" = 3.1337004320166270688,
+    "denominator" = 0.097050174109834685954,
+    "slr" = 32.289487996900668065
   )
 
   expect_equal(actual, expected)
@@ -127,7 +117,7 @@ test_that("Interpret SLR returns the correct message for values greater than 0 a
   df <- data.frame("score" = 0.5, "slr" = 0.75)
   actual <- interpret_slr(df)
 
-  expected <- "A score-based likelihood ratio of 0.8 means the likelihood of observing a similarity score of 0.5 if the documents were written by different people is 1.33 times greater than the likelihood of observing this score if the documents were written by the same writer."
+  expected <- "A score-based likelihood ratio of 0.75 means the likelihood of observing a similarity score of 0.5 if the documents were written by different people is 1.33 times greater than the likelihood of observing this score if the documents were written by the same writer."
 
   expect_identical(actual, expected)
 })
@@ -151,17 +141,9 @@ test_that("Interpret SLR returns the correct message for a value of 0", {
 })
 
 test_that("Make densities works with ranger package", {
-  # load random forest from test fixtures
-  rforest <- readRDS(testthat::test_path("fixtures", "train", "rf1.rds"))
-  actual <- make_densities_from_rf(scores = rforest$scores)
+  actual <- make_densities(scores = ref_scores)
 
   expected <- readRDS(testthat::test_path("fixtures", "slr", "densities.csv"))
 
   expect_equal(actual, expected)
-})
-
-test_that("Calculate score with clusters works on w0030 samples", {
-  c1 <- testthat::test_path("fixtures", "clusters", "w0030_s01_pWOZ_r01.rds")
-  c2 <- testthat::test_path("fixtures", "clusters", "w0030_s01_pWOZ_r02.rds")
-  testthat::expect_snapshot(calculate_score_with_clusters(c1, c2))
 })

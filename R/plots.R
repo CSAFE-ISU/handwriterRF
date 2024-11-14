@@ -26,7 +26,7 @@
 #' score calculated with [calculate_slr()] to see whether the score is more
 #' typical of the same writer or different writers reference scores.
 #'
-#' @param validation A data frame of validation scores calculated with
+#' @param scores A data frame of scores calculated with
 #'   [get_validation_scores()]
 #' @param score A similarity score calculated with [calculate_slr()]
 #'
@@ -39,7 +39,7 @@
 #' # Add a vertical line 0.1 on the horizontal axis.
 #' plot_histograms(rforest = random_forest, score = 0.1)
 #'
-plot_histograms <- function(validation, score = NULL, downsample_size = NULL, n_bins = 50) {
+plot_histograms <- function(scores, obs_score = NULL, downsample_size = NULL, n_bins = 50) {
   # Prevent note "no visible binding for global variable"
   Score <- Group <- NULL
 
@@ -50,8 +50,8 @@ plot_histograms <- function(validation, score = NULL, downsample_size = NULL, n_
     )
   }
 
-  df1 <- data.frame(Score = validation$same_writer, Group = "same writer")
-  df2 <- data.frame(Score = validation$diff_writer, Group = "different writers")
+  df1 <- data.frame(Score = scores$same_writer$score, Group = "same writer")
+  df2 <- data.frame(Score = scores$diff_writer$score, Group = "different writers")
 
   if (!is.null(downsample_size)) {
     df2 <- df2 %>%
@@ -82,17 +82,17 @@ plot_histograms <- function(validation, score = NULL, downsample_size = NULL, n_
     ggplot2::theme_bw()
 
   # Optional - add vertical line at score
-  if (!is.null(score)) {
+  if (!is.null(obs_score)) {
     ymax <- max(df$rate)
     p <- p +
       ggplot2::geom_vline(
-        xintercept = score,
+        xintercept = obs_score,
         color = "black",
         linetype = "dashed") +  # add vertical line
       ggplot2::annotate("text",
-                        x = score,
+                        x = obs_score,
                         y = ymax / 2,
-                        label = paste("observed score", score),
+                        label = paste("observed score", obs_score),
                         color = "black",
                         size = 3,
                         angle = 90,
