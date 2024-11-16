@@ -2,7 +2,7 @@
 
 ## Minor improvements and bug fixes
 
-* Created `plot_histograms()` to plot histograms of the reference same writer and different writer similarity scores in `random_forest$scores`.
+* Created `plot_scores()` to plot histograms of the reference same writer and different writer similarity scores in `random_forest$scores`.
 
 # handwriterRF 1.0.2
 

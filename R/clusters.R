@@ -33,9 +33,10 @@
 #' @examples
 #' rates <- get_cluster_fill_rates(df = cfc)
 #'
+#' @md
 get_cluster_fill_rates <- function(df) {
   # Prevent note "no visible binding for global variable"
-  docname <- writer <- doc <- NULL
+  docname <- writer <- doc <- cfr <- NULL
 
   # drop label columns and calculate cluster fill rates: each row sums to 1.
   df_clusters_only <- df %>%

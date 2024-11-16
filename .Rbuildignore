@@ -13,4 +13,6 @@
 ^experiments$
 ^docs$
 ^plots$
+^\_quarto$
+^altdoc$
 

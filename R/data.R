@@ -78,63 +78,77 @@
 #'   \item{40}{The number of graphs in cluster 40}
 #' }
 #' @source <https://forensicstats.org/handwritingdatabase/>
+#'
+#' @md
 "cfc"
 
-#' Cluster Fill Rates for 1200 CSAFE Handwriting Database Samples
+
+#' A \pkg{ranger} Random Forest and Data Frame of Distances
 #'
-#' A dataset containing cluster fill rates for for 1,200 handwriting samples
-#' from the CSAFE Handwriting Database. The dataset was created by running
-#' \code{\link{get_cluster_fill_rates}} on the cluster
-#' fill counts data frame cfc. Cluster fill rates are the proportion of total
-#' graphs assigned to each cluster.
+#' A list that contains a trained random forest created with \pkg{ranger} and
+#' the data frame of distances used to train the random forest.
 #'
-#' @format A data frame with 1200 rows and 42 variables:
+#' @format A list with the following components:
 #' \describe{
-#'   \item{docname}{file name of the handwriting sample}
-#'   \item{total_graphs}{The total number of graphs in the handwriting sample}
-#'   \item{cluster1}{The number of graphs in cluster 1}
-#'   \item{cluster2}{The number of graphs in cluster 2}
-#'   \item{cluster3}{The number of graphs in cluster 3}
-#'   \item{cluster4}{The number of graphs in cluster 4}
-#'   \item{cluster5}{The number of graphs in cluster 5}
-#'   \item{cluster6}{The number of graphs in cluster 6}
-#'   \item{cluster7}{The number of graphs in cluster 7}
-#'   \item{cluster8}{The number of graphs in cluster 8}
-#'   \item{cluster9}{The number of graphs in cluster 9}
-#'   \item{cluster10}{The number of graphs in cluster 10}
-#'   \item{cluster11}{The number of graphs in cluster 11}
-#'   \item{cluster12}{The number of graphs in cluster 12}
-#'   \item{cluster13}{The number of graphs in cluster 13}
-#'   \item{cluster14}{The number of graphs in cluster 14}
-#'   \item{cluster15}{The number of graphs in cluster 15}
-#'   \item{cluster16}{The number of graphs in cluster 16}
-#'   \item{cluster17}{The number of graphs in cluster 17}
-#'   \item{cluster18}{The number of graphs in cluster 18}
-#'   \item{cluster19}{The number of graphs in cluster 19}
-#'   \item{cluster20}{The number of graphs in cluster 20}
-#'   \item{cluster21}{The number of graphs in cluster 21}
-#'   \item{cluster22}{The number of graphs in cluster 22}
-#'   \item{cluster23}{The number of graphs in cluster 23}
-#'   \item{cluster24}{The number of graphs in cluster 24}
-#'   \item{cluster25}{The number of graphs in cluster 25}
-#'   \item{cluster26}{The number of graphs in cluster 26}
-#'   \item{cluster27}{The number of graphs in cluster 27}
-#'   \item{cluster28}{The number of graphs in cluster 28}
-#'   \item{cluster29}{The number of graphs in cluster 29}
-#'   \item{cluster30}{The number of graphs in cluster 30}
-#'   \item{cluster31}{The number of graphs in cluster 31}
-#'   \item{cluster32}{The number of graphs in cluster 32}
-#'   \item{cluster33}{The number of graphs in cluster 33}
-#'   \item{cluster34}{The number of graphs in cluster 34}
-#'   \item{cluster35}{The number of graphs in cluster 35}
-#'   \item{cluster36}{The number of graphs in cluster 36}
-#'   \item{cluster37}{The number of graphs in cluster 37}
-#'   \item{cluster38}{The number of graphs in cluster 38}
-#'   \item{cluster39}{The number of graphs in cluster 39}
-#'   \item{cluster40}{The number of graphs in cluster 40}
+#' #' \item{rf}{A random forest created with \pkg{ranger} with settings:
+#' importance = 'permutation', scale.permutation.importance = TRUE, and num.trees = 200.}
+#' \item{dists}{The data frame used to train the random forest. The data frame has
+#' 400 rows. Each row contains the absolute and Euclidean distances between the
+#' cluster fill rates of two handwriting samples. If both handwriting samples are
+#' from the same writer, the class is same. If the handwriting samples are from
+#' different writers, the class is different. There are 200 same distances and
+#' 200 different distances in the data frame. The class is recorded in the match column.}
 #' }
-#' @source <https://forensicstats.org/handwritingdatabase/>
-"cfr"
+#'
+#' @examples
+#' # view the random forest
+#' random_forest$rf
+#'
+#' # view the distances data frame
+#' random_forest$dists
+#'
+#' @md
+"random_forest"
+
+
+#' Reference Similarity Scores
+#'
+#' A list containing two data frames. The same_writer data frame contains
+#' similarity scores from same writer pairs. The diff_writer data frame
+#' contains similarity scores from different writer pairs. The similarity scores
+#' are calculated from the validation data frame with the following steps:
+#' \enumerate{
+#'     \item The absolute and Euclidean distances are calculated between pairs of writer profiles.
+#'     \item `random_forest` uses the distances between the pair to predict the class of the pair
+#'     as same writer or different writer.
+#'     \item The final class prediction from the previous step isn't used. Instead, the proportion of
+#'     decision trees that predict same writer is used as the similarity score.
+#' }
+#'
+#' @format A list with the following components:
+#' \describe{
+#' \item{same_writer}{A data frame of same writer similarity scores. The columns docname1
+#' and writer1 record the file name and the writer ID of the first handwriting sample. The columns
+#' docname2 and writer2 record the file name and writer ID of the second handwriting sample. The match
+#' column records the class, which is same, of the pairs of handwriting samples. The similarity scores
+#' between the pairs of handwriting samples are in the score column.}
+#' \item{diff_writer}{A data frame of different writer similarity scores. The columns docname1
+#' and writer1 record the file name and the writer ID of the first handwriting sample. The columns
+#' docname2 and writer2 record the file name and writer ID of the second handwriting sample. The match
+#' column records the class, which is different, of the pairs of handwriting samples. The similarity scores
+#' between the pairs of handwriting samples are in the score column.}
+#' }
+#'
+#' @examples
+#' summary(ref_scores$same_writer)
+#'
+#' summary(ref_scores$diff_writer)
+#'
+#' plot_scores(ref_scores)
+#'
+#' @md
+"ref_scores"
+
 
 #' Cluster Template with 40 Clusters
 #'
@@ -166,7 +180,7 @@
 #' \item{wcd}{The within cluster
 #'   distances on the final iteration of the K-means algorithm. More specifically,
 #'   the distance between each graph and the center of the cluster to which it
-#'   was assigned  on each iteration. The output of \code{\link[handwriter]{make_clustering_template}}' stores
+#'   was assigned  on each iteration. The output of \code{\link[handwriter]{make_clustering_template}} stores
 #'   the within cluster distances on each iteration, but the previous iterations were removed here to reduce the file size.}
 #' \item{wcss}{A vector of the
 #'   within-cluster sum of squares on each iteration of the K-means algorithm.}}
@@ -185,37 +199,220 @@
 "templateK40"
 
 
-#' A \pkg{ranger} Random Forest, Distances, and Similarity Scores
+#' A Test Set of Cluster Fill Rates
 #'
-#' A list that contains a trained random forest created with \pkg{ranger}, the
-#' data frame of distances used to train the random forest, and similarity
-#' scores calculated from the training data.
+#' Writers from the CSAFE Handwriting Database and the CVL Handwriting Database
+#' were randomly assigned to train, validation, and test sets.
 #'
-#' @format A list with the following components:
+#' The test data frame contains cluster fill rates for 368 handwritten documents
+#' from the CSAFE Handwriting Database and the CVL Handwriting Database. The
+#' documents are from 184 writers. The CSAFE Handwriting Database has multiple
+#' repetitions of each prompt so one London Letter prompt and one Wizard of Oz
+#' prompt were randomly selected from each writer. The CVL Handwriting Database
+#' does not contain multiple repetitions of prompts and two prompts were
+#' randomly selected from each writer.
+#'
+#' The documents were split into graphs with
+#' \code{\link[handwriter]{process_batch_dir}}. The graphs were grouped into
+#' clusters with \code{\link[handwriter]{get_clusters_batch}}. The cluster
+#' fill counts were calculated with
+#' \code{\link[handwriter]{get_cluster_fill_counts}}. Finally,
+#' \code{\link{get_cluster_fill_rates}} calculated the cluster fill rates.
+#'
+#' @format A data frame with 368 rows and 43 variables:
 #' \describe{
-#' \item{dists}{The data frame used to train the random forest. The data frame has
-#' 600 rows. Each row contains the absolute and Euclidean distances between the
-#' cluster fill rates of two handwriting samples. If both handwriting samples are
-#' from the same writer, the class is 'same'. If the handwriting samples are from
-#' different writers, the class is 'different'. There are 300 'same' distances and
-#' 300 'different' distances in the data frame.}
-#' \item{rf}{A random forest created with \pkg{ranger} with settings:
-#' importance = 'permutation', scale.permutation.importance = TRUE, and num.trees = 200.}
-#' \item{scores}{A similarity score was obtained for each pair of handwriting samples in the
-#' training data frame, dists, by calculating the proportion of decision trees that voted 'same'
-#' class for the pair.}
+#'   \item{docname}{The file name of the handwriting sample.}
+#'   \item{writer}{Writer ID. There are 184 distinct writer ID's. Each
+#'   writer has 2 documents in the data frame.}
+#'   \item{total_graphs}{The total number of graphs in the document.}
+#'   \item{cluster1}{The proportion of graphs in cluster 1}
+#'   \item{cluster2}{The proportion of graphs in cluster 2}
+#'   \item{cluster3}{The proportion of graphs in cluster 3}
+#'   \item{cluster4}{The proportion of graphs in cluster 4}
+#'   \item{cluster5}{The proportion of graphs in cluster 5}
+#'   \item{cluster6}{The proportion of graphs in cluster 6}
+#'   \item{cluster7}{The proportion of graphs in cluster 7}
+#'   \item{cluster8}{The proportion of graphs in cluster 8}
+#'   \item{cluster9}{The proportion of graphs in cluster 9}
+#'   \item{cluster10}{The proportion of graphs in cluster 10}
+#'   \item{cluster11}{The proportion of graphs in cluster 11}
+#'   \item{cluster12}{The proportion of graphs in cluster 12}
+#'   \item{cluster13}{The proportion of graphs in cluster 13}
+#'   \item{cluster14}{The proportion of graphs in cluster 14}
+#'   \item{cluster15}{The proportion of graphs in cluster 15}
+#'   \item{cluster16}{The proportion of graphs in cluster 16}
+#'   \item{cluster17}{The proportion of graphs in cluster 17}
+#'   \item{cluster18}{The proportion of graphs in cluster 18}
+#'   \item{cluster19}{The proportion of graphs in cluster 19}
+#'   \item{cluster20}{The proportion of graphs in cluster 20}
+#'   \item{cluster21}{The proportion of graphs in cluster 21}
+#'   \item{cluster22}{The proportion of graphs in cluster 22}
+#'   \item{cluster23}{The proportion of graphs in cluster 23}
+#'   \item{cluster24}{The proportion of graphs in cluster 24}
+#'   \item{cluster25}{The proportion of graphs in cluster 25}
+#'   \item{cluster26}{The proportion of graphs in cluster 26}
+#'   \item{cluster27}{The proportion of graphs in cluster 27}
+#'   \item{cluster28}{The proportion of graphs in cluster 28}
+#'   \item{cluster29}{The proportion of graphs in cluster 29}
+#'   \item{cluster30}{The proportion of graphs in cluster 30}
+#'   \item{cluster31}{The proportion of graphs in cluster 31}
+#'   \item{cluster32}{The proportion of graphs in cluster 32}
+#'   \item{cluster33}{The proportion of graphs in cluster 33}
+#'   \item{cluster34}{The proportion of graphs in cluster 34}
+#'   \item{cluster35}{The proportion of graphs in cluster 35}
+#'   \item{cluster36}{The proportion of graphs in cluster 36}
+#'   \item{cluster37}{The proportion of graphs in cluster 37}
+#'   \item{cluster38}{The proportion of graphs in cluster 38}
+#'   \item{cluster39}{The proportion of graphs in cluster 39}
+#'   \item{cluster40}{The proportion of graphs in cluster 40}
 #' }
-#'
-#' @examples
-#' # view the random forest
-#' random_forest$rf
-#'
-#' # view the distances data frame
-#' random_forest$dists
-#'
-#' # plot histograms of the similarity scores and place a vertical
-#' # line at similarity score 0.9.
-#' plot_histograms(random_forest, 0.9)
+#' @source <https://forensicstats.org/handwritingdatabase/>, <https://cvl.tuwien.ac.at/research/cvl-databases/an-off-line-database-for-writer-retrieval-writer-identification-and-word-spotting/>
 #'
 #' @md
-"random_forest"
+"test"
+
+
+#' A Training Set of Cluster Fill Rates
+#'
+#' Writers from the CSAFE Handwriting Database and the CVL Handwriting Database
+#' were randomly assigned to train, validation, and test sets.
+#'
+#' The train data frame contains cluster fill rates for 400 handwritten documents
+#' from the CSAFE Handwriting Database and the CVL Handwriting Database. The
+#' documents are from 200 writers. The CSAFE Handwriting Database has multiple
+#' repetitions of each prompt so one London Letter prompt and one Wizard of Oz
+#' prompt were randomly selected from each writer. The CVL Handwriting Database
+#' does not contain multiple repetitions of prompts and two prompts were
+#' randomly selected from each writer.
+#'
+#' The documents were split into graphs with
+#' \code{\link[handwriter]{process_batch_dir}}. The graphs were grouped into
+#' clusters with \code{\link[handwriter]{get_clusters_batch}}. The cluster
+#' fill counts were calculated with
+#' \code{\link[handwriter]{get_cluster_fill_counts}}. Finally,
+#' \code{\link{get_cluster_fill_rates}} calculated the cluster fill rates.
+#'
+#' @format A data frame with 40 rows and 43 variables:
+#' \describe{
+#'   \item{docname}{The file name of the handwriting sample.}
+#'   \item{writer}{Writer ID. There are 200 distinct writer ID's. Each
+#'   writer has 2 documents in the data frame.}
+#'   \item{total_graphs}{The total number of graphs in the document.}
+#'   \item{cluster1}{The proportion of graphs in cluster 1}
+#'   \item{cluster2}{The proportion of graphs in cluster 2}
+#'   \item{cluster3}{The proportion of graphs in cluster 3}
+#'   \item{cluster4}{The proportion of graphs in cluster 4}
+#'   \item{cluster5}{The proportion of graphs in cluster 5}
+#'   \item{cluster6}{The proportion of graphs in cluster 6}
+#'   \item{cluster7}{The proportion of graphs in cluster 7}
+#'   \item{cluster8}{The proportion of graphs in cluster 8}
+#'   \item{cluster9}{The proportion of graphs in cluster 9}
+#'   \item{cluster10}{The proportion of graphs in cluster 10}
+#'   \item{cluster11}{The proportion of graphs in cluster 11}
+#'   \item{cluster12}{The proportion of graphs in cluster 12}
+#'   \item{cluster13}{The proportion of graphs in cluster 13}
+#'   \item{cluster14}{The proportion of graphs in cluster 14}
+#'   \item{cluster15}{The proportion of graphs in cluster 15}
+#'   \item{cluster16}{The proportion of graphs in cluster 16}
+#'   \item{cluster17}{The proportion of graphs in cluster 17}
+#'   \item{cluster18}{The proportion of graphs in cluster 18}
+#'   \item{cluster19}{The proportion of graphs in cluster 19}
+#'   \item{cluster20}{The proportion of graphs in cluster 20}
+#'   \item{cluster21}{The proportion of graphs in cluster 21}
+#'   \item{cluster22}{The proportion of graphs in cluster 22}
+#'   \item{cluster23}{The proportion of graphs in cluster 23}
+#'   \item{cluster24}{The proportion of graphs in cluster 24}
+#'   \item{cluster25}{The proportion of graphs in cluster 25}
+#'   \item{cluster26}{The proportion of graphs in cluster 26}
+#'   \item{cluster27}{The proportion of graphs in cluster 27}
+#'   \item{cluster28}{The proportion of graphs in cluster 28}
+#'   \item{cluster29}{The proportion of graphs in cluster 29}
+#'   \item{cluster30}{The proportion of graphs in cluster 30}
+#'   \item{cluster31}{The proportion of graphs in cluster 31}
+#'   \item{cluster32}{The proportion of graphs in cluster 32}
+#'   \item{cluster33}{The proportion of graphs in cluster 33}
+#'   \item{cluster34}{The proportion of graphs in cluster 34}
+#'   \item{cluster35}{The proportion of graphs in cluster 35}
+#'   \item{cluster36}{The proportion of graphs in cluster 36}
+#'   \item{cluster37}{The proportion of graphs in cluster 37}
+#'   \item{cluster38}{The proportion of graphs in cluster 38}
+#'   \item{cluster39}{The proportion of graphs in cluster 39}
+#'   \item{cluster40}{The proportion of graphs in cluster 40}
+#' }
+#' @source <https://forensicstats.org/handwritingdatabase/>, <https://cvl.tuwien.ac.at/research/cvl-databases/an-off-line-database-for-writer-retrieval-writer-identification-and-word-spotting/>
+#'
+#' @md
+"train"
+
+
+#' A Validation Set of Cluster Fill Rates
+#'
+#' Writers from the CSAFE Handwriting Database and the CVL Handwriting Database
+#' were randomly assigned to train, validation, and test sets.
+#'
+#' The validation data frame contains cluster fill rates for 400 handwritten
+#' documents from the CSAFE Handwriting Database and the CVL Handwriting
+#' Database. The documents are from 200 writers. The CSAFE Handwriting Database
+#' has multiple repetitions of each prompt so one London Letter prompt and one
+#' Wizard of Oz prompt were randomly selected from each writer. The CVL
+#' Handwriting Database does not contain multiple repetitions of prompts and two
+#' prompts were randomly selected from each writer.
+#'
+#' The documents were split into graphs with
+#' \code{\link[handwriter]{process_batch_dir}}. The graphs were grouped into
+#' clusters with \code{\link[handwriter]{get_clusters_batch}}. The cluster
+#' fill counts were calculated with
+#' \code{\link[handwriter]{get_cluster_fill_counts}}. Finally,
+#' \code{\link{get_cluster_fill_rates}} calculated the cluster fill rates.
+#'
+#' @format A data frame with 40 rows and 43 variables:
+#' \describe{
+#'   \item{docname}{The file name of the handwriting sample.}
+#'   \item{writer}{Writer ID. There are 200 distinct writer ID's. Each
+#'   writer has 2 documents in the data frame.}
+#'   \item{total_graphs}{The total number of graphs in the document.}
+#'   \item{cluster1}{The proportion of graphs in cluster 1}
+#'   \item{cluster2}{The proportion of graphs in cluster 2}
+#'   \item{cluster3}{The proportion of graphs in cluster 3}
+#'   \item{cluster4}{The proportion of graphs in cluster 4}
+#'   \item{cluster5}{The proportion of graphs in cluster 5}
+#'   \item{cluster6}{The proportion of graphs in cluster 6}
+#'   \item{cluster7}{The proportion of graphs in cluster 7}
+#'   \item{cluster8}{The proportion of graphs in cluster 8}
+#'   \item{cluster9}{The proportion of graphs in cluster 9}
+#'   \item{cluster10}{The proportion of graphs in cluster 10}
+#'   \item{cluster11}{The proportion of graphs in cluster 11}
+#'   \item{cluster12}{The proportion of graphs in cluster 12}
+#'   \item{cluster13}{The proportion of graphs in cluster 13}
+#'   \item{cluster14}{The proportion of graphs in cluster 14}
+#'   \item{cluster15}{The proportion of graphs in cluster 15}
+#'   \item{cluster16}{The proportion of graphs in cluster 16}
+#'   \item{cluster17}{The proportion of graphs in cluster 17}
+#'   \item{cluster18}{The proportion of graphs in cluster 18}
+#'   \item{cluster19}{The proportion of graphs in cluster 19}
+#'   \item{cluster20}{The proportion of graphs in cluster 20}
+#'   \item{cluster21}{The proportion of graphs in cluster 21}
+#'   \item{cluster22}{The proportion of graphs in cluster 22}
+#'   \item{cluster23}{The proportion of graphs in cluster 23}
+#'   \item{cluster24}{The proportion of graphs in cluster 24}
+#'   \item{cluster25}{The proportion of graphs in cluster 25}
+#'   \item{cluster26}{The proportion of graphs in cluster 26}
+#'   \item{cluster27}{The proportion of graphs in cluster 27}
+#'   \item{cluster28}{The proportion of graphs in cluster 28}
+#'   \item{cluster29}{The proportion of graphs in cluster 29}
+#'   \item{cluster30}{The proportion of graphs in cluster 30}
+#'   \item{cluster31}{The proportion of graphs in cluster 31}
+#'   \item{cluster32}{The proportion of graphs in cluster 32}
+#'   \item{cluster33}{The proportion of graphs in cluster 33}
+#'   \item{cluster34}{The proportion of graphs in cluster 34}
+#'   \item{cluster35}{The proportion of graphs in cluster 35}
+#'   \item{cluster36}{The proportion of graphs in cluster 36}
+#'   \item{cluster37}{The proportion of graphs in cluster 37}
+#'   \item{cluster38}{The proportion of graphs in cluster 38}
+#'   \item{cluster39}{The proportion of graphs in cluster 39}
+#'   \item{cluster40}{The proportion of graphs in cluster 40}
+#' }
+#' @source <https://forensicstats.org/handwritingdatabase/>, <https://cvl.tuwien.ac.at/research/cvl-databases/an-off-line-database-for-writer-retrieval-writer-identification-and-word-spotting/>
+#'
+#' @md
+"validation"

@@ -40,11 +40,6 @@ if `score_only` is FALSE. If score only is true, reference scores are
 unnecessary because a score-based likelihood ratio will not be calculated.
 If reference scores are supplied, `score_only` will automatically be set to
 FALSE.}
-
-\item{unknown_writers}{TRUE if the ground truth writer of either or both
-documents is unknown. FALSE if the ground truth writer of both documents is
-known. Knowing the ground truth for BOTH documents is likely to only occur
-when using handwriting samples collected under research settings.}
 }
 \value{
 A data frame

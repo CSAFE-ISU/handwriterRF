@@ -1,16 +1,35 @@
-# save train set
-train_set <- get_csafe_train_set(df = cfr, train_prompt_codes = "pLND")
-write.csv(train_set, testthat::test_path("fixtures", "train", "train_set.csv"), row.names = FALSE)
+# save distances
+df <- validation[1:3, 1:6]
+d <- get_distances(df, c("abs", "euc"))
+saveRDS(d, testthat::test_path("fixtures", "distances", "abs_euc.rds"))
 
-# save ranger random forest
-random_forest1 <- train_rf(
-  df = train_set,
-  ntrees = 200,
-  distance_measures = "euc",
-  output_dir = testthat::test_path("fixtures", "train"),
-  run_number = 1,
-  downsample = TRUE
-)
+df <- validation[1:3, ]
+d <- get_distances(df, c("man", "euc", "max", "cos"))
+saveRDS(d, testthat::test_path("fixtures", "distances", "man_euc_max_cos.rds"))
+
+df <- validation[1:2, 1:6]
+d <- absolute_dist(df)
+saveRDS(d, testthat::test_path("fixtures", "distances", "abs_2docs.rds"))
+
+df <- validation[1:3, 1:6]
+d <- absolute_dist(df)
+saveRDS(d, testthat::test_path("fixtures", "distances", "abs_3docs.rds"))
+
+df <- validation[1:3, ]
+d <- manhattan_dist(df)
+saveRDS(d, testthat::test_path("fixtures", "distances", "man.rds"))
+
+df <- validation[1:3, ]
+d <- euclidean_dist(df)
+saveRDS(d, testthat::test_path("fixtures", "distances", "euc.rds"))
+
+df <- validation[1:3, ]
+d <- maximum_dist(df)
+saveRDS(d, testthat::test_path("fixtures", "distances", "max.rds"))
+
+df <- validation[1:3, ]
+d <- cosine_dist(df)
+saveRDS(d, testthat::test_path("fixtures", "distances", "cos.rds"))
 
 # save densities
 densities <- make_densities(scores = ref_scores)

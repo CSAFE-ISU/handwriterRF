@@ -49,16 +49,11 @@ The cosine distance between two n-length vectors of cluster fill rates, a and b,
 }
 \examples{
 
-rates <- cfr[1:3, ]
-# extract the writer ID from the document name
-rates$writer <- substr(rates$docname, 2, 5)
-# calculate maximum and Euclidean distances between the first 3 documents in cfr.
+rates <- test[1:3, ]
+# calculate maximum and Euclidean distances between the first 3 documents in test.
 distances <- get_distances(df = rates, distance_measures = c("max", "euc"))
 
-rates <- cfr
-# extract the writer ID from the document name
-rates$writer <- substr(rates$docname, 2, 5)
-# calculate maximum and distances between all documents in cfr.
-distances <- get_distances(df = rates, distance_measures = c("man"))
+# calculate maximum and distances between all documents in test.
+distances <- get_distances(df = test, distance_measures = c("man"))
 
 }

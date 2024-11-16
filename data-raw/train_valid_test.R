@@ -161,4 +161,4 @@ test <- rbind(csafe$test, cvl$test)
 saveRDS(test, "data-raw/test.rds")
 usethis::use_data(test, overwrite = TRUE)
 
-plot_histograms(scores = ref_scores, obs_score = 0.3, downsample_size = NULL)
+plot_scores(scores = ref_scores, obs_score = 0.3, downsample_size = NULL)

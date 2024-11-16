@@ -19,29 +19,38 @@
 # External Functions ------------------------------------------------------
 
 
-#' Plot Histograms
+#' Plot Scores
 #'
-#' Plot histograms of same writer and different writers reference similarity
-#' scores from a validation set. Plot a vertical, dashed line at a similarity
-#' score calculated with [calculate_slr()] to see whether the score is more
-#' typical of the same writer or different writers reference scores.
+#' Plot same writer and different writers reference similarity scores from a
+#' validation set. The similarity scores are greater than or equal to zero and
+#' less than or equal to one. The interval from 0 to 1 is split into `n_bins`.
+#' The proportion of scores in each bin is calculated and plotted. Optionally, a
+#' vertical dotted line may be plotted at an observed similarity score.
+#'
+#' The methods used in this package typically produce many times more different
+#' writer scores than same writer scores. For example, `ref_scores` contains
+#' 79,600 different writer scores but only 200 same writer scores. Histograms,
+#' which show the frequency of scores, don't handle this class imbalance well.
+#' Instead, the rate of scores is plotted.
 #'
 #' @param scores A data frame of scores calculated with
 #'   [get_validation_scores()]
-#' @param score A similarity score calculated with [calculate_slr()]
+#' @param obs_score Optional. A similarity score calculated with
+#'   [calculate_slr()]
+#' @param n_bins The number of bins
 #'
 #' @return A ggplot2 plot of histograms
 #' @export
 #'
 #' @examples
-#' plot_histograms(rforest = random_forest)
+#' plot_scores(scores = ref_scores)
 #'
 #' # Add a vertical line 0.1 on the horizontal axis.
-#' plot_histograms(rforest = random_forest, score = 0.1)
+#' plot_scores(scores = ref_scores, obs_score = 0.1)
 #'
-plot_histograms <- function(scores, obs_score = NULL, downsample_size = NULL, n_bins = 50) {
+plot_scores <- function(scores, obs_score = NULL, n_bins = 50) {
   # Prevent note "no visible binding for global variable"
-  Score <- Group <- NULL
+  Score <- Group <- bin <- rate <- NULL
 
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop(
@@ -52,11 +61,6 @@ plot_histograms <- function(scores, obs_score = NULL, downsample_size = NULL, n_
 
   df1 <- data.frame(Score = scores$same_writer$score, Group = "same writer")
   df2 <- data.frame(Score = scores$diff_writer$score, Group = "different writers")
-
-  if (!is.null(downsample_size)) {
-    df2 <- df2 %>%
-      dplyr::slice_sample(n=downsample_size)
-  }
 
   # Instead of frequency of scores, calculate rate of scores by splitting [0, 1] into 50
   # intervals of equal width and calculating the rate of scores in each interval.

@@ -28,10 +28,6 @@
 #'   PNG file.
 #' @param sample2 A filepath to a handwritten document scanned and saved as a
 #'   PNG file.
-#' @param unknown_writers TRUE if the ground truth writer of either or both
-#'   documents is unknown. FALSE if the ground truth writer of both documents is
-#'   known. Knowing the ground truth for BOTH documents is likely to only occur
-#'   when using handwriting samples collected under research settings.
 #' @param score_only TRUE returns only the similarity score. FALSE returns the
 #'   similarity score and a score-based likelihood ratio for that score,
 #'   calculated using `reference_scores`.
@@ -93,9 +89,9 @@ compare_documents <- function(sample1,
                  slr = NULL,
                  unknown_writers = TRUE)
 
-  params <- run_checks(params)
-
   params <- setup(params)
+
+  params <- run_checks(params)
 
   params <- copy_samples_to_project_dir(params)
 
@@ -105,7 +101,7 @@ compare_documents <- function(sample1,
   clusters <- handwriter::get_clusters_batch(template = templateK40,
                                              input_dir = file.path(params$project_dir, "graphs"),
                                              output_dir = file.path(params$project_dir, "clusters"),
-                                             num_cores = 2,
+                                             num_cores = 1,
                                              save_master_file = FALSE)
 
   message("Estimating writer profiles...")
@@ -126,6 +122,8 @@ compare_documents <- function(sample1,
 
   df <- make_results_df(params)
 
+  clean_up(params)
+
   return(df)
 }
 
@@ -136,16 +134,6 @@ run_checks <- function(params) {
   # samples can't be identical
   if (params$sample1_path_original == params$sample2_path_original) {
     stop("sample1 and sample2 can't be identical.")
-  }
-
-  if (!is.null(params$reference_scores) && params$score_only) {
-    message("Reference scores were supplied so score_only will be changed to FALSE.")
-    params$score_only <- FALSE
-  }
-
-  if ((params$sample1_path_original != params$sample2_path_original) && (params$sample1_name == params$sample2_name)) {
-    params$sample1_name <- "sample1.png"
-    params$sample2_name <- "sample2.png"
   }
 
   check_dir_contents(params, "clusters")
@@ -200,6 +188,17 @@ setup <- function(params) {
   params <- handle_null_values(params)
 
   create_dirs(params)
+
+  if (!is.null(params$reference_scores) && params$score_only) {
+    message("Reference scores were supplied so score_only will be changed to FALSE.")
+    params$score_only <- FALSE
+  }
+
+  if ((params$sample1_path_original != params$sample2_path_original) && (params$sample1_name == params$sample2_name)) {
+    message("Samples have the same file name so they will be renamed 'sample1.png' and 'sample2.png'.")
+    params$sample1_name <- "sample1.png"
+    params$sample2_name <- "sample2.png"
+  }
 
   return(params)
 }
@@ -381,3 +380,11 @@ make_results_df <- function(params) {
                                                   "slr")))
   return(df)
 }
+
+clean_up <- function(params) {
+  # Optional. Delete comparison folder and contents in tempdir()
+  if (params$project_dir == file.path(tempdir(), "comparison")) {
+    unlink(file.path(tempdir(), "comparison"), recursive = TRUE)
+  }
+}
+
