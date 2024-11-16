@@ -75,16 +75,18 @@
 #' calculate_slr(s1, s2)
 #' }
 #'
+#' @md
 calculate_slr <- function(sample1_path, sample2_path, unknown_writers = TRUE,
                           rforest = NULL, reference_scores = NULL,
                           project_dir = NULL) {
-
-  df <- compare_documents(sample1 = sample1_path,
-                          sample2 = sample2_path,
-                          score_only = FALSE,
-                          rforest = rforest,
-                          reference_scores = reference_scores,
-                          project_dir = project_dir)
+  df <- compare_documents(
+    sample1 = sample1_path,
+    sample2 = sample2_path,
+    score_only = FALSE,
+    rforest = rforest,
+    reference_scores = reference_scores,
+    project_dir = project_dir
+  )
   return(df)
 }
 

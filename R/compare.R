@@ -74,20 +74,21 @@ compare_documents <- function(sample1,
                               rforest = NULL,
                               project_dir = NULL,
                               reference_scores = NULL) {
-
-  params <- list(sample1_path_original = sample1,
-                 sample2_path_original = sample2,
-                 sample1_path = sample1,
-                 sample2_path = sample2,
-                 sample1_name = basename(sample1),
-                 sample2_name = basename(sample2),
-                 score_only = score_only,
-                 rforest = rforest,
-                 project_dir = project_dir,
-                 reference_scores = reference_scores,
-                 score = NULL,
-                 slr = NULL,
-                 unknown_writers = TRUE)
+  params <- list(
+    sample1_path_original = sample1,
+    sample2_path_original = sample2,
+    sample1_path = sample1,
+    sample2_path = sample2,
+    sample1_name = basename(sample1),
+    sample2_name = basename(sample2),
+    score_only = score_only,
+    rforest = rforest,
+    project_dir = project_dir,
+    reference_scores = reference_scores,
+    score = NULL,
+    slr = NULL,
+    unknown_writers = TRUE
+  )
 
   params <- setup(params)
 
@@ -95,14 +96,18 @@ compare_documents <- function(sample1,
 
   params <- copy_samples_to_project_dir(params)
 
-  handwriter::process_batch_dir(input_dir = file.path(params$project_dir, "docs"),
-                                output_dir = file.path(params$project_dir, "graphs"))
+  handwriter::process_batch_dir(
+    input_dir = file.path(params$project_dir, "docs"),
+    output_dir = file.path(params$project_dir, "graphs")
+  )
 
-  clusters <- handwriter::get_clusters_batch(template = templateK40,
-                                             input_dir = file.path(params$project_dir, "graphs"),
-                                             output_dir = file.path(params$project_dir, "clusters"),
-                                             num_cores = 1,
-                                             save_master_file = FALSE)
+  clusters <- handwriter::get_clusters_batch(
+    template = templateK40,
+    input_dir = file.path(params$project_dir, "graphs"),
+    output_dir = file.path(params$project_dir, "clusters"),
+    num_cores = 1,
+    save_master_file = FALSE
+  )
 
   message("Estimating writer profiles...")
   profiles <- get_writer_profiles(clusters = clusters, unknown_writers = params$unknown_writers)
@@ -144,16 +149,21 @@ run_checks <- function(params) {
 }
 
 check_dir_contents <- function(params, dir_name) {
-  if (!is.null(params$project_dir) && dir.exists(file.path(params$project_dir, dir_name))){
+  if (!is.null(params$project_dir) && dir.exists(file.path(params$project_dir, dir_name))) {
     actual_files <- list.files(file.path(params$project_dir, dir_name))
 
     expected_files <- switch(dir_name,
-                             "docs" = c(params$sample1_name, params$sample2_name),
-                             "graphs" = c("problems.txt",
-                                          stringr::str_replace(params$sample1_name, ".png", "_proclist.rds"),
-                                          stringr::str_replace(params$sample2_name, ".png", "_proclist.rds")),
-                             "clusters" = c(stringr::str_replace(params$sample1_name, ".png", ".rds"),
-                                            stringr::str_replace(params$sample2_name, ".png", ".rds")))
+      "docs" = c(params$sample1_name, params$sample2_name),
+      "graphs" = c(
+        "problems.txt",
+        stringr::str_replace(params$sample1_name, ".png", "_proclist.rds"),
+        stringr::str_replace(params$sample2_name, ".png", "_proclist.rds")
+      ),
+      "clusters" = c(
+        stringr::str_replace(params$sample1_name, ".png", ".rds"),
+        stringr::str_replace(params$sample2_name, ".png", ".rds")
+      )
+    )
 
     if (length(setdiff(actual_files, expected_files)) > 0) {
       stop("project_dir contains one or more helper files from documents other than sample1 and sample2.")
@@ -259,7 +269,7 @@ get_score <- function(d, rforest, unknown_writers = TRUE) {
     scores_df$docname2 <- d$docname2
 
     # Add writer1, writer2, and match columns for known writing samples only
-    if (!unknown_writers){
+    if (!unknown_writers) {
       scores_df$match <- label_same_different_writer(dists = d)$match
       scores_df$writer1 <- d$writer1
       scores_df$writer2 <- d$writer2
@@ -268,7 +278,6 @@ get_score <- function(d, rforest, unknown_writers = TRUE) {
     # Sort columns
     scores_df <- scores_df %>%
       dplyr::select(tidyselect::any_of(c("docname1", "writer1", "docname2", "writer2", "match", "score")))
-
   }
 
   # Prevent note 'no visible binding for global variable'
@@ -375,9 +384,11 @@ make_results_df <- function(params) {
     df$ground_truth <- ifelse(df$writer1 == df$writer2, "same writer", "different writer")
   }
 
-  df <- df %>% dplyr::select(tidyselect::any_of(c("sample1", "writer1", "sample2", "writer2",
-                                                  "ground_truth", "score", "numerator", "denominator",
-                                                  "slr")))
+  df <- df %>% dplyr::select(tidyselect::any_of(c(
+    "sample1", "writer1", "sample2", "writer2",
+    "ground_truth", "score", "numerator", "denominator",
+    "slr"
+  )))
   return(df)
 }
 
@@ -387,4 +398,3 @@ clean_up <- function(params) {
     unlink(file.path(tempdir(), "comparison"), recursive = TRUE)
   }
 }
-

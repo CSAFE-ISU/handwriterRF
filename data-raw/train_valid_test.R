@@ -31,11 +31,11 @@ make_csafe_sets <- function(rates) {
     woz <- df %>%
       dplyr::filter(prompt == "pWOZ") %>%
       dplyr::group_by(writer) %>%
-      dplyr::slice_sample(n=1)
+      dplyr::slice_sample(n = 1)
     lnd <- df %>%
       dplyr::filter(prompt == "pLND") %>%
       dplyr::group_by(writer) %>%
-      dplyr::slice_sample(n=1)
+      dplyr::slice_sample(n = 1)
     # phr <- df %>%
     #   dplyr::filter(prompt == "pPHR") %>%
     #   dplyr::group_by(writer) %>%
@@ -62,7 +62,7 @@ make_csafe_sets <- function(rates) {
   return(prompts)
 }
 
-make_cvl_sets <- function(rates){
+make_cvl_sets <- function(rates) {
   expand_cvl_docnames <- function(df) {
     df <- df %>%
       tidyr::separate(docname, into = c("writer", "prompt"), extra = "merge", remove = FALSE)
@@ -77,17 +77,17 @@ make_cvl_sets <- function(rates){
     prompts$train <- df %>%
       dplyr::filter(writer %in% writers$train) %>%
       dplyr::group_by(writer) %>%
-      dplyr::slice_sample(n=2)
+      dplyr::slice_sample(n = 2)
 
     prompts$validation <- df %>%
       dplyr::filter(writer %in% writers$validation) %>%
       dplyr::group_by(writer) %>%
-      dplyr::slice_sample(n=2)
+      dplyr::slice_sample(n = 2)
 
     prompts$test <- df %>%
       dplyr::filter(writer %in% writers$test) %>%
       dplyr::group_by(writer) %>%
-      dplyr::slice_sample(n=2)
+      dplyr::slice_sample(n = 2)
 
     return(prompts)
   }
@@ -113,7 +113,7 @@ split_writers <- function(all_writers) {
   writers <- list()
 
   # sample writers for random forest and remove from list
-  writers$train <- sample(all_writers, size=100)
+  writers$train <- sample(all_writers, size = 100)
   all_writers <- setdiff(all_writers, writers$train)
 
   # sample writers for validation and remove from list

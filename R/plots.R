@@ -45,9 +45,12 @@
 #' @examples
 #' plot_scores(scores = ref_scores)
 #'
+#' plot_scores(scores = ref_scores, n_bins = 70)
+#'
 #' # Add a vertical line 0.1 on the horizontal axis.
 #' plot_scores(scores = ref_scores, obs_score = 0.1)
 #'
+#' @md
 plot_scores <- function(scores, obs_score = NULL, n_bins = 50) {
   # Prevent note "no visible binding for global variable"
   Score <- Group <- bin <- rate <- NULL
@@ -79,9 +82,11 @@ plot_scores <- function(scores, obs_score = NULL, n_bins = 50) {
   df$bin <- as.numeric(as.character(df$bin))
 
   p <- df %>% ggplot2::ggplot(ggplot2::aes(x = bin, y = rate, fill = Group)) +
-    ggplot2::geom_bar(stat = "identity",
-                      position = "identity",
-                      alpha = 0.5) +
+    ggplot2::geom_bar(
+      stat = "identity",
+      position = "identity",
+      alpha = 0.5
+    ) +
     ggplot2::scale_fill_manual(values = c("same writer" = "#6BA4B8", "different writers" = "#F68D2E")) + # Customize colors
     ggplot2::theme_bw()
 
@@ -92,17 +97,18 @@ plot_scores <- function(scores, obs_score = NULL, n_bins = 50) {
       ggplot2::geom_vline(
         xintercept = obs_score,
         color = "black",
-        linetype = "dashed") +  # add vertical line
+        linetype = "dashed"
+      ) + # add vertical line
       ggplot2::annotate("text",
-                        x = obs_score,
-                        y = ymax / 2,
-                        label = paste("observed score", obs_score),
-                        color = "black",
-                        size = 3,
-                        angle = 90,
-                        vjust = -1,
-                        hjust = 0.5
-                        ) +  # add text
+        x = obs_score,
+        y = ymax / 2,
+        label = paste("observed score", obs_score),
+        color = "black",
+        size = 3,
+        angle = 90,
+        vjust = -1,
+        hjust = 0.5
+      ) + # add text
       ggplot2::labs(title = "The observed similarity score compared to reference similarity scores", x = "Score", y = "Rate")
   } else {
     p <- p + ggplot2::labs(title = "Reference similarity scores", x = "Score", y = "Rate")
