@@ -34,7 +34,7 @@
 #' Instead, the rate of scores is plotted.
 #'
 #' @param scores A data frame of scores calculated with
-#'   [get_validation_scores()]
+#'   [get_ref_scores()]
 #' @param obs_score Optional. A similarity score calculated with
 #'   [calculate_slr()]
 #' @param n_bins The number of bins

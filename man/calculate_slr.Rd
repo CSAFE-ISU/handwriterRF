@@ -26,10 +26,10 @@ records the ground truth of whether the same person or different people
 wrote the samples will be added to the output data frame.}
 
 \item{rforest}{Optional. A random forest trained with \pkg{ranger}. If no
-random forest is specified, `random_forest` will be used.}
+random forest is specified, \code{random_forest} will be used.}
 
 \item{reference_scores}{Optional. A data frame of reference similarity
-scores. If reference scores is not specified, `ref_scores` will be used.}
+scores. If reference scores is not specified, \code{ref_scores} will be used.}
 
 \item{project_dir}{A path to a directory where helper files will be saved. If
 no project directory is specified, the helper files will be saved to
@@ -42,15 +42,15 @@ A data frame
 Compares two handwriting samples scanned and saved a PNG images with the
 following steps:
 \enumerate{
-    \item \code{\link[handwriter]{processDocument}} splits the writing in both samples into component shapes, or graphs.
-    \item \code{\link[handwriter]{get_clusters_batch}} groups the graphs into clusters of similar shapes.
-    \item \code{\link[handwriter]{get_cluster_fill_counts}} counts the number of graphs assigned to each cluster.
-    \item \code{\link{get_cluster_fill_rates}} calculates the proportion of graphs assigned to each cluster. The cluster fill rates serve as a writer profile.
-    \item A similarity score is calculated between the cluster fill rates of the two documents using a random forest trained with \pkg{ranger}.
-    \item The similarity score is compared to reference distributions of same writer and different
-    writer similarity scores. The result is a score-based likelihood ratio that conveys the strength
-    of the evidence in favor of same writer or different writer. For more details, see Madeline
-    Johnson and Danica Ommen (2021) <doi:10.1002/sam.11566>.
+\item \code{\link[handwriter]{processDocument}} splits the writing in both samples into component shapes, or graphs.
+\item \code{\link[handwriter]{get_clusters_batch}} groups the graphs into clusters of similar shapes.
+\item \code{\link[handwriter]{get_cluster_fill_counts}} counts the number of graphs assigned to each cluster.
+\item \code{\link{get_cluster_fill_rates}} calculates the proportion of graphs assigned to each cluster. The cluster fill rates serve as a writer profile.
+\item A similarity score is calculated between the cluster fill rates of the two documents using a random forest trained with \pkg{ranger}.
+\item The similarity score is compared to reference distributions of same writer and different
+writer similarity scores. The result is a score-based likelihood ratio that conveys the strength
+of the evidence in favor of same writer or different writer. For more details, see Madeline
+Johnson and Danica Ommen (2021) \url{doi:10.1002/sam.11566}.
 }
 }
 \examples{

@@ -8,10 +8,10 @@ plot_scores(scores, obs_score = NULL, n_bins = 50)
 }
 \arguments{
 \item{scores}{A data frame of scores calculated with
-[get_validation_scores()]}
+\code{\link[=get_ref_scores]{get_ref_scores()}}}
 
 \item{obs_score}{Optional. A similarity score calculated with
-[calculate_slr()]}
+\code{\link[=calculate_slr]{calculate_slr()}}}
 
 \item{n_bins}{The number of bins}
 }
@@ -21,19 +21,21 @@ A ggplot2 plot of histograms
 \description{
 Plot same writer and different writers reference similarity scores from a
 validation set. The similarity scores are greater than or equal to zero and
-less than or equal to one. The interval from 0 to 1 is split into `n_bins`.
+less than or equal to one. The interval from 0 to 1 is split into \code{n_bins}.
 The proportion of scores in each bin is calculated and plotted. Optionally, a
 vertical dotted line may be plotted at an observed similarity score.
 }
 \details{
 The methods used in this package typically produce many times more different
-writer scores than same writer scores. For example, `ref_scores` contains
+writer scores than same writer scores. For example, \code{ref_scores} contains
 79,600 different writer scores but only 200 same writer scores. Histograms,
 which show the frequency of scores, don't handle this class imbalance well.
 Instead, the rate of scores is plotted.
 }
 \examples{
 plot_scores(scores = ref_scores)
+
+plot_scores(scores = ref_scores, n_bins = 70)
 
 # Add a vertical line 0.1 on the horizontal axis.
 plot_scores(scores = ref_scores, obs_score = 0.1)

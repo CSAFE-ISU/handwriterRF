@@ -152,7 +152,7 @@ validation <- rbind(csafe$validation, cvl$validation)
 saveRDS(validation, "data-raw/validation.rds")
 usethis::use_data(validation, overwrite = TRUE)
 
-ref_scores <- get_validation_scores(rforest = random_forest, df = ref_scores)
+ref_scores <- get_ref_scores(rforest = random_forest, df = ref_scores)
 saveRDS(ref_scores, "data-raw/ref_scores.rds")
 usethis::use_data(ref_scores, overwrite = TRUE)
 
