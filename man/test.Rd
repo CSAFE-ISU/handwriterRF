@@ -5,11 +5,11 @@
 \alias{test}
 \title{A Test Set of Cluster Fill Rates}
 \format{
-A data frame with 368 rows and 43 variables:
+A data frame with 332 rows and 43 variables:
 \describe{
 \item{docname}{The file name of the handwriting sample.}
-\item{writer}{Writer ID. There are 184 distinct writer ID's. Each
-writer has 2 documents in the data frame.}
+\item{writer}{Writer ID. There are 83 distinct writer ID's. Each
+writer has four documents in the data frame.}
 \item{total_graphs}{The total number of graphs in the document.}
 \item{cluster1}{The proportion of graphs in cluster 1}
 \item{cluster2}{The proportion of graphs in cluster 2}
@@ -54,7 +54,8 @@ writer has 2 documents in the data frame.}
 }
 }
 \source{
-\url{https://forensicstats.org/handwritingdatabase/}, \url{https://cvl.tuwien.ac.at/research/cvl-databases/an-off-line-database-for-writer-retrieval-writer-identification-and-word-spotting/}
+\url{https://forensicstats.org/handwritingdatabase/},
+\url{https://cvl.tuwien.ac.at/research/cvl-databases/an-off-line-database-for-writer-retrieval-writer-identification-and-word-spotting/}
 }
 \usage{
 test
@@ -64,18 +65,18 @@ Writers from the CSAFE Handwriting Database and the CVL Handwriting Database
 were randomly assigned to train, validation, and test sets.
 }
 \details{
-The test data frame contains cluster fill rates for 368 handwritten documents
+The test data frame contains cluster fill rates for 332 handwritten documents
 from the CSAFE Handwriting Database and the CVL Handwriting Database. The
-documents are from 184 writers. The CSAFE Handwriting Database has multiple
-repetitions of each prompt so one London Letter prompt and one Wizard of Oz
-prompt were randomly selected from each writer. The CVL Handwriting Database
-does not contain multiple repetitions of prompts and two prompts were
-randomly selected from each writer.
+documents are from 83 writers. The CSAFE Handwriting Database has nine
+repetitions of each prompt. Two London Letter prompts and two Wizard of Oz
+prompts were randomly selected from each writer. The CVL Handwriting Database
+does not contain multiple repetitions of prompts and four Engligh language
+prompts were randomly selected from each writer.
 
 The documents were split into graphs with
 \code{\link[handwriter]{process_batch_dir}}. The graphs were grouped into
-clusters with \code{\link[handwriter]{get_clusters_batch}}. The cluster
-fill counts were calculated with
+clusters with \code{\link[handwriter]{get_clusters_batch}}. The cluster fill
+counts were calculated with
 \code{\link[handwriter]{get_cluster_fill_counts}}. Finally,
 \code{\link{get_cluster_fill_rates}} calculated the cluster fill rates.
 }

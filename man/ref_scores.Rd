@@ -7,12 +7,12 @@
 \format{
 A list with the following components:
 \describe{
-\item{same_writer}{A data frame of same writer similarity scores. The columns docname1
+\item{same_writer}{A data frame of 1,800 same writer similarity scores. The columns docname1
 and writer1 record the file name and the writer ID of the first handwriting sample. The columns
 docname2 and writer2 record the file name and writer ID of the second handwriting sample. The match
 column records the class, which is same, of the pairs of handwriting samples. The similarity scores
 between the pairs of handwriting samples are in the score column.}
-\item{diff_writer}{A data frame of different writer similarity scores. The columns docname1
+\item{diff_writer}{A data frame of 717,600 different writer similarity scores. The columns docname1
 and writer1 record the file name and the writer ID of the first handwriting sample. The columns
 docname2 and writer2 record the file name and writer ID of the second handwriting sample. The match
 column records the class, which is different, of the pairs of handwriting samples. The similarity scores
@@ -24,15 +24,15 @@ ref_scores
 }
 \description{
 A list containing two data frames. The same_writer data frame contains
-similarity scores from same writer pairs. The diff_writer data frame
-contains similarity scores from different writer pairs. The similarity scores
-are calculated from the validation data frame with the following steps:
+similarity scores from same writer pairs. The diff_writer data frame contains
+similarity scores from different writer pairs. The similarity scores are
+calculated from the validation data frame with the following steps:
 \enumerate{
 \item The absolute and Euclidean distances are calculated between pairs of writer profiles.
 \item \code{random_forest} uses the distances between the pair to predict the class of the pair
 as same writer or different writer.
-\item The final class prediction from the previous step isn't used. Instead, the proportion of
-decision trees that predict same writer is used as the similarity score.
+\item The proportion of decision trees that predict same writer is used as the similarity
+score.
 }
 }
 \examples{

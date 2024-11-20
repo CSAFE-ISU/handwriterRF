@@ -24,7 +24,7 @@
 #' with \code{\link[handwriter]{get_clusters_batch}}. The cluster fill counts were
 #' calculated with \code{\link[handwriter]{get_cluster_fill_counts}}.
 #'
-#' @format A data frame with 1200 rows and 41 variables:
+#' @format A data frame with 1200 rows and 43 variables:
 #' \describe{
 #'   \item{docname}{The file name of the handwriting sample. The file
 #'   name includes the writer ID, the writing session, prompt, and
@@ -93,11 +93,12 @@
 #' #' \item{rf}{A random forest created with \pkg{ranger} with settings:
 #' importance = 'permutation', scale.permutation.importance = TRUE, and num.trees = 200.}
 #' \item{dists}{The data frame used to train the random forest. The data frame has
-#' 400 rows. Each row contains the absolute and Euclidean distances between the
-#' cluster fill rates of two handwriting samples. If both handwriting samples are
+#' 2,400 rows. Each row contains the absolute and Euclidean distances between the
+#' cluster fill rates of two handwriting samples. The class is recorded in the match column.
+#' If both handwriting samples are
 #' from the same writer, the class is same. If the handwriting samples are from
-#' different writers, the class is different. There are 200 same distances and
-#' 200 different distances in the data frame. The class is recorded in the match column.}
+#' different writers, the class is different. There are 1,200 same distances and
+#' 1,200 different distances in the data frame.}
 #' }
 #'
 #' @examples
@@ -114,25 +115,25 @@
 #' Reference Similarity Scores
 #'
 #' A list containing two data frames. The same_writer data frame contains
-#' similarity scores from same writer pairs. The diff_writer data frame
-#' contains similarity scores from different writer pairs. The similarity scores
-#' are calculated from the validation data frame with the following steps:
+#' similarity scores from same writer pairs. The diff_writer data frame contains
+#' similarity scores from different writer pairs. The similarity scores are
+#' calculated from the validation data frame with the following steps:
 #' \enumerate{
 #'     \item The absolute and Euclidean distances are calculated between pairs of writer profiles.
 #'     \item `random_forest` uses the distances between the pair to predict the class of the pair
 #'     as same writer or different writer.
-#'     \item The final class prediction from the previous step isn't used. Instead, the proportion of
-#'     decision trees that predict same writer is used as the similarity score.
+#'     \item The proportion of decision trees that predict same writer is used as the similarity
+#'     score.
 #' }
 #'
 #' @format A list with the following components:
 #' \describe{
-#' \item{same_writer}{A data frame of same writer similarity scores. The columns docname1
+#' \item{same_writer}{A data frame of 1,800 same writer similarity scores. The columns docname1
 #' and writer1 record the file name and the writer ID of the first handwriting sample. The columns
 #' docname2 and writer2 record the file name and writer ID of the second handwriting sample. The match
 #' column records the class, which is same, of the pairs of handwriting samples. The similarity scores
 #' between the pairs of handwriting samples are in the score column.}
-#' \item{diff_writer}{A data frame of different writer similarity scores. The columns docname1
+#' \item{diff_writer}{A data frame of 717,600 different writer similarity scores. The columns docname1
 #' and writer1 record the file name and the writer ID of the first handwriting sample. The columns
 #' docname2 and writer2 record the file name and writer ID of the second handwriting sample. The match
 #' column records the class, which is different, of the pairs of handwriting samples. The similarity scores
@@ -204,26 +205,26 @@
 #' Writers from the CSAFE Handwriting Database and the CVL Handwriting Database
 #' were randomly assigned to train, validation, and test sets.
 #'
-#' The test data frame contains cluster fill rates for 368 handwritten documents
+#' The test data frame contains cluster fill rates for 332 handwritten documents
 #' from the CSAFE Handwriting Database and the CVL Handwriting Database. The
-#' documents are from 184 writers. The CSAFE Handwriting Database has multiple
-#' repetitions of each prompt so one London Letter prompt and one Wizard of Oz
-#' prompt were randomly selected from each writer. The CVL Handwriting Database
-#' does not contain multiple repetitions of prompts and two prompts were
-#' randomly selected from each writer.
+#' documents are from 83 writers. The CSAFE Handwriting Database has nine
+#' repetitions of each prompt. Two London Letter prompts and two Wizard of Oz
+#' prompts were randomly selected from each writer. The CVL Handwriting Database
+#' does not contain multiple repetitions of prompts and four Engligh language
+#' prompts were randomly selected from each writer.
 #'
 #' The documents were split into graphs with
 #' \code{\link[handwriter]{process_batch_dir}}. The graphs were grouped into
-#' clusters with \code{\link[handwriter]{get_clusters_batch}}. The cluster
-#' fill counts were calculated with
+#' clusters with \code{\link[handwriter]{get_clusters_batch}}. The cluster fill
+#' counts were calculated with
 #' \code{\link[handwriter]{get_cluster_fill_counts}}. Finally,
 #' \code{\link{get_cluster_fill_rates}} calculated the cluster fill rates.
 #'
-#' @format A data frame with 368 rows and 43 variables:
+#' @format A data frame with 332 rows and 43 variables:
 #' \describe{
 #'   \item{docname}{The file name of the handwriting sample.}
-#'   \item{writer}{Writer ID. There are 184 distinct writer ID's. Each
-#'   writer has 2 documents in the data frame.}
+#'   \item{writer}{Writer ID. There are 83 distinct writer ID's. Each
+#'   writer has four documents in the data frame.}
 #'   \item{total_graphs}{The total number of graphs in the document.}
 #'   \item{cluster1}{The proportion of graphs in cluster 1}
 #'   \item{cluster2}{The proportion of graphs in cluster 2}
@@ -266,7 +267,8 @@
 #'   \item{cluster39}{The proportion of graphs in cluster 39}
 #'   \item{cluster40}{The proportion of graphs in cluster 40}
 #' }
-#' @source <https://forensicstats.org/handwritingdatabase/>, <https://cvl.tuwien.ac.at/research/cvl-databases/an-off-line-database-for-writer-retrieval-writer-identification-and-word-spotting/>
+#' @source <https://forensicstats.org/handwritingdatabase/>,
+#'   <https://cvl.tuwien.ac.at/research/cvl-databases/an-off-line-database-for-writer-retrieval-writer-identification-and-word-spotting/>
 #'
 #' @md
 "test"
@@ -277,26 +279,26 @@
 #' Writers from the CSAFE Handwriting Database and the CVL Handwriting Database
 #' were randomly assigned to train, validation, and test sets.
 #'
-#' The train data frame contains cluster fill rates for 400 handwritten documents
-#' from the CSAFE Handwriting Database and the CVL Handwriting Database. The
-#' documents are from 200 writers. The CSAFE Handwriting Database has multiple
-#' repetitions of each prompt so one London Letter prompt and one Wizard of Oz
-#' prompt were randomly selected from each writer. The CVL Handwriting Database
-#' does not contain multiple repetitions of prompts and two prompts were
-#' randomly selected from each writer.
+#' The train data frame contains cluster fill rates for 800 handwritten
+#' documents from the CSAFE Handwriting Database and the CVL Handwriting
+#' Database. The documents are from 200 writers. The CSAFE Handwriting Database
+#' has nine repetitions of each prompt. Two London Letter prompts and two Wizard
+#' of Oz prompts were randomly selected from each writer. The CVL Handwriting
+#' Database does not contain multiple repetitions of prompts and four English
+#' language prompts were randomly selected from each writer.
 #'
 #' The documents were split into graphs with
 #' \code{\link[handwriter]{process_batch_dir}}. The graphs were grouped into
-#' clusters with \code{\link[handwriter]{get_clusters_batch}}. The cluster
-#' fill counts were calculated with
+#' clusters with \code{\link[handwriter]{get_clusters_batch}}. The cluster fill
+#' counts were calculated with
 #' \code{\link[handwriter]{get_cluster_fill_counts}}. Finally,
 #' \code{\link{get_cluster_fill_rates}} calculated the cluster fill rates.
 #'
-#' @format A data frame with 40 rows and 43 variables:
+#' @format A data frame with 800 rows and 43 variables:
 #' \describe{
 #'   \item{docname}{The file name of the handwriting sample.}
 #'   \item{writer}{Writer ID. There are 200 distinct writer ID's. Each
-#'   writer has 2 documents in the data frame.}
+#'   writer has 4 documents in the data frame.}
 #'   \item{total_graphs}{The total number of graphs in the document.}
 #'   \item{cluster1}{The proportion of graphs in cluster 1}
 #'   \item{cluster2}{The proportion of graphs in cluster 2}
@@ -339,7 +341,8 @@
 #'   \item{cluster39}{The proportion of graphs in cluster 39}
 #'   \item{cluster40}{The proportion of graphs in cluster 40}
 #' }
-#' @source <https://forensicstats.org/handwritingdatabase/>, <https://cvl.tuwien.ac.at/research/cvl-databases/an-off-line-database-for-writer-retrieval-writer-identification-and-word-spotting/>
+#' @source <https://forensicstats.org/handwritingdatabase/>,
+#'   <https://cvl.tuwien.ac.at/research/cvl-databases/an-off-line-database-for-writer-retrieval-writer-identification-and-word-spotting/>
 #'
 #' @md
 "train"
@@ -350,26 +353,26 @@
 #' Writers from the CSAFE Handwriting Database and the CVL Handwriting Database
 #' were randomly assigned to train, validation, and test sets.
 #'
-#' The validation data frame contains cluster fill rates for 400 handwritten
+#' The validation data frame contains cluster fill rates for 1,200 handwritten
 #' documents from the CSAFE Handwriting Database and the CVL Handwriting
-#' Database. The documents are from 200 writers. The CSAFE Handwriting Database
-#' has multiple repetitions of each prompt so one London Letter prompt and one
-#' Wizard of Oz prompt were randomly selected from each writer. The CVL
-#' Handwriting Database does not contain multiple repetitions of prompts and two
-#' prompts were randomly selected from each writer.
+#' Database. The documents are from 300 writers. The CSAFE Handwriting Database
+#' has nine repetitions of each prompt. Two London Letter prompts and two Wizard
+#' of Oz prompts were randomly selected from each writer. The CVL Handwriting
+#' Database does not contain multiple repetitions of prompts and four English
+#' language prompts were randomly selected from each writer.
 #'
 #' The documents were split into graphs with
 #' \code{\link[handwriter]{process_batch_dir}}. The graphs were grouped into
-#' clusters with \code{\link[handwriter]{get_clusters_batch}}. The cluster
-#' fill counts were calculated with
+#' clusters with \code{\link[handwriter]{get_clusters_batch}}. The cluster fill
+#' counts were calculated with
 #' \code{\link[handwriter]{get_cluster_fill_counts}}. Finally,
 #' \code{\link{get_cluster_fill_rates}} calculated the cluster fill rates.
 #'
-#' @format A data frame with 40 rows and 43 variables:
+#' @format A data frame with 1,200 rows and 43 variables:
 #' \describe{
 #'   \item{docname}{The file name of the handwriting sample.}
-#'   \item{writer}{Writer ID. There are 200 distinct writer ID's. Each
-#'   writer has 2 documents in the data frame.}
+#'   \item{writer}{Writer ID. There are 300 distinct writer ID's. Each
+#'   writer has 4 documents in the data frame.}
 #'   \item{total_graphs}{The total number of graphs in the document.}
 #'   \item{cluster1}{The proportion of graphs in cluster 1}
 #'   \item{cluster2}{The proportion of graphs in cluster 2}
@@ -412,7 +415,8 @@
 #'   \item{cluster39}{The proportion of graphs in cluster 39}
 #'   \item{cluster40}{The proportion of graphs in cluster 40}
 #' }
-#' @source <https://forensicstats.org/handwritingdatabase/>, <https://cvl.tuwien.ac.at/research/cvl-databases/an-off-line-database-for-writer-retrieval-writer-identification-and-word-spotting/>
+#' @source <https://forensicstats.org/handwritingdatabase/>,
+#'   <https://cvl.tuwien.ac.at/research/cvl-databases/an-off-line-database-for-writer-retrieval-writer-identification-and-word-spotting/>
 #'
 #' @md
 "validation"

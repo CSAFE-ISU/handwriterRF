@@ -1,85 +1,57 @@
 test_that("Calculate SLR works on w0030 samples", {
   actual <- calculate_slr(
-    sample1_path = testthat::test_path("fixtures", "samples", "w0030_s01_pWOZ_r01.png"),
-    sample2_path = testthat::test_path("fixtures", "samples", "w0030_s01_pWOZ_r02.png"),
-    project_dir = testthat::test_path("fixtures", "slrs_w0030")
+    sample1_path = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r01.png"),
+    sample2_path = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r02.png"),
   )
 
-  expected <- data.frame(
-    "sample1" = "fixtures/samples/w0030_s01_pWOZ_r01.png",
-    "sample2" = "fixtures/samples/w0030_s01_pWOZ_r02.png",
-    "score" = 0.89500000000000001776,
-    "numerator" = 3.8745314426619446024,
-    "denominator" = 0.062397042796531188014,
-    "slr" = 62.094792782028122247
-  )
+  expected <- readRDS(testthat::test_path("fixtures", "slrs", "w0030_v_w0030.rds"))
 
-  expect_equal(actual, expected)
+  # Full file paths might be different but the file names should be identical
+  testthat::expect_identical(basename(actual$sample1), basename(expected$sample1))
+  testthat::expect_identical(basename(actual$sample2), basename(expected$sample2))
+
+  # All other columns should be identical
+  testthat::expect_identical(actual[-c(1,2)], expected[-c(1,2)])
 })
 
 test_that("Calculate SLR works on w0030 versus w0238 samples", {
   actual <- calculate_slr(
-    sample1_path = testthat::test_path("fixtures", "samples", "w0030_s01_pWOZ_r01.png"),
-    sample2_path = testthat::test_path("fixtures", "samples", "w0238_s01_pWOZ_r02.png"),
-    project_dir = testthat::test_path("fixtures", "slrs_w0030_v_w0238")
+    sample1_path = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r01.png"),
+    sample2_path = testthat::test_path("fixtures", "samples1", "w0238_s01_pWOZ_r02.png"),
   )
 
-  expected <- data.frame(
-    "sample1" = "fixtures/samples/w0030_s01_pWOZ_r01.png",
-    "sample2" = "fixtures/samples/w0238_s01_pWOZ_r02.png",
-    "score" = 0.56499999999999994671,
-    "numerator" = 0.22081676083216716933,
-    "denominator" = 0.16659517717430183392,
-    "slr" = 1.3254691076749207657
-  )
+  expected <- readRDS(testthat::test_path("fixtures", "slrs", "w0030_v_w0238.rds"))
 
-  expect_equal(actual, expected)
+  # Full file paths might be different but the file names should be identical
+  testthat::expect_identical(basename(actual$sample1), basename(expected$sample1))
+  testthat::expect_identical(basename(actual$sample2), basename(expected$sample2))
+
+  # All other columns should be identical
+  testthat::expect_identical(actual[-c(1,2)], expected[-c(1,2)])
 })
 
-test_that("Calculate SLR works on w0238 samples", {
+test_that("Calculate SLR works on w0030 samples in project directory", {
   actual <- calculate_slr(
-    sample1_path = testthat::test_path("fixtures", "samples", "w0238_s01_pWOZ_r02.png"),
-    sample2_path = testthat::test_path("fixtures", "samples", "w0238_s01_pWOZ_r03.png"),
-    project_dir = testthat::test_path("fixtures", "slrs_w0238")
+    sample1_path = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r01.png"),
+    sample2_path = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r02.png"),
+    project_dir = testthat::test_path("fixtures", "slrs_w0030")
   )
 
-  expected <- data.frame(
-    "sample1" = "fixtures/samples/w0238_s01_pWOZ_r02.png",
-    "sample2" = "fixtures/samples/w0238_s01_pWOZ_r03.png",
-    "score" = 0.94499999999999995115,
-    "numerator" = 3.9664120614606899196,
-    "denominator" = 0.022299799230150865736,
-    "slr" = 177.867613090337926
-  )
+  expected <- readRDS(testthat::test_path("fixtures", "slrs", "w0030_v_w0030.rds"))
 
-  expect_equal(actual, expected)
-})
+  # Full file paths might be different but the file names should be identical
+  testthat::expect_identical(basename(actual$sample1), basename(expected$sample1))
+  testthat::expect_identical(basename(actual$sample2), basename(expected$sample2))
 
-test_that("Calculate SLR works on w0030 samples in temp directory", {
-  # The project_dir = NULL is the default for calculate_slr
-  actual <- calculate_slr(
-    sample1_path = testthat::test_path("fixtures", "samples", "w0030_s01_pWOZ_r01.png"),
-    sample2_path = testthat::test_path("fixtures", "samples", "w0030_s01_pWOZ_r02.png")
-  )
-
-  expected <- data.frame(
-    "sample1" = "fixtures/samples/w0030_s01_pWOZ_r01.png",
-    "sample2" = "fixtures/samples/w0030_s01_pWOZ_r02.png",
-    "score" = 0.89500000000000001776,
-    "numerator" = 3.8745314426619446024,
-    "denominator" = 0.062397042796531188014,
-    "slr" = 62.094792782028122247
-  )
-
-  expect_equal(actual, expected)
+  # All other columns should be identical
+  testthat::expect_identical(actual[-c(1,2)], expected[-c(1,2)])
 })
 
 test_that("Calculate SLRs throws error if samples are the same file in the same folder", {
   expect_error(
     calculate_slr(
-      sample1_path = testthat::test_path("fixtures", "samples", "w0238_s01_pWOZ_r02.png"),
-      sample2_path = testthat::test_path("fixtures", "samples", "w0238_s01_pWOZ_r02.png"),
-      project_dir = testthat::test_path("fixtures", "slrs_w0238")
+      sample1_path = testthat::test_path("fixtures", "samples1", "w0238_s01_pWOZ_r02.png"),
+      sample2_path = testthat::test_path("fixtures", "samples1", "w0238_s01_pWOZ_r02.png"),
     ),
     "sample1 and sample2 can't be identical."
   )
@@ -87,21 +59,18 @@ test_that("Calculate SLRs throws error if samples are the same file in the same 
 
 test_that("Calculate SLRs works if samples in different folders have the same file name", {
   actual <- calculate_slr(
-    sample1_path = testthat::test_path("fixtures", "samples", "0.png"),
+    sample1_path = testthat::test_path("fixtures", "samples1", "0.png"),
     sample2_path = testthat::test_path("fixtures", "samples2", "0.png"),
-    project_dir = testthat::test_path("fixtures", "slrs_same_filename")
   )
 
-  expected <- data.frame(
-    "sample1" = "fixtures/samples/0.png",
-    "sample2" = "fixtures/samples2/0.png",
-    "score" = 0.85999999999999998668,
-    "numerator" = 3.1337004320166270688,
-    "denominator" = 0.097050174109834685954,
-    "slr" = 32.289487996900668065
-  )
+  expected <-readRDS(testthat::test_path("fixtures", "slrs", "same_filename_example.rds"))
 
-  expect_equal(actual, expected)
+  # Full file paths might be different but the file names should be identical
+  testthat::expect_identical(basename(actual$sample1), basename(expected$sample1))
+  testthat::expect_identical(basename(actual$sample2), basename(expected$sample2))
+
+  # All other columns should be identical
+  testthat::expect_identical(actual[-c(1,2)], expected[-c(1,2)])
 })
 
 test_that("Interpret SLR returns the correct message for values greater than 1", {
@@ -143,7 +112,7 @@ test_that("Interpret SLR returns the correct message for a value of 0", {
 test_that("Make densities works with ranger package", {
   actual <- make_densities(scores = ref_scores)
 
-  expected <- readRDS(testthat::test_path("fixtures", "slr", "densities.csv"))
+  expected <- readRDS(testthat::test_path("fixtures", "slrs", "densities.csv"))
 
   expect_equal(actual, expected)
 })

@@ -4,11 +4,7 @@ test_that("Get score works with unknown writers", {
   d <- get_distances(df, c("abs", "euc"))
   actual <- get_score(d = d, rforest = random_forest, unknown_writers = TRUE)
 
-  expected <- data.frame(
-    "docname1" = "w0001_s01_pWOZ_r03",
-    "docname2" = "w0002_s02_pWOZ_r02",
-    "score" = 0.15
-  )
+  expected <- readRDS(testthat::test_path("fixtures", "scores", "unknown_writers.rds"))
 
   expect_identical(actual, expected)
 })
@@ -18,14 +14,7 @@ test_that("Get score works with known writers", {
   d <- get_distances(df, c("abs", "euc"))
   actual <- get_score(d = d, rforest = random_forest, unknown_writers = FALSE)
 
-  expected <- data.frame(
-    "docname1" = "w0001_s01_pWOZ_r03",
-    "writer1" = "w0001",
-    "docname2" = "w0002_s02_pWOZ_r02",
-    "writer2" = "w0002",
-    "match" = as.factor("different"),
-    "score" = 0.15
-  )
+  expected <- readRDS(testthat::test_path("fixtures", "scores", "known_writers.rds"))
 
   expect_identical(actual, expected)
 })

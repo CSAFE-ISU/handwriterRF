@@ -5,7 +5,7 @@
 \alias{cfc}
 \title{Cluster Fill Counts for 1200 CSAFE Handwriting Database Samples}
 \format{
-A data frame with 1200 rows and 41 variables:
+A data frame with 1200 rows and 43 variables:
 \describe{
 \item{docname}{The file name of the handwriting sample. The file
 name includes the writer ID, the writing session, prompt, and
