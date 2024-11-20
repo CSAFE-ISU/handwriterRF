@@ -3,6 +3,7 @@
 export("%>%")
 export(calculate_slr)
 export(compare_documents)
+export(compare_writer_profiles)
 export(get_cluster_fill_rates)
 export(get_distances)
 export(get_ref_scores)

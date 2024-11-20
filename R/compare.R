@@ -50,6 +50,7 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' # Compare two documents from the same writer with a similarity score
 #' s1 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r01.png"),
 #'   package = "handwriterRF"
@@ -68,6 +69,9 @@
 #'   package = "handwriterRF"
 #' )
 #' compare_documents(s1, s2, score_only = FALSE)
+#' }
+#'
+#' @md
 compare_documents <- function(sample1,
                               sample2,
                               score_only = TRUE,
@@ -75,22 +79,23 @@ compare_documents <- function(sample1,
                               project_dir = NULL,
                               reference_scores = NULL) {
   params <- list(
-    sample1_path_original = sample1,
-    sample2_path_original = sample2,
-    sample1_path = sample1,
-    sample2_path = sample2,
-    sample1_name = basename(sample1),
-    sample2_name = basename(sample2),
+    samples = list(original_path1 = sample1,
+                   original_path2 = sample2,
+                   path1 = sample1,
+                   path2 = sample2,
+                   name1 = basename(sample1),
+                   name2 = basename(sample2)),
+    writer_profiles = NULL,
     score_only = score_only,
     rforest = rforest,
     project_dir = project_dir,
     reference_scores = reference_scores,
     score = NULL,
     slr = NULL,
-    unknown_writers = TRUE
+    known_writers = FALSE
   )
 
-  params <- setup(params)
+  params <- setup(params, subdirs = c("docs", "graphs", "clusters"))
 
   params <- run_checks(params)
 
@@ -110,14 +115,14 @@ compare_documents <- function(sample1,
   )
 
   message("Estimating writer profiles...")
-  profiles <- get_writer_profiles(clusters = clusters, unknown_writers = params$unknown_writers)
+  profiles <- get_writer_profiles(clusters = clusters, known_writers = params$known_writers)
 
   message("Calculating distance between samples...")
   dist_measures <- which_dists(rforest = params$rforest)
   d <- get_distances(df = profiles, distance_measures = dist_measures)
 
   message("Calculating similarity score...")
-  params$score <- get_score(d = d, rforest = params$rforest, unknown_writers = params$unknown_writers)$score
+  params$score <- get_score(d = d, rforest = params$rforest, known_writers = params$known_writers)$score
 
   # Optional. Calculate SLR
   if (!score_only) {
@@ -133,36 +138,108 @@ compare_documents <- function(sample1,
 }
 
 
-# Internal Functions ------------------------------------------------------
+#' Compare Writer Profiles
+#'
+#' Compare the writer profiles from two handwritten documents to predict whether
+#' they were written by the same person. Use either a similarity score or a
+#' score-based likelihood ratio as a comparison method.
+#'
+#' @param writer_profiles A data frame of writer profiles or cluster fill rates
+#'   calculated with [get_cluster_fill_rates]
+#' @param score_only TRUE returns only the similarity score. FALSE returns the
+#'   similarity score and a score-based likelihood ratio for that score,
+#'   calculated using `reference_scores`.
+#' @param rforest Optional. A random forest created with [`ranger::ranger()`].
+#'   If a random forest is not supplied, `random_forest` will be used.
+#' @param project_dir Optional. A folder in which to save helper files and a CSV
+#'   file with the results. If no project directory is supplied. Helper files
+#'   will be saved to tempdir() > comparison but deleted before the function
+#'   terminates. A CSV file with the results will not be saved, but a data frame
+#'   of the results will be returned.
+#' @param reference_scores Optional. A list of same writer and different writer
+#'   similarity scores used for reference to calculate a score-based likelihood
+#'   ratio. If reference scores are not supplied, `ref_scores` will be used only
+#'   if `score_only` is FALSE. If score only is true, reference scores are
+#'   unnecessary because a score-based likelihood ratio will not be calculated.
+#'   If reference scores are supplied, `score_only` will automatically be set to
+#'   FALSE.
+#' @param known_writers TRUE if the true writer is known for both writing
+#'   samples. Otherwise, FALSE. If TRUE, the writer IDs and a column that
+#'   records the ground truth of whether the same person or different people
+#'   wrote the samples will be added to the output data frame.
+#'
+#' @return A data frame
+#' @export
+#'
+#' @examples
+#' compare_writer_profiles(test[1:2,], score_only = TRUE)
+#'
+#' compare_writer_profiles(test[1:2,], score_only = FALSE)
+#'
+#' @md
+compare_writer_profiles <- function(
+    writer_profiles,
+    score_only = TRUE,
+    rforest = NULL,
+    project_dir = NULL,
+    reference_scores = NULL,
+    known_writers = FALSE) {
 
-run_checks <- function(params) {
-  # samples can't be identical
-  if (params$sample1_path_original == params$sample2_path_original) {
-    stop("sample1 and sample2 can't be identical.")
+  params <- list(
+    samples = NULL,
+    writer_profiles = writer_profiles,
+    score_only = score_only,
+    rforest = rforest,
+    project_dir = project_dir,
+    reference_scores = reference_scores,
+    score = NULL,
+    slr = NULL,
+    known_writers = known_writers
+  )
+
+  params <- setup(params)
+
+  params <- run_checks(params)
+
+  message("Calculating distance between samples...")
+  dist_measures <- which_dists(rforest = params$rforest)
+  d <- get_distances(df = writer_profiles, distance_measures = dist_measures)
+
+  message("Calculating similarity score...")
+  params$score <- get_score(d = d, rforest = params$rforest, known_writers = params$known_writers)$score
+
+  # Optional. Calculate SLR
+  if (!score_only) {
+    message("Calculating SLR...")
+    params <- get_slr(params)
   }
 
-  check_dir_contents(params, "clusters")
-  check_dir_contents(params, "docs")
-  check_dir_contents(params, "graphs")
+  df <- make_results_df(params)
 
-  return(params)
+  clean_up(params)
+
+  return(df)
 }
+
+
+
+# Internal Functions ------------------------------------------------------
 
 check_dir_contents <- function(params, dir_name) {
   if (!is.null(params$project_dir) && dir.exists(file.path(params$project_dir, dir_name))) {
     actual_files <- list.files(file.path(params$project_dir, dir_name))
 
     expected_files <- switch(dir_name,
-      "docs" = c(params$sample1_name, params$sample2_name),
-      "graphs" = c(
-        "problems.txt",
-        stringr::str_replace(params$sample1_name, ".png", "_proclist.rds"),
-        stringr::str_replace(params$sample2_name, ".png", "_proclist.rds")
-      ),
-      "clusters" = c(
-        stringr::str_replace(params$sample1_name, ".png", ".rds"),
-        stringr::str_replace(params$sample2_name, ".png", ".rds")
-      )
+                             "docs" = c(params$samples$name1, params$samples$name2),
+                             "graphs" = c(
+                               "problems.txt",
+                               stringr::str_replace(params$samples$name1, ".png", "_proclist.rds"),
+                               stringr::str_replace(params$samples$name2, ".png", "_proclist.rds")
+                             ),
+                             "clusters" = c(
+                               stringr::str_replace(params$samples$name1, ".png", ".rds"),
+                               stringr::str_replace(params$samples$name2, ".png", ".rds")
+                             )
     )
 
     if (length(setdiff(actual_files, expected_files)) > 0) {
@@ -171,7 +248,7 @@ check_dir_contents <- function(params, dir_name) {
   }
 }
 
-setup <- function(params) {
+setup <- function(params, subdirs = NULL) {
   handle_null_values <- function(params) {
     if (is.null(params$project_dir)) {
       params$project_dir <- file.path(tempdir(), "comparison")
@@ -188,27 +265,45 @@ setup <- function(params) {
     return(params)
   }
 
-  create_dirs <- function(params) {
+  create_dirs <- function(params, subdirs) {
     create_dir(params$project_dir)
-    create_dir(file.path(params$project_dir, "clusters"))
-    create_dir(file.path(params$project_dir, "docs"))
-    create_dir(file.path(params$project_dir, "graphs"))
+    if (!is.null(subdirs)) {
+      create_dir(file.path(params$project_dir, "clusters"))
+      create_dir(file.path(params$project_dir, "docs"))
+      create_dir(file.path(params$project_dir, "graphs"))
+    }
   }
 
   params <- handle_null_values(params)
 
-  create_dirs(params)
+  create_dirs(params = params, subdirs = subdirs)
 
   if (!is.null(params$reference_scores) && params$score_only) {
     message("Reference scores were supplied so score_only will be changed to FALSE.")
     params$score_only <- FALSE
   }
 
-  if ((params$sample1_path_original != params$sample2_path_original) && (params$sample1_name == params$sample2_name)) {
+  if (!is.null(params$samples) &&
+      (params$samples$original_path1 != params$samples$original_path2) &&
+      (params$samples$name1 == params$samples$name2)) {
     message("Samples have the same file name so they will be renamed 'sample1.png' and 'sample2.png'.")
-    params$sample1_name <- "sample1.png"
-    params$sample2_name <- "sample2.png"
+    params$samples$name1 <- "sample1.png"
+    params$samples$name2 <- "sample2.png"
   }
+
+  return(params)
+}
+
+run_checks <- function(params) {
+  # samples can't be identical
+  if (!is.null(params$samples) &&
+      (params$samples$original_path1 == params$samples$original_path2)) {
+    stop("sample1 and sample2 can't be identical.")
+  }
+
+  check_dir_contents(params, "clusters")
+  check_dir_contents(params, "docs")
+  check_dir_contents(params, "graphs")
 
   return(params)
 }
@@ -218,21 +313,21 @@ copy_samples_to_project_dir <- function(params) {
   message("Copying samples to project directory > docs...\n")
 
   # New file paths for samples in project directory
-  params$sample1_path <- file.path(params$project_dir, "docs", params$sample1_name)
-  params$sample2_path <- file.path(params$project_dir, "docs", params$sample2_name)
+  params$samples$path1 <- file.path(params$project_dir, "docs", params$samples$name1)
+  params$samples$path2 <- file.path(params$project_dir, "docs", params$samples$name2)
 
-  file.copy(params$sample1_path_original, params$sample1_path)
-  file.copy(params$sample2_path_original, params$sample2_path)
+  file.copy(params$samples$original_path1, params$samples$path1)
+  file.copy(params$samples$original_path2, params$samples$path2)
 
   return(params)
 }
 
-get_writer_profiles <- function(clusters, unknown_writers = TRUE) {
+get_writer_profiles <- function(clusters, known_writers = FALSE) {
   counts <- handwriter::get_cluster_fill_counts(clusters)
   profiles <- get_cluster_fill_rates(counts)
 
   # get_distances requires a writer ID column
-  if (unknown_writers) {
+  if (!known_writers) {
     profiles$writer <- c("unknown1", "unknown2")
   }
 
@@ -246,14 +341,19 @@ get_writer_profiles <- function(clusters, unknown_writers = TRUE) {
 #' Ommen (2021) <doi:10.1002/sam.11566>.
 #'
 #' @param d A data frame of distance(s) between two handwriting samples,
-#'   calculated with \code{\link{get_distances}}. The distance(s) needs to be the
-#'   distance(s) used to train the random forest.
-#' @param rforest A \pkg{ranger} random forest created with \code{\link{train_rf}}.
+#'   calculated with \code{\link{get_distances}}. The distance(s) needs to be
+#'   the distance(s) used to train the random forest.
+#' @param rforest A \pkg{ranger} random forest created with
+#'   \code{\link{train_rf}}.
+#' @param known_writers TRUE if the true writer is known for both writing
+#'   samples. Otherwise, FALSE. If TRUE, the writer IDs and a column that
+#'   records the ground truth of whether the same person or different people
+#'   wrote the samples will be added to the output data frame.
 #'
 #' @return A data frame
 #'
 #' @noRd
-get_score <- function(d, rforest, unknown_writers = TRUE) {
+get_score <- function(d, rforest, known_writers = FALSE) {
   get_prop_same_votes <- function(preds) {
     # Get the proportion of decision trees in the trained random forest that
     # predict (vote) same writer.
@@ -263,13 +363,13 @@ get_score <- function(d, rforest, unknown_writers = TRUE) {
     return(prop)
   }
 
-  make_scores_df <- function(score, d, unknown_writers) {
+  make_scores_df <- function(score, d, known_writers) {
     scores_df <- data.frame("score" = score)
     scores_df$docname1 <- d$docname1
     scores_df$docname2 <- d$docname2
 
     # Add writer1, writer2, and match columns for known writing samples only
-    if (!unknown_writers) {
+    if (known_writers) {
       scores_df$match <- label_same_different_writer(dists = d)$match
       scores_df$writer1 <- d$writer1
       scores_df$writer2 <- d$writer2
@@ -293,7 +393,7 @@ get_score <- function(d, rforest, unknown_writers = TRUE) {
   preds <- ranger::predictions(stats::predict(rforest$rf, dists_only, predict.all = TRUE))
   score <- get_prop_same_votes(preds = preds)
 
-  scores_df <- make_scores_df(score = score, d = d, unknown_writers = unknown_writers)
+  scores_df <- make_scores_df(score = score, d = d, known_writers = known_writers)
 
   return(scores_df)
 }
@@ -367,10 +467,18 @@ eval_density_at_point <- function(den, x, type, zero_correction = 1e-10) {
 
 make_results_df <- function(params) {
   df <- data.frame(
-    "sample1" = params$sample1_path_original,
-    "sample2" = params$sample2_path_original,
     "score" = params$score
   )
+
+  if (!is.null(params$samples)) {
+    df$sample1 <- params$samples$original_path1
+    df$sample2 <- params$samples$original_path2
+  }
+
+  if (!is.null(params$writer_profiles)) {
+    df$sample1 <- params$writer_profiles$docname[1]
+    df$sample2 <- params$writer_profiles$docname[2]
+  }
 
   if (!params$score_only) {
     df$numerator <- params$numerator
@@ -378,9 +486,14 @@ make_results_df <- function(params) {
     df$slr <- params$slr
   }
 
-  if (!params$unknown_writers) {
-    df$writer1 <- params$writer1
-    df$writer2 <- params$writer2
+  if (params$known_writers) {
+    if (is.null(params$writer_profiles)) {
+      df$writer1 <- params$writer1
+      df$writer2 <- params$writer2
+    } else if (!is.null(params$writer_profiles)) {
+      df$writer1 <- params$writer_profiles$writer[1]
+      df$writer2 <- params$writer_profiles$writer[2]
+    }
     df$ground_truth <- ifelse(df$writer1 == df$writer2, "same writer", "different writer")
   }
 

@@ -43,7 +43,7 @@ get_ref_scores <- function(rforest, df) {
   dist_measures <- which_dists(rforest = rforest)
   d <- get_distances(df = df, distance_measures = dist_measures)
 
-  scores_df <- get_score(d = d, rforest = rforest, unknown_writers = FALSE)
+  scores_df <- get_score(d = d, rforest = rforest, known_writers = TRUE)
 
   # split into same and different writers to make it easier on the next step
   scores <- list()

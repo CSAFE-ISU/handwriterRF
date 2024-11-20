@@ -35,12 +35,12 @@ saveRDS(d, testthat::test_path("fixtures", "distances", "cos.rds"))
 df <- test[1:2, ]
 df$writer <- c("unknown1", "unknown2")
 d <- get_distances(df, c("abs", "euc"))
-actual <- get_score(d = d, rforest = random_forest, unknown_writers = TRUE)
+actual <- get_score(d = d, rforest = random_forest, known_writers = TRUE)
 saveRDS(actual, testthat::test_path("fixtures", "scores", "unknown_writers.rds"))
 
 df <- test[1:2, ]
 d <- get_distances(df, c("abs", "euc"))
-actual <- get_score(d = d, rforest = random_forest, unknown_writers = FALSE)
+actual <- get_score(d = d, rforest = random_forest, known_writers = FALSE)
 saveRDS(actual, testthat::test_path("fixtures", "scores", "known_writers.rds"))
 
 # save densities
