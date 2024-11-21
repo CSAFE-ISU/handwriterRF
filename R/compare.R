@@ -119,10 +119,10 @@ compare_documents <- function(sample1,
 
   message("Calculating distance between samples...")
   dist_measures <- which_dists(rforest = params$rforest)
-  d <- get_distances(df = profiles, distance_measures = dist_measures)
+  params$dist <- get_distances(df = profiles, distance_measures = dist_measures)
 
   message("Calculating similarity score...")
-  params$score <- get_score(d = d, rforest = params$rforest, known_writers = params$known_writers)$score
+  params$score <- get_score(d = params$dist, rforest = params$rforest, known_writers = params$known_writers)$score
 
   # Optional. Calculate SLR
   if (!score_only) {
@@ -203,10 +203,10 @@ compare_writer_profiles <- function(
 
   message("Calculating distance between samples...")
   dist_measures <- which_dists(rforest = params$rforest)
-  d <- get_distances(df = writer_profiles, distance_measures = dist_measures)
+  params$dist <- get_distances(df = writer_profiles, distance_measures = dist_measures)
 
   message("Calculating similarity score...")
-  params$score <- get_score(d = d, rforest = params$rforest, known_writers = params$known_writers)$score
+  params$score <- get_score(d = params$dist, rforest = params$rforest, known_writers = params$known_writers)$score
 
   # Optional. Calculate SLR
   if (!score_only) {
@@ -323,6 +323,9 @@ copy_samples_to_project_dir <- function(params) {
 }
 
 get_writer_profiles <- function(clusters, known_writers = FALSE) {
+  # Prevent note "no visible binding for global variable"
+  writers <- NULL
+
   counts <- handwriter::get_cluster_fill_counts(clusters)
   profiles <- get_cluster_fill_rates(counts)
 
@@ -399,10 +402,16 @@ get_score <- function(d, rforest, known_writers = FALSE) {
 }
 
 get_slr <- function(params) {
+  get_slr_for_single_score <- function(score, densities) {
+    numerator <- eval_density_at_point(den = densities$same_writer, x = score, type = "numerator")
+    denominator <- eval_density_at_point(den = densities$diff_writer, x = score, type = "denominator")
+    slr <- numerator / denominator
+    return(slr)
+  }
+
   densities <- make_densities(scores = params$reference_scores)
-  params$numerator <- eval_density_at_point(den = densities$same_writer, x = params$score, type = "numerator")
-  params$denominator <- eval_density_at_point(den = densities$diff_writer, x = params$score, type = "denominator")
-  params$slr <- params$numerator / params$denominator
+
+  params$slr <- sapply(params$score, function(x) get_slr_for_single_score(score = x, densities = densities))
 
   return(params)
 }
@@ -466,42 +475,23 @@ eval_density_at_point <- function(den, x, type, zero_correction = 1e-10) {
 
 
 make_results_df <- function(params) {
-  df <- data.frame(
-    "score" = params$score
-  )
+  df <- params$dist
 
-  if (!is.null(params$samples)) {
-    df$sample1 <- params$samples$original_path1
-    df$sample2 <- params$samples$original_path2
-  }
+  # drop distance measures
+  df <- df %>% dplyr::select(tidyselect::any_of(c("docname1", "writer1", "docname2", "writer2")))
 
-  if (!is.null(params$writer_profiles)) {
-    df$sample1 <- params$writer_profiles$docname[1]
-    df$sample2 <- params$writer_profiles$docname[2]
-  }
+  df$score <- params$score
 
   if (!params$score_only) {
-    df$numerator <- params$numerator
-    df$denominator <- params$denominator
     df$slr <- params$slr
   }
 
   if (params$known_writers) {
-    if (is.null(params$writer_profiles)) {
-      df$writer1 <- params$writer1
-      df$writer2 <- params$writer2
-    } else if (!is.null(params$writer_profiles)) {
-      df$writer1 <- params$writer_profiles$writer[1]
-      df$writer2 <- params$writer_profiles$writer[2]
-    }
     df$ground_truth <- ifelse(df$writer1 == df$writer2, "same writer", "different writer")
   }
 
-  df <- df %>% dplyr::select(tidyselect::any_of(c(
-    "sample1", "writer1", "sample2", "writer2",
-    "ground_truth", "score", "numerator", "denominator",
-    "slr"
-  )))
+  df <- df %>%
+    dplyr::select(tidyselect::any_of(c("docname1", "writer1", "docname2", "writer2", "ground_truth", "score", "slr")))
   return(df)
 }
 
