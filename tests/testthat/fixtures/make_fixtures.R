@@ -35,12 +35,12 @@ saveRDS(d, testthat::test_path("fixtures", "distances", "cos.rds"))
 df <- test[1:2, ]
 df$writer <- c("unknown1", "unknown2")
 d <- get_distances(df, c("abs", "euc"))
-actual <- get_score(d = d, rforest = random_forest, known_writers = TRUE)
+actual <- get_score(d = d, rforest = random_forest)
 saveRDS(actual, testthat::test_path("fixtures", "scores", "unknown_writers.rds"))
 
 df <- test[1:2, ]
 d <- get_distances(df, c("abs", "euc"))
-actual <- get_score(d = d, rforest = random_forest, known_writers = FALSE)
+actual <- get_score(d = d, rforest = random_forest)
 saveRDS(actual, testthat::test_path("fixtures", "scores", "known_writers.rds"))
 
 # save densities
@@ -66,3 +66,38 @@ actual <- calculate_slr(
   project_dir = testthat::test_path("fixtures", "slrs_same_filename_example")
 )
 saveRDS(actual, testthat::test_path("fixtures", "slrs", "same_filename_example.rds"))
+
+# compare documents
+actual <- compare_documents(
+  sample1 = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r01.png"),
+  sample2 = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r02.png"),
+  score_only = TRUE
+)
+saveRDS(actual, testthat::test_path("fixtures", "compare", "w0030_v_w0030_score_only.rds"))
+
+# compare writer profiles
+writer_profiles <- test[1:4, ]
+writer_profiles <- writer_profiles %>% dplyr::select(-writer)
+actual <- compare_writer_profiles(
+  writer_profiles
+)
+saveRDS(actual, testthat::test_path("fixtures", "compare", "test_4rows_score_only_unknown_writers.rds"))
+
+actual <- compare_writer_profiles(
+  writer_profiles,
+  score_only = FALSE
+)
+saveRDS(actual, testthat::test_path("fixtures", "compare", "test_4rows_slr_unknown_writers.rds"))
+
+
+writer_profiles <- test[1:4, ]
+actual <- compare_writer_profiles(
+  writer_profiles
+)
+saveRDS(actual, testthat::test_path("fixtures", "compare", "test_4rows_score_only_known_writers.rds"))
+
+actual <- compare_writer_profiles(
+  writer_profiles,
+  score_only = FALSE
+)
+saveRDS(actual, testthat::test_path("fixtures", "compare", "test_4rows_slr_known_writers.rds"))

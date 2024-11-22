@@ -1,4 +1,4 @@
-test_that("Calculate SLR works on w0030 samples", {
+testthat::test_that("Calculate SLR works on w0030 samples", {
   actual <- calculate_slr(
     sample1_path = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r01.png"),
     sample2_path = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r02.png"),
@@ -6,15 +6,10 @@ test_that("Calculate SLR works on w0030 samples", {
 
   expected <- readRDS(testthat::test_path("fixtures", "slrs", "w0030_v_w0030.rds"))
 
-  # Full file paths might be different but the file names should be identical
-  testthat::expect_identical(basename(actual$sample1), basename(expected$sample1))
-  testthat::expect_identical(basename(actual$sample2), basename(expected$sample2))
-
-  # All other columns should be identical
-  testthat::expect_identical(actual[-c(1,2)], expected[-c(1,2)])
+  testthat::expect_identical(actual, expected)
 })
 
-test_that("Calculate SLR works on w0030 versus w0238 samples", {
+testthat::test_that("Calculate SLR works on w0030 versus w0238 samples", {
   actual <- calculate_slr(
     sample1_path = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r01.png"),
     sample2_path = testthat::test_path("fixtures", "samples1", "w0238_s01_pWOZ_r02.png"),
@@ -22,15 +17,10 @@ test_that("Calculate SLR works on w0030 versus w0238 samples", {
 
   expected <- readRDS(testthat::test_path("fixtures", "slrs", "w0030_v_w0238.rds"))
 
-  # Full file paths might be different but the file names should be identical
-  testthat::expect_identical(basename(actual$sample1), basename(expected$sample1))
-  testthat::expect_identical(basename(actual$sample2), basename(expected$sample2))
-
-  # All other columns should be identical
-  testthat::expect_identical(actual[-c(1,2)], expected[-c(1,2)])
+  testthat::expect_identical(actual, expected)
 })
 
-test_that("Calculate SLR works on w0030 samples in project directory", {
+testthat::test_that("Calculate SLR works on w0030 samples in project directory", {
   actual <- calculate_slr(
     sample1_path = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r01.png"),
     sample2_path = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r02.png"),
@@ -39,12 +29,7 @@ test_that("Calculate SLR works on w0030 samples in project directory", {
 
   expected <- readRDS(testthat::test_path("fixtures", "slrs", "w0030_v_w0030.rds"))
 
-  # Full file paths might be different but the file names should be identical
-  testthat::expect_identical(basename(actual$sample1), basename(expected$sample1))
-  testthat::expect_identical(basename(actual$sample2), basename(expected$sample2))
-
-  # All other columns should be identical
-  testthat::expect_identical(actual[-c(1,2)], expected[-c(1,2)])
+  testthat::expect_identical(actual, expected)
 })
 
 test_that("Calculate SLRs throws error if samples are the same file in the same folder", {
@@ -63,14 +48,9 @@ test_that("Calculate SLRs works if samples in different folders have the same fi
     sample2_path = testthat::test_path("fixtures", "samples2", "0.png"),
   )
 
-  expected <-readRDS(testthat::test_path("fixtures", "slrs", "same_filename_example.rds"))
+  expected <- readRDS(testthat::test_path("fixtures", "slrs", "same_filename_example.rds"))
 
-  # Full file paths might be different but the file names should be identical
-  testthat::expect_identical(basename(actual$sample1), basename(expected$sample1))
-  testthat::expect_identical(basename(actual$sample2), basename(expected$sample2))
-
-  # All other columns should be identical
-  testthat::expect_identical(actual[-c(1,2)], expected[-c(1,2)])
+  testthat::expect_identical(actual, expected)
 })
 
 test_that("Interpret SLR returns the correct message for values greater than 1", {

@@ -38,10 +38,6 @@
 #'   format.
 #' @param sample2_path A file path to a second handwriting sample saved in PNG
 #'   file format.
-#' @param known_writers TRUE if the true writer is known for both writing
-#'   samples. Otherwise, FALSE. If TRUE, the writer IDs and a column that
-#'   records the ground truth of whether the same person or different people
-#'   wrote the samples will be added to the output data frame.
 #' @param rforest Optional. A random forest trained with \pkg{ranger}. If no
 #'   random forest is specified, `random_forest` will be used.
 #' @param reference_scores Optional. A data frame of reference similarity
@@ -76,7 +72,7 @@
 #' }
 #'
 #' @md
-calculate_slr <- function(sample1_path, sample2_path, known_writers = TRUE,
+calculate_slr <- function(sample1_path, sample2_path,
                           rforest = NULL, reference_scores = NULL,
                           project_dir = NULL) {
   df <- compare_documents(

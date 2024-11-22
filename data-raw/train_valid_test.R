@@ -29,10 +29,12 @@ make_csafe_sets <- function(rates, prompts = c("pWOZ", "pLND"), num_per_prompt =
     df <- df %>% dplyr::filter(writer %in% writers)
 
     # randomly select prompts from each writer
-    dfs <- lapply(prompts, function(p) {df %>%
+    dfs <- lapply(prompts, function(p) {
+      df %>%
         dplyr::filter(prompt == p) %>%
         dplyr::group_by(writer) %>%
-        dplyr::slice_sample(n = num_per_prompt)})
+        dplyr::slice_sample(n = num_per_prompt)
+    })
     df <- do.call(rbind, dfs)
 
     return(df)
@@ -46,9 +48,11 @@ make_csafe_sets <- function(rates, prompts = c("pWOZ", "pLND"), num_per_prompt =
 
   # split writers train, validation, and test sets
   all_writers <- find_writers_with_27_docs(df = rates)
-  writers <- split_writers(all_writers = all_writers,
-                           num_train_writers = num_train_writers,
-                           num_validation_writers = num_validation_writers)
+  writers <- split_writers(
+    all_writers = all_writers,
+    num_train_writers = num_train_writers,
+    num_validation_writers = num_validation_writers
+  )
 
   rates_exp <- expand_docnames(df = rates)
   docs <- lapply(writers, function(x) sample_prompts(df = rates_exp, writers = x, prompts = prompts, num_per_prompt = num_per_prompt))
@@ -77,7 +81,6 @@ make_cvl_sets <- function(rates, num_per_writer = 4, use_German_prompt = FALSE,
   }
 
   sample_prompts <- function(df, writers, num_per_writer, use_German_prompt) {
-
     df <- expand_cvl_docnames(df = df)
 
     if (!use_German_prompt) {
@@ -100,13 +103,19 @@ make_cvl_sets <- function(rates, num_per_writer = 4, use_German_prompt = FALSE,
   }
 
   all_writers <- find_writers_with_5plus_docs(df = rates)
-  writers <- split_writers(all_writers = all_writers,
-                           num_train_writers = num_train_writers,
-                           num_validation_writers = num_validation_writers)
-  docs <- lapply(writers, function(w) sample_prompts(df = rates,
-                                                     writers = w,
-                                                     num_per_writer = num_per_writer,
-                                                     use_German_prompt = use_German_prompt))
+  writers <- split_writers(
+    all_writers = all_writers,
+    num_train_writers = num_train_writers,
+    num_validation_writers = num_validation_writers
+  )
+  docs <- lapply(writers, function(w) {
+    sample_prompts(
+      df = rates,
+      writers = w,
+      num_per_writer = num_per_writer,
+      use_German_prompt = use_German_prompt
+    )
+  })
   docs <- lapply(docs, drop_prompt_column)
 
   return(docs)
@@ -148,12 +157,16 @@ csafe <- readRDS("data-raw/csafe_cfr.rds")
 cvl <- readRDS("data-raw/cvl_cfr.rds")
 
 # Make sets
-csafe <- make_csafe_sets(rates = csafe, prompts = c("pWOZ", "pLND"), num_per_prompt = 2,
-                         num_train_writers = 100, num_validation_writers = 150)
+csafe <- make_csafe_sets(
+  rates = csafe, prompts = c("pWOZ", "pLND"), num_per_prompt = 2,
+  num_train_writers = 100, num_validation_writers = 150
+)
 saveRDS(csafe, "data-raw/csafe_sets.rds")
 
-cvl <- make_cvl_sets(rates = cvl, num_per_writer = 4, use_German_prompt = FALSE,
-                     num_train_writers = 100, num_validation_writers = 150)
+cvl <- make_cvl_sets(
+  rates = cvl, num_per_writer = 4, use_German_prompt = FALSE,
+  num_train_writers = 100, num_validation_writers = 150
+)
 saveRDS(cvl, "data-raw/cvl_sets.rds")
 
 # csafe <- readRDS("data-raw/csafe_sets.rds")

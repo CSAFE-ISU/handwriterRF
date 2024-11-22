@@ -21,6 +21,8 @@ Create reference scores of same writer and different writer scores from a
 data frame of cluster fill rates.
 }
 \examples{
+\donttest{
 get_ref_scores(rforest = random_forest, df = validation)
+}
 
 }

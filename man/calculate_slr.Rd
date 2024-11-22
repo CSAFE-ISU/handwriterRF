@@ -7,7 +7,6 @@
 calculate_slr(
   sample1_path,
   sample2_path,
-  known_writers = TRUE,
   rforest = NULL,
   reference_scores = NULL,
   project_dir = NULL
@@ -19,11 +18,6 @@ format.}
 
 \item{sample2_path}{A file path to a second handwriting sample saved in PNG
 file format.}
-
-\item{known_writers}{TRUE if the true writer is known for both writing
-samples. Otherwise, FALSE. If TRUE, the writer IDs and a column that
-records the ground truth of whether the same person or different people
-wrote the samples will be added to the output data frame.}
 
 \item{rforest}{Optional. A random forest trained with \pkg{ranger}. If no
 random forest is specified, \code{random_forest} will be used.}

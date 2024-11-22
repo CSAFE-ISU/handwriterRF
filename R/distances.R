@@ -70,6 +70,11 @@
 get_distances <- function(df, distance_measures) {
   dists <- list()
 
+  # If no writer column, label writers as unknown1, unknown2, etc.
+  if (!("writer" %in% colnames(df))) {
+    df$writer <- paste0("unknown", 1:nrow(df))
+  }
+
   for (method in distance_measures) {
     if (method == "abs") {
       dists[["abs"]] <- absolute_dist(df)

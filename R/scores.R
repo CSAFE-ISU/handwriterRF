@@ -34,7 +34,9 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' get_ref_scores(rforest = random_forest, df = validation)
+#' }
 #'
 get_ref_scores <- function(rforest, df) {
   # Prevent note 'no visible binding for global variable'
@@ -43,7 +45,7 @@ get_ref_scores <- function(rforest, df) {
   dist_measures <- which_dists(rforest = rforest)
   d <- get_distances(df = df, distance_measures = dist_measures)
 
-  scores_df <- get_score(d = d, rforest = rforest, known_writers = TRUE)
+  scores_df <- get_score(d = d, rforest = rforest)
 
   # split into same and different writers to make it easier on the next step
   scores <- list()

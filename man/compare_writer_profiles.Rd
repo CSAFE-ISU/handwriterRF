@@ -9,8 +9,7 @@ compare_writer_profiles(
   score_only = TRUE,
   rforest = NULL,
   project_dir = NULL,
-  reference_scores = NULL,
-  known_writers = FALSE
+  reference_scores = NULL
 )
 }
 \arguments{
@@ -37,11 +36,6 @@ if \code{score_only} is FALSE. If score only is true, reference scores are
 unnecessary because a score-based likelihood ratio will not be calculated.
 If reference scores are supplied, \code{score_only} will automatically be set to
 FALSE.}
-
-\item{known_writers}{TRUE if the true writer is known for both writing
-samples. Otherwise, FALSE. If TRUE, the writer IDs and a column that
-records the ground truth of whether the same person or different people
-wrote the samples will be added to the output data frame.}
 }
 \value{
 A data frame
@@ -52,8 +46,8 @@ they were written by the same person. Use either a similarity score or a
 score-based likelihood ratio as a comparison method.
 }
 \examples{
-compare_writer_profiles(test[1:2,], score_only = TRUE)
+compare_writer_profiles(test[1:2, ], score_only = TRUE)
 
-compare_writer_profiles(test[1:2,], score_only = FALSE)
+compare_writer_profiles(test[1:2, ], score_only = FALSE)
 
 }
