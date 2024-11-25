@@ -326,66 +326,6 @@ get_writer_profiles <- function(clusters) {
   return(profiles)
 }
 
-#' Calculate a Similarity Score
-#'
-#' Use a trained random forest to produce a similarity score for the distance
-#' between two handwriting samples as described in Madeline Johnson and Danica
-#' Ommen (2021) <doi:10.1002/sam.11566>.
-#'
-#' @param d A data frame of distance(s) between two handwriting samples,
-#'   calculated with \code{\link{get_distances}}. The distance(s) needs to be
-#'   the distance(s) used to train the random forest.
-#' @param rforest A \pkg{ranger} random forest created with
-#'   \code{\link{train_rf}}.
-#'
-#' @return A data frame
-#'
-#' @noRd
-get_score <- function(d, rforest) {
-  get_prop_same_votes <- function(preds) {
-    # Get the proportion of decision trees in the trained random forest that
-    # predict (vote) same writer.
-    preds <- as.data.frame(preds)
-    ntrees <- ncol(preds)
-    prop <- rowSums(preds == 2) / ntrees
-    return(prop)
-  }
-
-  make_scores_df <- function(score, d) {
-    scores_df <- data.frame("score" = score)
-    scores_df$docname1 <- d$docname1
-    scores_df$docname2 <- d$docname2
-
-    # Add writer1, writer2, and match columns for known writing samples only
-    if (!all(startsWith(d$writer1, "unknown")) && !all(startsWith(d$writer2, "unknown"))) {
-      scores_df$match <- label_same_different_writer(dists = d)$match
-      scores_df$writer1 <- d$writer1
-      scores_df$writer2 <- d$writer2
-    }
-
-    # Sort columns
-    scores_df <- scores_df %>%
-      dplyr::select(tidyselect::any_of(c("docname1", "writer1", "docname2", "writer2", "match", "score")))
-  }
-
-  # Prevent note 'no visible binding for global variable'
-  docname1 <- docname2 <- NULL
-
-  # Get only the distance columns
-  dists_only <- d %>%
-    dplyr::ungroup() %>%
-    dplyr::select(-tidyselect::any_of(c("docname1", "writer1", "docname2", "writer2", "match")))
-
-  # Get predictions: a matrix with a row for each doc and a column for each
-  # decision tree. 1 = 'different', 2 = 'same'
-  preds <- ranger::predictions(stats::predict(rforest$rf, dists_only, predict.all = TRUE))
-  score <- get_prop_same_votes(preds = preds)
-
-  scores_df <- make_scores_df(score = score, d = d)
-
-  return(scores_df)
-}
-
 get_slr <- function(params) {
   get_slr_for_single_score <- function(score, densities) {
     numerator <- eval_density_at_point(den = densities$same_writer, x = score, type = "numerator")
@@ -400,64 +340,6 @@ get_slr <- function(params) {
 
   return(params)
 }
-
-#' Make Densities
-#'
-#' Create densities of same writer and different writer scores from reference scores created with
-#' get_validation scores().
-#'
-#' @param scores A list of reference scores created with \code{\link{get_validation_scores}}.
-#'
-#' @return A list of densities
-#'
-#' @noRd
-make_densities <- function(scores) {
-  pdfs <- list()
-  pdfs$same_writer <- stats::density(scores$same_writer$score, kernel = "gaussian", n = 10000)
-  pdfs$diff_writer <- stats::density(scores$diff_writer$score, kernel = "gaussian", n = 10000)
-
-  return(pdfs)
-}
-
-
-#' Evaluate Density at a Point
-#'
-#' @param den A density created with \code{\link[stats]{density}}
-#' @param x A number at which to evaluate the density. I.e., calculate the
-#'   height of the density at the point.
-#' @param type Use 'numerator' or 'denominator' to specify whether the density
-#'   is for the numerator or denominator of the score-based likelihood ratio.
-#'   This is used to determine how to handle NAs or zeros. If the density is for
-#'   the numerator and the density evaluated at the point is NA, the output
-#'   value is 0. If the density is for the denominator and the density evaluated
-#'   at the point is NA or zero, the output is the value input for zero
-#'   correction, to avoid dividing by zero when the score-based likelihood is
-#'   calculated. If the density
-#' @param zero_correction A small number to be used in place of zero in the
-#'   denominator of the score-based likelihood ratio.
-#'
-#' @return A number
-#'
-#' @noRd
-eval_density_at_point <- function(den, x, type, zero_correction = 1e-10) {
-  y <- stats::approx(den$x, den$y, xout = x, n = 10000)$y
-
-  # correct NA
-  if (is.na(y) && (type == "numerator")) {
-    y <- 0
-  }
-  if (is.na(y) && (type == "denominator")) {
-    y <- zero_correction
-  }
-
-  # correct zero in denominator
-  if ((y == 0) && (type == "denominator")) {
-    y <- zero_correction
-  }
-
-  return(y)
-}
-
 
 make_results_df <- function(params) {
   df <- params$dist

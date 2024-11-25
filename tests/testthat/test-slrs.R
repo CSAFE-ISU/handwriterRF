@@ -89,10 +89,39 @@ test_that("Interpret SLR returns the correct message for a value of 0", {
   expect_identical(actual, expected)
 })
 
+test_that("Interpret SLR returns an error for non-numeric values", {
+  df <- data.frame("score" = 0.575, "slr" = "string")
+  expect_error(interpret_slr(df), "The slr value is not numeric.")
+
+  df <- data.frame("score" = 0.575, "slr" = NA)
+  expect_error(interpret_slr(df), "The slr value is not numeric.")
+})
+
+test_that("Interpret SLR returns an error for infinite values", {
+  df <- data.frame("score" = 0.575, "slr" = Inf)
+  expect_error(interpret_slr(df), "The slr value cannot be infinite.")
+})
+
+test_that("Interpret SLR returns an error for invalid values", {
+  df <- data.frame("score" = 0.575, "slr" = -1)
+  expect_error(interpret_slr(df), "The slr value must be greater than or equal to zero.")
+
+  df <- data.frame("score" = 0.575, "slr" = Inf)
+  expect_error(interpret_slr(df), "The slr value cannot be infinite.")
+})
+
 test_that("Make densities works with ranger package", {
   actual <- make_densities(scores = ref_scores)
 
   expected <- readRDS(testthat::test_path("fixtures", "slrs", "densities.csv"))
 
   expect_equal(actual, expected)
+})
+
+test_that("Evaluate density at point changes NA in denominator to 1e-10", {
+  den <- density(ref_scores$diff_writer$score)
+
+  actual <- eval_density_at_point(den, 1.5, type = "denominator")
+
+  expect_equal(actual, 1e-10)
 })

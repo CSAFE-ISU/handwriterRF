@@ -110,6 +110,17 @@ calculate_slr <- function(sample1_path, sample2_path,
 #' interpret_slr(df)
 #'
 interpret_slr <- function(df) {
+  # check for non-numeric values
+  if (!is.numeric(df$slr)) {
+    stop("The slr value is not numeric.")
+  }
+
+  # check for infinite values
+  if (is.infinite(df$slr)) {
+    stop("The slr value cannot be infinite.")
+  }
+
+  # create appropriate message if slr >= 0, return error if slr < 0
   if (df$slr > 1) {
     x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark = ","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by the same person is", format(round(df$slr, 1), big.mark = ","), "times greater than the likelihood of observing this score if the documents were written by different writers.")
   } else if (df$slr > 0 && df$slr < 1) {
@@ -119,7 +130,67 @@ interpret_slr <- function(df) {
   } else if (df$slr == 0) {
     x <- paste("A score-based likelihood ratio of 0 means it is virtually impossible that the documents were written by the same person.")
   } else {
-    stop("The slr value is invalid.")
+    stop("The slr value must be greater than or equal to zero.")
   }
   return(x)
+}
+
+
+# Internal Functions ------------------------------------------------------
+
+#' Make Densities
+#'
+#' Create densities of same writer and different writer scores from reference
+#' scores created with get_validation scores().
+#'
+#' @param scores A list of reference scores created with
+#'   \code{\link{get_validation_scores}}.
+#'
+#' @return A list of densities
+#'
+#' @noRd
+make_densities <- function(scores) {
+  pdfs <- list()
+  pdfs$same_writer <- stats::density(scores$same_writer$score, kernel = "gaussian", n = 10000)
+  pdfs$diff_writer <- stats::density(scores$diff_writer$score, kernel = "gaussian", n = 10000)
+
+  return(pdfs)
+}
+
+#' Evaluate Density at a Point
+#'
+#' @param den A density created with \code{\link[stats]{density}}
+#' @param x A number at which to evaluate the density. I.e., calculate the
+#'   height of the density at the point.
+#' @param type Use 'numerator' or 'denominator' to specify whether the density
+#'   is for the numerator or denominator of the score-based likelihood ratio.
+#'   This is used to determine how to handle NAs or zeros. If the density is for
+#'   the numerator and the density evaluated at the point is NA, the output
+#'   value is 0. If the density is for the denominator and the density evaluated
+#'   at the point is NA or zero, the output is the value input for zero
+#'   correction, to avoid dividing by zero when the score-based likelihood is
+#'   calculated. If the density
+#' @param zero_correction A small number to be used in place of zero in the
+#'   denominator of the score-based likelihood ratio.
+#'
+#' @return A number
+#'
+#' @noRd
+eval_density_at_point <- function(den, x, type, zero_correction = 1e-10) {
+  y <- stats::approx(den$x, den$y, xout = x, n = 10000)$y
+
+  # correct NAs
+  if (is.na(y) && (type == "numerator")) {
+    y <- 0
+  }
+  if (is.na(y) && (type == "denominator")) {
+    y <- zero_correction
+  }
+
+  # correct zero in denominator
+  if ((y == 0) && (type == "denominator")) {
+    y <- zero_correction
+  }
+
+  return(y)
 }

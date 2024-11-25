@@ -45,7 +45,8 @@ create_dir <- function(folder) {
 #' @param suffix A character string to add to the end of the new columns. Use ""
 #'   for no suffix.
 #'
-#' @return A data frame with new columns: writer, session, prompt, and repetition.
+#' @return A data frame with new columns: writer, session, prompt, and
+#'   repetition.
 #'
 #' @noRd
 expand_docnames <- function(df, docname_col = "docname", suffix = "") {

@@ -9,7 +9,7 @@ test_that("Train random forest works with ranger package", {
     df = train,
     ntrees = 200,
     distance_measures = "euc",
-    output_dir = tempdir(),
+    output_dir = NULL,
     run_number = 1,
     downsample = TRUE
   ), NA)
