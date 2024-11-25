@@ -1,8 +1,6 @@
 ---
 title: "handwriterRF"
-format: 
-  html:
-    theme: csafe.css
+format: gfm
 ---
 
 <!-- badges: start -->
