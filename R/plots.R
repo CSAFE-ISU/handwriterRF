@@ -52,8 +52,28 @@
 #'
 #' @md
 plot_scores <- function(scores, obs_score = NULL, n_bins = 50) {
-  # Prevent note "no visible binding for global variable"
-  Score <- Group <- bin <- rate <- NULL
+  get_bin_rates <- function(scores, group, breaks = seq(0.00, 1, 0.02), labels = seq(0.01, 0.99, 0.02)) {
+    # prevent note: "no visible binding for global variable"
+    Group <- bin <- NULL
+
+    df <- data.frame(Score = scores, Group = group)
+
+    num_same <- nrow(df)
+
+    # split into bins
+    df$bin <- cut(df$Score, breaks = breaks, labels = labels, include.lowest = TRUE)
+
+    # calculate rates for bins
+    df <- df %>%
+      dplyr::group_by(Group, bin) %>%
+      dplyr::summarize(rate = dplyr::n() / num_same) %>%
+      dplyr::mutate(bin = as.numeric(as.character(bin)))
+
+    return(df)
+  }
+
+  # prevent note: "no visible binding for global variable"
+  bin <- rate <- Group <- NULL
 
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop(
@@ -62,24 +82,11 @@ plot_scores <- function(scores, obs_score = NULL, n_bins = 50) {
     )
   }
 
-  df1 <- data.frame(Score = scores$same_writer$score, Group = "same writer")
-  df2 <- data.frame(Score = scores$diff_writer$score, Group = "different writers")
-
   # Instead of frequency of scores, calculate rate of scores by splitting [0, 1] into 50
   # intervals of equal width and calculating the rate of scores in each interval.
-  breaks <- seq(0, 100, 2) / 100
-  num_same <- nrow(df1)
-  df1 <- df1 %>%
-    dplyr::mutate(bin = cut(Score, breaks = breaks, labels = seq(0.01, 0.99, 0.02), include.lowest = TRUE)) %>%
-    dplyr::group_by(Group, bin) %>%
-    dplyr::summarize(rate = dplyr::n() / num_same)
-  num_diff <- nrow(df2)
-  df2 <- df2 %>%
-    dplyr::mutate(bin = cut(Score, breaks = breaks, labels = seq(0.01, 0.99, 0.02), include.lowest = TRUE)) %>%
-    dplyr::group_by(Group, bin) %>%
-    dplyr::summarize(rate = dplyr::n() / num_diff)
+  df1 <- get_bin_rates(scores = scores$same_writer$score, group = "same writer")
+  df2 <- get_bin_rates(scores = scores$diff_writer$score, group = "different writers")
   df <- rbind(df1, df2)
-  df$bin <- as.numeric(as.character(df$bin))
 
   p <- df %>% ggplot2::ggplot(ggplot2::aes(x = bin, y = rate, fill = Group)) +
     ggplot2::geom_bar(
