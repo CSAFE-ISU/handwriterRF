@@ -54,8 +54,6 @@ train_rf <- function(df,
                      output_dir = NULL,
                      run_number = 1,
                      downsample = TRUE) {
-  # Prevent note 'no visible binding for global variable'
-  docname1 <- docname2 <- NULL
 
   set.seed(run_number)
 
@@ -78,8 +76,10 @@ train_rf <- function(df,
 
   # train and save random forest
   rforest <- list()
+  train_df <- dists %>% dplyr::select(-tidyselect::any_of(c("docname1", "docname2")))
+
   rforest$rf <- ranger::ranger(match ~ .,
-    data = subset(dists, select = -c(docname1, docname2)),
+    data = train_df,
     importance = "permutation",
     scale.permutation.importance = TRUE,
     num.trees = 200
@@ -121,16 +121,14 @@ downsample_diff_pairs <- function(df) {
 #' @return A data frame
 #' @noRd
 label_same_different_writer <- function(dists) {
-  # prevent note 'no visible binding for global variable'
-  writer1 <- writer2 <- NULL
 
-  dists <- dists %>% dplyr::mutate(match = ifelse(writer1 == writer2, "same", "different"))
+  dists$match <- ifelse(dists$writer1 == dists$writer2, "same", "different")
 
   # make match a factor
   dists$match <- as.factor(dists$match)
 
   # drop columns in prep for rf
-  dists <- dists %>% dplyr::select(-writer1, -writer2)
+  dists <- dists %>% dplyr::select(-tidyselect::all_of(c("writer1", "writer2")))
 
   return(dists)
 }

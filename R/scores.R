@@ -39,8 +39,6 @@
 #' }
 #'
 get_ref_scores <- function(rforest, df) {
-  # Prevent note 'no visible binding for global variable'
-  score <- session <- prompt <- rep <- total_graphs <- NULL
 
   dist_measures <- which_dists(rforest = rforest)
   d <- get_distances(df = df, distance_measures = dist_measures)
@@ -101,9 +99,6 @@ get_score <- function(d, rforest) {
     scores_df <- scores_df %>%
       dplyr::select(tidyselect::any_of(c("docname1", "writer1", "docname2", "writer2", "match", "score")))
   }
-
-  # Prevent note 'no visible binding for global variable'
-  docname1 <- docname2 <- NULL
 
   # Get only the distance columns
   dists_only <- d %>%

@@ -50,20 +50,23 @@ create_dir <- function(folder) {
 #'
 #' @noRd
 expand_docnames <- function(df, docname_col = "docname", suffix = "") {
-  # Prevent note "no visible binding for global variable"
-  docname <- writer <- session <- prompt <- NULL
 
-  df <- df %>% tidyr::separate_wider_delim(tidyselect::all_of(docname_col),
-    delim = "_",
-    names = c(
-      paste0("writer", suffix),
-      paste0("session", suffix),
-      paste0("prompt", suffix),
-      paste0("rep", suffix)
-    ),
-    cols_remove = FALSE
-  )
+  df <- df %>%
+    tidyr::separate_wider_delim(tidyselect::all_of(docname_col),
+                                delim = "_",
+                                names = c(
+                                  paste0("writer", suffix),
+                                  paste0("session", suffix),
+                                  paste0("prompt", suffix),
+                                  paste0("rep", suffix)
+                                ),
+                                cols_remove = FALSE
+    )
 
-  df <- df %>% dplyr::select(docname, writer, session, prompt, rep, tidyselect::everything())
+  df <- df %>%
+    dplyr::select(
+      tidyselect::all_of(c("docname", "writer", "session", "prompt", "rep")),
+      tidyselect::everything())
+
   return(df)
 }

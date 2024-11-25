@@ -319,9 +319,6 @@ get_cluster_cols <- function(df) {
 #'
 #' @noRd
 dist_matrix2df <- function(m, docnames, writers, dist_col_label) {
-  # Prevent note 'no visible binding for global variable'
-  docname <- docname2 <- writer1 <- writer2 <- NULL
-
   # set lower triangle as NA because they are duplicates of upper triangle. Set
   m[lower.tri(m)] <- NA
   # diagonal entries to NA because each is the distance between a document and
@@ -340,7 +337,7 @@ dist_matrix2df <- function(m, docnames, writers, dist_col_label) {
   df <- reshape2::melt(df, id.vars = "docname1", variable.name = "docname2", value.name = dist_col_label, na.rm = TRUE)
 
   # change docname2 column from factor to character
-  df <- df %>% dplyr::mutate(docname2 = as.character(docname2))
+  df$docname2 <- as.character(df$docname2)
 
   # add writer columns
   lookup <- data.frame(docnames, writers)

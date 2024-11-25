@@ -9,12 +9,8 @@
 ^scratch*
 
 # Folders
-^altdoc$
 ^data-raw$
-^docs$
-^experiments$
 ^plots$
-^\_quarto$
-
+^README_files$
 
 ^\.github$

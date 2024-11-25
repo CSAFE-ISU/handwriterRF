@@ -317,12 +317,8 @@ copy_samples_to_project_dir <- function(params) {
 }
 
 get_writer_profiles <- function(clusters) {
-  # Prevent note "no visible binding for global variable"
-  writers <- NULL
-
   counts <- handwriter::get_cluster_fill_counts(clusters)
   profiles <- get_cluster_fill_rates(counts)
-
   return(profiles)
 }
 

@@ -35,9 +35,6 @@
 #'
 #' @md
 get_cluster_fill_rates <- function(df) {
-  # Prevent note "no visible binding for global variable"
-  docname <- writer <- doc <- cfr <- NULL
-
   # get label columns. docname is required for input data frames but writer and
   # doc are optional.
   label_cols <- df %>%
