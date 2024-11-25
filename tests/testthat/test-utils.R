@@ -9,7 +9,7 @@ test_that("Create directory works", {
 
 test_that("Expand docnames works", {
   # test data frame already has writer column, so drop it
-  df <- test[1:10,] %>% dplyr::select(-tidyselect::all_of(c("writer")))
+  df <- test[1:10, ] %>% dplyr::select(-tidyselect::all_of(c("writer")))
   actual <- expand_docnames(df = df)
 
   expected <- readRDS(testthat::test_path("fixtures", "expand_docname", "expanded.rds"))

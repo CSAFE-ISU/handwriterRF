@@ -102,6 +102,6 @@ actual <- compare_writer_profiles(
 saveRDS(actual, testthat::test_path("fixtures", "compare", "test_4rows_slr_known_writers.rds"))
 
 # Expand Docnames ----
-df <- test[1:10,] %>% dplyr::select(-tidyselect::all_of(c("writer")))
+df <- test[1:10, ] %>% dplyr::select(-tidyselect::all_of(c("writer")))
 actual <- expand_docnames(df = df)
 saveRDS(actual, testthat::test_path("fixtures", "expand_docname", "expanded.rds"))

@@ -119,4 +119,3 @@ get_score <- function(d, rforest) {
 
   return(scores_df)
 }
-
