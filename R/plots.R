@@ -19,29 +19,61 @@
 # External Functions ------------------------------------------------------
 
 
-#' Plot Histograms
+#' Plot Scores
 #'
-#' Plot histograms of same writer and different writers reference similarity
-#' scores from a random forest created with [train_rf()]. Plot a vertical,
-#' dashed line at a similarity score calculated with [calculate_slr()] to see
-#' whether the score is more typical of the same writer or different writers
-#' reference scores.
+#' Plot same writer and different writers reference similarity scores from a
+#' validation set. The similarity scores are greater than or equal to zero and
+#' less than or equal to one. The interval from 0 to 1 is split into `n_bins`.
+#' The proportion of scores in each bin is calculated and plotted. Optionally, a
+#' vertical dotted line may be plotted at an observed similarity score.
 #'
-#' @param rforest A random forest created with [train_rf()]
-#' @param score A similarity score calculated with [calculate_slr()]
+#' The methods used in this package typically produce many times more different
+#' writer scores than same writer scores. For example, `ref_scores` contains
+#' 79,600 different writer scores but only 200 same writer scores. Histograms,
+#' which show the frequency of scores, don't handle this class imbalance well.
+#' Instead, the rate of scores is plotted.
+#'
+#' @param scores A data frame of scores calculated with
+#'   [get_ref_scores()]
+#' @param obs_score Optional. A similarity score calculated with
+#'   [calculate_slr()]
+#' @param n_bins The number of bins
 #'
 #' @return A ggplot2 plot of histograms
 #' @export
 #'
 #' @examples
-#' plot_histograms(rforest = random_forest)
+#' plot_scores(scores = ref_scores)
+#'
+#' plot_scores(scores = ref_scores, n_bins = 70)
 #'
 #' # Add a vertical line 0.1 on the horizontal axis.
-#' plot_histograms(rforest = random_forest, score = 0.1)
+#' plot_scores(scores = ref_scores, obs_score = 0.1)
 #'
-plot_histograms <- function(rforest, score = NULL) {
-  # Prevent note "no visible binding for global variable"
-  Score <- Group <- NULL
+#' @md
+plot_scores <- function(scores, obs_score = NULL, n_bins = 50) {
+  get_bin_rates <- function(scores, group, breaks = seq(0.00, 1, 0.02), labels = seq(0.01, 0.99, 0.02)) {
+    # prevent note: "no visible binding for global variable"
+    Group <- bin <- NULL
+
+    df <- data.frame(Score = scores, Group = group)
+
+    num_same <- nrow(df)
+
+    # split into bins
+    df$bin <- cut(df$Score, breaks = breaks, labels = labels, include.lowest = TRUE)
+
+    # calculate rates for bins
+    df <- df %>%
+      dplyr::group_by(Group, bin) %>%
+      dplyr::summarize(rate = dplyr::n() / num_same) %>%
+      dplyr::mutate(bin = as.numeric(as.character(bin)))
+
+    return(df)
+  }
+
+  # prevent note: "no visible binding for global variable"
+  bin <- rate <- Group <- NULL
 
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop(
@@ -50,37 +82,104 @@ plot_histograms <- function(rforest, score = NULL) {
     )
   }
 
-  scores <- rforest$scores
+  # Instead of frequency of scores, calculate rate of scores by splitting [0, 1] into 50
+  # intervals of equal width and calculating the rate of scores in each interval.
+  df1 <- get_bin_rates(scores = scores$same_writer$score, group = "same writer")
+  df2 <- get_bin_rates(scores = scores$diff_writer$score, group = "different writers")
+  df <- rbind(df1, df2)
 
-  df <- data.frame(
-    Score = c(scores$same_writer, scores$diff_writer),
-    Group = rep(c("same writer", "different writers"), each = 300)
-  )
-
-  p <- df %>% ggplot2::ggplot(ggplot2::aes(x = Score)) +
-    ggplot2::geom_histogram(position = "identity",
-                            ggplot2::aes(fill = Group),
-                            alpha = 0.4,
-                            bins = 30) +  # Histograms with transparency
-    ggplot2::scale_fill_manual(values = c("same writer" = "#6BA4B8", "different writers" = "#F68D2E")) +  # Customize colors
-    ggplot2::labs(title = "Reference Similarity Scores", x = "Score", y = "Frequency") +
+  p <- df %>% ggplot2::ggplot(ggplot2::aes(x = bin, y = rate, fill = Group)) +
+    ggplot2::geom_bar(
+      stat = "identity",
+      position = "identity",
+      alpha = 0.5
+    ) +
+    ggplot2::scale_fill_manual(values = c("same writer" = "#6BA4B8", "different writers" = "#F68D2E")) + # Customize colors
     ggplot2::theme_bw()
 
   # Optional - add vertical line at score
-  if (!is.null(score)) {
+  if (!is.null(obs_score)) {
+    ymax <- max(df$rate)
     p <- p +
-      ggplot2::geom_vline(xintercept = score,
-                          color = "black",
-                          linetype = "dashed") +  # Add vertical line
+      ggplot2::geom_vline(
+        xintercept = obs_score,
+        color = "black",
+        linetype = "dashed"
+      ) + # add vertical line
       ggplot2::annotate("text",
-                        x = score,
-                        y = 75,  # Dynamically position the label
-                        label = paste("similarity score", score),
-                        color = "black",
-                        size = 3,
-                        angle = 90,
-                        vjust = -1,
-                        hjust = 0.5)  # Add text annotation
+        x = obs_score,
+        y = ymax / 2,
+        label = paste("observed score", obs_score),
+        color = "black",
+        size = 3,
+        angle = 90,
+        vjust = -1,
+        hjust = 0.5
+      ) + # add text
+      ggplot2::labs(title = "The observed similarity score compared to reference similarity scores", x = "Score", y = "Rate")
+  } else {
+    p <- p + ggplot2::labs(title = "Reference similarity scores", x = "Score", y = "Rate")
+  }
+
+  return(p)
+}
+
+#' Plot Writer Profiles
+#'
+#' Create a line plot of cluster fill rates for one or more documents, where the
+#' cluster fill rates serve as writer profiles. Each cluster fill rates for each
+#' document are plotted as different colored lines.
+#'
+#' @param rates A data frame of cluster fill rates created with
+#'   \code{\link[handwriterRF]{get_cluster_fill_rates}}
+#' @param color_by A column name. 'ggplot2' will always group by docname, but
+#'   will use this column to assign colors.
+#' @param ... Additional arguments passed to `ggplot2::facet_wrap`, such as
+#'   `facets`, `nrow`, etc.
+#'
+#' @return A line plot
+#'
+#' @export
+#'
+#' @examples
+#' plot_writer_profiles(rates = test[1:4, ])
+#'
+#' plot_writer_profiles(rates = test[1:4, ], facets = "writer")
+#'
+#' plot_writer_profiles(rates = test[1:4, ], facets = "writer~docname")
+#'
+#' @md
+plot_writer_profiles <- function(rates, color_by = "docname", ...) {
+  # prevent note: "no visible binding for global variable"
+  docname <- cluster <- rate <- .data <- NULL
+
+  rates <- rates %>%
+    tidyr::pivot_longer(
+      cols = tidyselect::starts_with("cluster"),
+      names_to = "cluster",
+      values_to = "rate"
+    ) %>%
+    dplyr::mutate(
+      docname = factor(docname),
+      cluster = as.integer(stringr::str_replace(cluster, "cluster", ""))
+    )
+
+  p <- rates %>%
+    ggplot2::ggplot(ggplot2::aes(
+      x = cluster,
+      y = rate,
+      group = docname,
+      color = .data[[color_by]]
+    )) +
+    ggplot2::geom_line() +
+    ggplot2::geom_point() +
+    ggplot2::theme_bw()
+
+  # optional. facet by writer or docname
+  extra_args <- list(...)
+  if (length(extra_args) > 0) {
+    p <- p +
+      ggplot2::facet_wrap(...)
   }
 
   return(p)

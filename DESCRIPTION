@@ -26,6 +26,7 @@ Imports:
     purrr,
     ranger,
     reshape2,
+    stringr,
     tidyr,
     tidyselect
 Config/testthat/edition: 3

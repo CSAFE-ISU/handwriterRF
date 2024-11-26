@@ -5,62 +5,62 @@
 \alias{cfc}
 \title{Cluster Fill Counts for 1200 CSAFE Handwriting Database Samples}
 \format{
-A data frame with 1200 rows and 41 variables:
+A data frame with 1200 rows and 43 variables:
 \describe{
-  \item{docname}{The file name of the handwriting sample. The file
-  name includes the writer ID, the writing session, prompt, and
-  repetition number of the handwriting sample. There are 1,200
-  handwriting samples.}
-  \item{writer}{Writer ID. There are 100 distinct writer ID's. Each
-  writer has 12 documents.}
-  \item{doc}{A document code that records the writing session, prompt,
-  and repetition number of the handwriting sample. There are 12 distinct
-  document codes. Each writer has a writing sample for each of the 12 document
-  codes.}
-  \item{1}{The number of graphs in cluster 1}
-  \item{2}{The number of graphs in cluster 2}
-  \item{3}{The number of graphs in cluster 3}
-  \item{4}{The number of graphs in cluster 4}
-  \item{5}{The number of graphs in cluster 5}
-  \item{6}{The number of graphs in cluster 6}
-  \item{7}{The number of graphs in cluster 7}
-  \item{8}{The number of graphs in cluster 8}
-  \item{9}{The number of graphs in cluster 9}
-  \item{10}{The number of graphs in cluster 10}
-  \item{11}{The number of graphs in cluster 11}
-  \item{12}{The number of graphs in cluster 12}
-  \item{13}{The number of graphs in cluster 13}
-  \item{14}{The number of graphs in cluster 14}
-  \item{15}{The number of graphs in cluster 15}
-  \item{16}{The number of graphs in cluster 16}
-  \item{17}{The number of graphs in cluster 17}
-  \item{18}{The number of graphs in cluster 18}
-  \item{19}{The number of graphs in cluster 19}
-  \item{20}{The number of graphs in cluster 20}
-  \item{21}{The number of graphs in cluster 21}
-  \item{22}{The number of graphs in cluster 22}
-  \item{23}{The number of graphs in cluster 23}
-  \item{24}{The number of graphs in cluster 24}
-  \item{25}{The number of graphs in cluster 25}
-  \item{26}{The number of graphs in cluster 26}
-  \item{27}{The number of graphs in cluster 27}
-  \item{28}{The number of graphs in cluster 28}
-  \item{29}{The number of graphs in cluster 29}
-  \item{30}{The number of graphs in cluster 30}
-  \item{31}{The number of graphs in cluster 31}
-  \item{32}{The number of graphs in cluster 32}
-  \item{33}{The number of graphs in cluster 33}
-  \item{34}{The number of graphs in cluster 34}
-  \item{35}{The number of graphs in cluster 35}
-  \item{36}{The number of graphs in cluster 36}
-  \item{37}{The number of graphs in cluster 37}
-  \item{38}{The number of graphs in cluster 38}
-  \item{39}{The number of graphs in cluster 39}
-  \item{40}{The number of graphs in cluster 40}
+\item{docname}{The file name of the handwriting sample. The file
+name includes the writer ID, the writing session, prompt, and
+repetition number of the handwriting sample. There are 1,200
+handwriting samples.}
+\item{writer}{Writer ID. There are 100 distinct writer ID's. Each
+writer has 12 documents.}
+\item{doc}{A document code that records the writing session, prompt,
+and repetition number of the handwriting sample. There are 12 distinct
+document codes. Each writer has a writing sample for each of the 12 document
+codes.}
+\item{1}{The number of graphs in cluster 1}
+\item{2}{The number of graphs in cluster 2}
+\item{3}{The number of graphs in cluster 3}
+\item{4}{The number of graphs in cluster 4}
+\item{5}{The number of graphs in cluster 5}
+\item{6}{The number of graphs in cluster 6}
+\item{7}{The number of graphs in cluster 7}
+\item{8}{The number of graphs in cluster 8}
+\item{9}{The number of graphs in cluster 9}
+\item{10}{The number of graphs in cluster 10}
+\item{11}{The number of graphs in cluster 11}
+\item{12}{The number of graphs in cluster 12}
+\item{13}{The number of graphs in cluster 13}
+\item{14}{The number of graphs in cluster 14}
+\item{15}{The number of graphs in cluster 15}
+\item{16}{The number of graphs in cluster 16}
+\item{17}{The number of graphs in cluster 17}
+\item{18}{The number of graphs in cluster 18}
+\item{19}{The number of graphs in cluster 19}
+\item{20}{The number of graphs in cluster 20}
+\item{21}{The number of graphs in cluster 21}
+\item{22}{The number of graphs in cluster 22}
+\item{23}{The number of graphs in cluster 23}
+\item{24}{The number of graphs in cluster 24}
+\item{25}{The number of graphs in cluster 25}
+\item{26}{The number of graphs in cluster 26}
+\item{27}{The number of graphs in cluster 27}
+\item{28}{The number of graphs in cluster 28}
+\item{29}{The number of graphs in cluster 29}
+\item{30}{The number of graphs in cluster 30}
+\item{31}{The number of graphs in cluster 31}
+\item{32}{The number of graphs in cluster 32}
+\item{33}{The number of graphs in cluster 33}
+\item{34}{The number of graphs in cluster 34}
+\item{35}{The number of graphs in cluster 35}
+\item{36}{The number of graphs in cluster 36}
+\item{37}{The number of graphs in cluster 37}
+\item{38}{The number of graphs in cluster 38}
+\item{39}{The number of graphs in cluster 39}
+\item{40}{The number of graphs in cluster 40}
 }
 }
 \source{
-<https://forensicstats.org/handwritingdatabase/>
+\url{https://forensicstats.org/handwritingdatabase/}
 }
 \usage{
 cfc

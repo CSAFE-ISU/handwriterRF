@@ -4,6 +4,3 @@
 .Ruserdata
 inst/doc
 scratch*
-
-altdoc/freeze.rds
-^_quarto$

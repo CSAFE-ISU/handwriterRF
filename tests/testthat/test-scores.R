@@ -1,6 +1,29 @@
-test_that("Get score works", {
-  d <- get_distances(cfr[1:2, ], c("abs", "euc"))
-  score <- get_score(d = d, rforest = random_forest)
+test_that("Get score works with unknown writers", {
+  df <- test[1:2, ]
+  df$writer <- c("unknown1", "unknown2")
+  d <- get_distances(df, c("abs", "euc"))
+  actual <- get_score(d = d, rforest = random_forest)
 
-  expect_equal(score, 0.175)
+  expected <- readRDS(testthat::test_path("fixtures", "scores", "unknown_writers.rds"))
+
+  expect_identical(actual, expected)
+})
+
+test_that("Get score works with known writers", {
+  df <- test[1:2, ]
+  d <- get_distances(df, c("abs", "euc"))
+  actual <- get_score(d = d, rforest = random_forest)
+
+  expected <- readRDS(testthat::test_path("fixtures", "scores", "known_writers.rds"))
+
+  expect_identical(actual, expected)
+})
+
+test_that("Get reference scores works", {
+  actual <- get_ref_scores(
+    rforest = random_forest,
+    df = validation
+  )
+
+  expect_identical(actual, ref_scores)
 })

@@ -1,9 +1,11 @@
 ---
 title: "handwriterRF"
-format: 
-  html:
-    theme: csafe.css
+format: gfm
 ---
+
+<!-- badges: start -->
+  [![Codecov test coverage](https://codecov.io/gh/CSAFE-ISU/handwriterRF/graph/badge.svg)](https://app.codecov.io/gh/CSAFE-ISU/handwriterRF)
+<!-- badges: end -->
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -26,26 +28,26 @@ HandwriterRF requires R and RStudio IDE.
 
 Install the handwriterRF R package. Open RStudio, navigate to the console window, and type
 
-```{r, eval=FALSE}
+```{r install, eval=FALSE}
 install.packages("handwriterRF")
 ```
 
 ## Compare Two Handwriting Samples
 ### Calculate a Score-base Likelihood Ratio
 Open RStudio, navigate to the console window, and load handwriterRF.
-```{r}
+```{r load}
 library(handwriterRF)
 ```
 
 The package includes 4 example handwriting samples from the [CSAFE Handwriting Database](https://forensicstats.org/handwritingdatabase/). Compare 2 of these samples. In this case, both samples are from writer 30.
-```{r, message=FALSE}
-sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
-sample2 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r02.png"), package = "handwriterRF")
+```{r calculate1, message=FALSE}
+sample1 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
+sample2 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r02.png"), package = "handwriterRF")
 slr <- calculate_slr(sample1, sample2)
 ```
 
 If you would like to use your own handwriting samples, scan and save them as PNG images. 
-```{r, eval=FALSE}
+```{r calculate2, eval=FALSE}
 sample1 <- "path/to/your_sample1.png"
 sample2 <- "path/to/your_sample2.png"
 slr <- calculate_slr(sample1, sample2)
@@ -53,23 +55,21 @@ slr <- calculate_slr(sample1, sample2)
 
 The result is a data frame:
 
--   *sample1_path* is the file path of the first sample.
--   *sample2_path* is the file path of the second sample.
 -   *docname1* is the file name of the first sample.
+-   *writer1* is "unknown1".
 -   *docname2* is the file name of the second sample.
+-   *writer2* is "unknown2".
 -   *score* is the similarity score between the two samples.
--   *numerator* is the numerator value of the score-based likelihood ratio. Intuitively, the larger the value the more the similarity score looks like the reference same writer similarity scores.
--   *denominator* is the denominator value of the score-based likelihood ratio. Intuitively, the larger the value the more the similarity score looks like the reference different writers similarity scores.
 -   *slr* is a score-based likelihood ratio that quantifies the strength of evidence in favor of same writer or different writer.
 
 Display the slr data frame. We hide the file path columns here so that the data frame fits on this page.
 
-```{r}
-slr %>% dplyr::select(-sample1_path, -sample2_path)
+```{r slr}
+slr
 ```
 
 ### Interpret the Score-base Likelihood Ratio
 View a verbal interpretation of the score-based likelihood ratio.
-```{r, message=FALSE}
+```{r interpret, message=FALSE}
 interpret_slr(slr)
 ```

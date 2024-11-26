@@ -27,7 +27,7 @@ K-means algorithm terminated.}
 \item{wcd}{The within cluster
 distances on the final iteration of the K-means algorithm. More specifically,
 the distance between each graph and the center of the cluster to which it
-was assigned  on each iteration. The output of \code{\link[handwriter]{make_clustering_template}}' stores
+was assigned  on each iteration. The output of \code{\link[handwriter]{make_clustering_template}} stores
 the within cluster distances on each iteration, but the previous iterations were removed here to reduce the file size.}
 \item{wcss}{A vector of the
 within-cluster sum of squares on each iteration of the K-means algorithm.}}

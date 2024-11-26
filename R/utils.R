@@ -45,19 +45,28 @@ create_dir <- function(folder) {
 #' @param suffix A character string to add to the end of the new columns. Use ""
 #'   for no suffix.
 #'
-#' @return A data frame with new columns: writer, session, prompt, and repetition.
+#' @return A data frame with new columns: writer, session, prompt, and
+#'   repetition.
 #'
 #' @noRd
 expand_docnames <- function(df, docname_col = "docname", suffix = "") {
-  df <- df %>% tidyr::separate_wider_delim(tidyselect::all_of(docname_col),
-    delim = "_",
-    names = c(
-      paste0("writer", suffix),
-      paste0("session", suffix),
-      paste0("prompt", suffix),
-      paste0("rep", suffix)
-    ),
-    cols_remove = FALSE
-  )
+
+  df <- df %>%
+    tidyr::separate_wider_delim(tidyselect::all_of(docname_col),
+                                delim = "_",
+                                names = c(
+                                  paste0("writer", suffix),
+                                  paste0("session", suffix),
+                                  paste0("prompt", suffix),
+                                  paste0("rep", suffix)
+                                ),
+                                cols_remove = FALSE
+    )
+
+  df <- df %>%
+    dplyr::select(
+      tidyselect::all_of(c("docname", "writer", "session", "prompt", "rep")),
+      tidyselect::everything())
+
   return(df)
 }

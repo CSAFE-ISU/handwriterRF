@@ -3,30 +3,27 @@
 \docType{data}
 \name{random_forest}
 \alias{random_forest}
-\title{A \pkg{ranger} Random Forest, Distances, and Similarity Scores}
+\title{A \pkg{ranger} Random Forest and Data Frame of Distances}
 \format{
 A list with the following components:
 \describe{
-\item{dists}{The data frame used to train the random forest. The data frame has
-600 rows. Each row contains the absolute and Euclidean distances between the
-cluster fill rates of two handwriting samples. If both handwriting samples are
-from the same writer, the class is 'same'. If the handwriting samples are from
-different writers, the class is 'different'. There are 300 'same' distances and
-300 'different' distances in the data frame.}
-\item{rf}{A random forest created with \pkg{ranger} with settings:
+#' \item{rf}{A random forest created with \pkg{ranger} with settings:
 importance = 'permutation', scale.permutation.importance = TRUE, and num.trees = 200.}
-\item{scores}{A similarity score was obtained for each pair of handwriting samples in the
-training data frame, dists, by calculating the proportion of decision trees that voted 'same'
-class for the pair.}
+\item{dists}{The data frame used to train the random forest. The data frame has
+2,400 rows. Each row contains the absolute and Euclidean distances between the
+cluster fill rates of two handwriting samples. The class is recorded in the match column.
+If both handwriting samples are
+from the same writer, the class is same. If the handwriting samples are from
+different writers, the class is different. There are 1,200 same distances and
+1,200 different distances in the data frame.}
 }
 }
 \usage{
 random_forest
 }
 \description{
-A list that contains a trained random forest created with \pkg{ranger}, the
-data frame of distances used to train the random forest, and similarity
-scores calculated from the training data.
+A list that contains a trained random forest created with \pkg{ranger} and
+the data frame of distances used to train the random forest.
 }
 \examples{
 # view the random forest
@@ -34,10 +31,6 @@ random_forest$rf
 
 # view the distances data frame
 random_forest$dists
-
-# plot histograms of the similarity scores and place a vertical
-# line at similarity score 0.9.
-plot_histograms(random_forest, 0.9)
 
 }
 \keyword{datasets}

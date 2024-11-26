@@ -2,15 +2,15 @@
 ^\.Rproj\.user$
 
 # Files
+^cran-comments\.md$
+^CRAN-SUBMISSION$
 ^LICENSE\.md$
 ^README.qmd$
 ^scratch*
 
 # Folders
 ^data-raw$
-^experiments$
-^docs$
-^altdoc$
-^_quarto$
-^cran-comments\.md$
-^CRAN-SUBMISSION$
+^plots$
+^README_files$
+
+^\.github$
