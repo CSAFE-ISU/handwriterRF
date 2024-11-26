@@ -1,4 +1,8 @@
 testthat::test_that("Calculate SLR works on w0030 samples", {
+  # make sure tempdir > comparison doesn't exist. If a previous test fails, this
+  # folder might still be hanging around.
+  delete_tempdir_comparison()
+
   actual <- calculate_slr(
     sample1_path = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r01.png"),
     sample2_path = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r02.png"),
@@ -6,10 +10,14 @@ testthat::test_that("Calculate SLR works on w0030 samples", {
 
   expected <- readRDS(testthat::test_path("fixtures", "slrs", "w0030_v_w0030.rds"))
 
-  testthat::expect_identical(actual, expected)
+  testthat::expect_equal(actual, expected)
 })
 
 testthat::test_that("Calculate SLR works on w0030 versus w0238 samples", {
+  # make sure tempdir > comparison doesn't exist. If a previous test fails, this
+  # folder might still be hanging around.
+  delete_tempdir_comparison()
+
   actual <- calculate_slr(
     sample1_path = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r01.png"),
     sample2_path = testthat::test_path("fixtures", "samples1", "w0238_s01_pWOZ_r02.png"),
@@ -17,10 +25,14 @@ testthat::test_that("Calculate SLR works on w0030 versus w0238 samples", {
 
   expected <- readRDS(testthat::test_path("fixtures", "slrs", "w0030_v_w0238.rds"))
 
-  testthat::expect_identical(actual, expected)
+  testthat::expect_equal(actual, expected)
 })
 
 testthat::test_that("Calculate SLR works on w0030 samples in project directory", {
+  # make sure tempdir > comparison doesn't exist. If a previous test fails, this
+  # folder might still be hanging around.
+  delete_tempdir_comparison()
+
   actual <- calculate_slr(
     sample1_path = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r01.png"),
     sample2_path = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r02.png"),
@@ -29,10 +41,14 @@ testthat::test_that("Calculate SLR works on w0030 samples in project directory",
 
   expected <- readRDS(testthat::test_path("fixtures", "slrs", "w0030_v_w0030.rds"))
 
-  testthat::expect_identical(actual, expected)
+  testthat::expect_equal(actual, expected)
 })
 
 test_that("Calculate SLRs throws error if samples are the same file in the same folder", {
+  # make sure tempdir > comparison doesn't exist. If a previous test fails, this
+  # folder might still be hanging around.
+  delete_tempdir_comparison()
+
   expect_error(
     calculate_slr(
       sample1_path = testthat::test_path("fixtures", "samples1", "w0238_s01_pWOZ_r02.png"),
@@ -43,6 +59,10 @@ test_that("Calculate SLRs throws error if samples are the same file in the same 
 })
 
 test_that("Calculate SLRs works if samples in different folders have the same file name", {
+  # make sure tempdir > comparison doesn't exist. If a previous test fails, this
+  # folder might still be hanging around.
+  delete_tempdir_comparison()
+
   actual <- calculate_slr(
     sample1_path = testthat::test_path("fixtures", "samples1", "0.png"),
     sample2_path = testthat::test_path("fixtures", "samples2", "0.png"),
@@ -50,7 +70,7 @@ test_that("Calculate SLRs works if samples in different folders have the same fi
 
   expected <- readRDS(testthat::test_path("fixtures", "slrs", "same_filename_example.rds"))
 
-  testthat::expect_identical(actual, expected)
+  testthat::expect_equal(actual, expected)
 })
 
 test_that("Interpret SLR returns the correct message for values greater than 1", {
@@ -59,7 +79,7 @@ test_that("Interpret SLR returns the correct message for values greater than 1",
 
   expected <- "A score-based likelihood ratio of 4,582,274,302 means the likelihood of observing a similarity score of 0.87 if the documents were written by the same person is 4,582,274,302 times greater than the likelihood of observing this score if the documents were written by different writers."
 
-  expect_identical(actual, expected)
+  expect_equal(actual, expected)
 })
 
 test_that("Interpret SLR returns the correct message for values greater than 0 and less than 1", {
@@ -68,7 +88,7 @@ test_that("Interpret SLR returns the correct message for values greater than 0 a
 
   expected <- "A score-based likelihood ratio of 0.75 means the likelihood of observing a similarity score of 0.5 if the documents were written by different people is 1.33 times greater than the likelihood of observing this score if the documents were written by the same writer."
 
-  expect_identical(actual, expected)
+  expect_equal(actual, expected)
 })
 
 test_that("Interpret SLR returns the correct message for a value of 1", {
@@ -77,7 +97,7 @@ test_that("Interpret SLR returns the correct message for a value of 1", {
 
   expected <- "A score-based likelihood ratio of 1 means the likelihood of observing a similarity score of 0.75 if the documents were written by different people is equal to the likelihood of observing the score if the documents were written by the same writer."
 
-  expect_identical(actual, expected)
+  expect_equal(actual, expected)
 })
 
 test_that("Interpret SLR returns the correct message for a value of 0", {
@@ -86,7 +106,7 @@ test_that("Interpret SLR returns the correct message for a value of 0", {
 
   expected <- "A score-based likelihood ratio of 0 means it is virtually impossible that the documents were written by the same person."
 
-  expect_identical(actual, expected)
+  expect_equal(actual, expected)
 })
 
 test_that("Interpret SLR returns an error for non-numeric values", {

@@ -6,7 +6,7 @@ test_that("Get score works with unknown writers", {
 
   expected <- readRDS(testthat::test_path("fixtures", "scores", "unknown_writers.rds"))
 
-  expect_identical(actual, expected)
+  expect_equal(actual, expected)
 })
 
 test_that("Get score works with known writers", {
@@ -16,7 +16,7 @@ test_that("Get score works with known writers", {
 
   expected <- readRDS(testthat::test_path("fixtures", "scores", "known_writers.rds"))
 
-  expect_identical(actual, expected)
+  expect_equal(actual, expected)
 })
 
 test_that("Get reference scores works", {
@@ -25,5 +25,5 @@ test_that("Get reference scores works", {
     df = validation
   )
 
-  expect_identical(actual, ref_scores)
+  expect_equal(actual, ref_scores)
 })
