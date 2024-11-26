@@ -70,3 +70,18 @@ expand_docnames <- function(df, docname_col = "docname", suffix = "") {
 
   return(df)
 }
+
+
+#' Empty the Comparison folder in the Temporary Directory
+#'
+#' `compare_documents()` and `calculate_slr()` save helper files in the
+#' tempdir() > comparison. Before these functions terminate, they run
+#' `empty_tempdir_comparison()` to delete the comparison folder and its
+#' contents.
+#'
+#' @return NULL
+#'
+#' @noRd
+delete_tempdir_comparison <- function() {
+  unlink(file.path(tempdir(), "comparison"), recursive = TRUE)
+}

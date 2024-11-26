@@ -96,7 +96,11 @@ compare_documents <- function(sample1,
     slr = NULL
   )
 
-  params <- setup(params, subdirs = c("docs", "graphs", "clusters"))
+  params <- handle_null_values(params)
+
+  params <- handle_samples_w_same_name(params)
+
+  create_dirs(params = params)
 
   params <- run_checks(params)
 
@@ -178,22 +182,19 @@ compare_writer_profiles <- function(
     writer_profiles,
     score_only = TRUE,
     rforest = NULL,
-    project_dir = NULL,
     reference_scores = NULL) {
   params <- list(
     samples = NULL,
     writer_profiles = writer_profiles,
     score_only = score_only,
     rforest = rforest,
-    project_dir = project_dir,
+    project_dir = NULL,
     reference_scores = reference_scores,
     score = NULL,
     slr = NULL
   )
 
-  params <- setup(params)
-
-  params <- run_checks(params)
+  params <- handle_null_values(params)
 
   message("Calculating distance between samples...")
   dist_measures <- which_dists(rforest = params$rforest)
@@ -210,8 +211,6 @@ compare_writer_profiles <- function(
 
   df <- make_results_df(params)
 
-  clean_up(params)
-
   return(df)
 }
 
@@ -219,64 +218,37 @@ compare_writer_profiles <- function(
 
 # Internal Functions ------------------------------------------------------
 
-check_dir_contents <- function(params, dir_name) {
-  if (!is.null(params$project_dir) && dir.exists(file.path(params$project_dir, dir_name))) {
-    actual_files <- list.files(file.path(params$project_dir, dir_name))
-
-    expected_files <- switch(dir_name,
-      "docs" = c(params$samples$name1, params$samples$name2),
-      "graphs" = c(
-        "problems.txt",
-        stringr::str_replace(params$samples$name1, ".png", "_proclist.rds"),
-        stringr::str_replace(params$samples$name2, ".png", "_proclist.rds")
-      ),
-      "clusters" = c(
-        stringr::str_replace(params$samples$name1, ".png", ".rds"),
-        stringr::str_replace(params$samples$name2, ".png", ".rds")
-      )
-    )
-
-    if (length(setdiff(actual_files, expected_files)) > 0) {
-      stop("project_dir contains one or more helper files from documents other than sample1 and sample2.")
-    }
-  }
-}
-
-setup <- function(params, subdirs = NULL) {
-  handle_null_values <- function(params) {
-    if (is.null(params$project_dir)) {
-      params$project_dir <- file.path(tempdir(), "comparison")
-    }
-
-    if (is.null(params$rforest)) {
-      params$rforest <- random_forest
-    }
-
-    if (is.null(params$reference_scores)) {
-      params$reference_scores <- ref_scores
-    }
-
-    return(params)
-  }
-
-  create_dirs <- function(params, subdirs) {
-    create_dir(params$project_dir)
-    if (!is.null(subdirs)) {
-      create_dir(file.path(params$project_dir, "clusters"))
-      create_dir(file.path(params$project_dir, "docs"))
-      create_dir(file.path(params$project_dir, "graphs"))
-    }
-  }
-
+handle_null_values <- function(params) {
   if (!is.null(params$reference_scores) && params$score_only) {
     message("Reference scores were supplied so score_only will be changed to FALSE.")
     params$score_only <- FALSE
   }
 
-  params <- handle_null_values(params)
+  if (is.null(params$project_dir)) {
+    params$project_dir <- file.path(tempdir(), "comparison")
+  }
 
-  create_dirs(params = params, subdirs = subdirs)
+  if (is.null(params$rforest)) {
+    params$rforest <- random_forest
+  }
 
+  if (is.null(params$reference_scores)) {
+    params$reference_scores <- ref_scores
+  }
+
+  return(params)
+}
+
+create_dirs <- function(params, subdirs = NULL) {
+  create_dir(params$project_dir)
+  create_dir(file.path(params$project_dir, "clusters"))
+  create_dir(file.path(params$project_dir, "docs"))
+  create_dir(file.path(params$project_dir, "graphs"))
+}
+
+handle_samples_w_same_name <- function(params) {
+
+  # samples in two different directories CAN have the same filename
   if (!is.null(params$samples) &&
     (params$samples$original_path1 != params$samples$original_path2) &&
     (params$samples$name1 == params$samples$name2)) {
@@ -285,15 +257,39 @@ setup <- function(params, subdirs = NULL) {
     params$samples$name2 <- "sample2.png"
   }
 
+  # samples' paths CANNOT be identical
+  if (!is.null(params$samples) &&
+      (params$samples$original_path1 == params$samples$original_path2)) {
+    stop("sample1 and sample2 can't be identical.")
+  }
+
   return(params)
 }
 
-run_checks <- function(params) {
-  # samples can't be identical
-  if (!is.null(params$samples) &&
-    (params$samples$original_path1 == params$samples$original_path2)) {
-    stop("sample1 and sample2 can't be identical.")
+check_dir_contents <- function(params, dir_name) {
+  if (!is.null(params$project_dir) && dir.exists(file.path(params$project_dir, dir_name))) {
+    actual_files <- list.files(file.path(params$project_dir, dir_name))
+
+    expected_files <- switch(dir_name,
+                             "docs" = c(params$samples$name1, params$samples$name2),
+                             "graphs" = c(
+                               "problems.txt",
+                               stringr::str_replace(params$samples$name1, ".png", "_proclist.rds"),
+                               stringr::str_replace(params$samples$name2, ".png", "_proclist.rds")
+                             ),
+                             "clusters" = c(
+                               stringr::str_replace(params$samples$name1, ".png", ".rds"),
+                               stringr::str_replace(params$samples$name2, ".png", ".rds")
+                             )
+    )
+
+    if (length(setdiff(actual_files, expected_files)) > 0) {
+      stop("project_dir contains one or more helper files from documents other than sample1 and sample2.")
+    }
   }
+}
+
+run_checks <- function(params) {
 
   check_dir_contents(params, "clusters")
   check_dir_contents(params, "docs")
@@ -361,6 +357,6 @@ make_results_df <- function(params) {
 clean_up <- function(params) {
   # Optional. Delete comparison folder and contents in tempdir()
   if (params$project_dir == file.path(tempdir(), "comparison")) {
-    unlink(file.path(tempdir(), "comparison"), recursive = TRUE)
+    delete_tempdir_comparison()
   }
 }
