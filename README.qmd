@@ -3,10 +3,6 @@ title: "handwriterRF"
 format: gfm
 ---
 
-<!-- badges: start -->
-  [![Codecov test coverage](https://codecov.io/gh/CSAFE-ISU/handwriterRF/graph/badge.svg)](https://app.codecov.io/gh/CSAFE-ISU/handwriterRF)
-<!-- badges: end -->
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```

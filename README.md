@@ -1,12 +1,6 @@
 # handwriterRF
 
 
-<!-- badges: start -->
-
-[![Codecov test
-coverage](https://codecov.io/gh/CSAFE-ISU/handwriterRF/graph/badge.svg)](https://app.codecov.io/gh/CSAFE-ISU/handwriterRF)
-<!-- badges: end -->
-
 HandwriterRF is designed to assist forensic document examiners by
 performing a statistical analysis on two handwriting samples. One or
 both of the samples could be from unknown writers. Two hypotheses are
