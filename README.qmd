@@ -7,6 +7,10 @@ format: gfm
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+<!-- badges: start -->
+  [![R-CMD-check](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
 HandwriterRF is designed to assist forensic document examiners by performing a statistical analysis on two handwriting samples. One or both of the samples could be from unknown writers. Two hypotheses are considered:
 
 $H_p: \text{The two documents were written by the same writer.}$ $H_d: \text{The two documents were written by different writers.}$
