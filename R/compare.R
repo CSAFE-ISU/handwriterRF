@@ -156,11 +156,6 @@ compare_documents <- function(sample1,
 #'   calculated using `reference_scores`.
 #' @param rforest Optional. A random forest created with [`ranger::ranger()`].
 #'   If a random forest is not supplied, `random_forest` will be used.
-#' @param project_dir Optional. A folder in which to save helper files and a CSV
-#'   file with the results. If no project directory is supplied. Helper files
-#'   will be saved to tempdir() > comparison but deleted before the function
-#'   terminates. A CSV file with the results will not be saved, but a data frame
-#'   of the results will be returned.
 #' @param reference_scores Optional. A list of same writer and different writer
 #'   similarity scores used for reference to calculate a score-based likelihood
 #'   ratio. If reference scores are not supplied, `ref_scores` will be used only

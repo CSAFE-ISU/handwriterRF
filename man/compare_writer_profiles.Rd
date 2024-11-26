@@ -8,7 +8,6 @@ compare_writer_profiles(
   writer_profiles,
   score_only = TRUE,
   rforest = NULL,
-  project_dir = NULL,
   reference_scores = NULL
 )
 }
@@ -22,12 +21,6 @@ calculated using \code{reference_scores}.}
 
 \item{rforest}{Optional. A random forest created with \code{\link[ranger:ranger]{ranger::ranger()}}.
 If a random forest is not supplied, \code{random_forest} will be used.}
-
-\item{project_dir}{Optional. A folder in which to save helper files and a CSV
-file with the results. If no project directory is supplied. Helper files
-will be saved to tempdir() > comparison but deleted before the function
-terminates. A CSV file with the results will not be saved, but a data frame
-of the results will be returned.}
 
 \item{reference_scores}{Optional. A list of same writer and different writer
 similarity scores used for reference to calculate a score-based likelihood
