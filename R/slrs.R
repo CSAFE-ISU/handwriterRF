@@ -20,8 +20,11 @@
 
 #' Calculate a Score-Based Likelihood Ratio
 #'
-#' Compares two handwriting samples scanned and saved a PNG images with the
-#' following steps:
+#' `r lifecycle::badge("superseded")` `calculate_slr` has been superseded in
+#' favor of `compare_documents()` which offers more functionality.
+#'
+#' Compares two handwriting
+#' samples scanned and saved a PNG images with the following steps:
 #' \enumerate{
 #'     \item \code{\link[handwriter]{processDocument}} splits the writing in both samples into component shapes, or graphs.
 #'     \item \code{\link[handwriter]{get_clusters_batch}} groups the graphs into clusters of similar shapes.

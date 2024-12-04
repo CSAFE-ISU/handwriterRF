@@ -21,7 +21,7 @@ Depends:
     R (>= 2.10)
 Imports: 
     dplyr,
-    handwriter,
+    handwriter (>= 3.2.3),
     magrittr,
     purrr,
     ranger,

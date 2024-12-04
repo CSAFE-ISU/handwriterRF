@@ -33,8 +33,12 @@ tempdir() and deleted before the function terminates.}
 A data frame
 }
 \description{
-Compares two handwriting samples scanned and saved a PNG images with the
-following steps:
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}} \code{calculate_slr} has been superseded in
+favor of \code{compare_documents()} which offers more functionality.
+}
+\details{
+Compares two handwriting
+samples scanned and saved a PNG images with the following steps:
 \enumerate{
 \item \code{\link[handwriter]{processDocument}} splits the writing in both samples into component shapes, or graphs.
 \item \code{\link[handwriter]{get_clusters_batch}} groups the graphs into clusters of similar shapes.

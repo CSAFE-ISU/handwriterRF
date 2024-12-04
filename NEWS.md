@@ -1,6 +1,14 @@
 # handwriterRF (development version)
 
+## Major changes
+
+* Created `compare_documents()` to compare two handwritten documents using either a similarity score or a score-based likelihood ratio as a comparison method.
+
+* Created new data frames of writer profiles `train`, `validation`, and `test`. Created a new `random_forest` from `train`. Created `ref_scores`, a list of same writer and different writer similarity scores, from `validation`. 
+
 ## Minor improvements and bug fixes
+
+* `calculate_slr()` has been superseded in favor of `compare_documents()`, which includes the functionality of `caclulate_slr()` and offers additional functionality.
 
 * Created `plot_scores()` to plot histograms of the reference same writer and different writer similarity scores in `random_forest$scores`.
 
