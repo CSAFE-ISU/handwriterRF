@@ -4,6 +4,8 @@
 
 * Created `compare_documents()` to compare two handwritten documents using either a similarity score or a score-based likelihood ratio as a comparison method.
 
+* Created functions `get_writer_profiles()` and `compare_writer_profiles()` to make experiments faster on large numbers of documents compared to `compare_documents()`. `get_writer_profiles()` estimates writer profiles for every handwritten document in a folder. Then `compare_writer_profiles()` calculates either a similarity score or score-based likelihood ratio for every pair of documents.    
+
 * Created new data frames of writer profiles `train`, `validation`, and `test`. Created a new `random_forest` from `train`. Created `ref_scores`, a list of same writer and different writer similarity scores, from `validation`. 
 
 ## Minor improvements and bug fixes

@@ -106,21 +106,11 @@ compare_documents <- function(sample1,
 
   params <- copy_samples_to_project_dir(params)
 
-  handwriter::process_batch_dir(
-    input_dir = file.path(params$project_dir, "docs"),
-    output_dir = file.path(params$project_dir, "graphs")
-  )
-
-  clusters <- handwriter::get_clusters_batch(
-    template = templateK40,
-    input_dir = file.path(params$project_dir, "graphs"),
-    output_dir = file.path(params$project_dir, "clusters"),
-    num_cores = 1,
-    save_master_file = FALSE
-  )
-
   message("Estimating writer profiles...")
-  profiles <- get_writer_profiles(clusters = clusters)
+  profiles <- get_writer_profiles(input_dir = file.path(params$project_dir, "docs"),
+                                  template = templateK40,
+                                  num_cores = 1,
+                                  output_dir = params$project_dir)
 
   message("Calculating distance between samples...")
   dist_measures <- which_dists(rforest = params$rforest)
@@ -210,6 +200,73 @@ compare_writer_profiles <- function(
 }
 
 
+#' Estimate Writer Profiles
+#'
+#' Estimate writer profiles from handwritten documents scanned and saved as PNG
+#' files. Each file in `input_dir` is split into component shapes called graphs
+#' with [`handwriter::process_batch_dir`]. Then the graphs are sorted into
+#' clusters with similar shapes using the cluster `template` and
+#' [`handwriter::get_clusters_batch`]. An estimate of the writer profile for a
+#' document is the proportion of graphs from that document assigned to each of
+#' the clusters in `template`. The writer profiles are estimated by running
+#' [`handwriter::get_cluster_fill_counts`] and then [`get_cluster_fill_rates`].
+#'
+#' The functions [`handwriter::process_batch_dir`] and
+#' [`handwriter::get_clusters_batch`] take upwards of 30 seconds per document
+#' and the results are saved to RDS files in `project_dir` > graphs and
+#' `project_dir` > clusters, respectively.
+#'
+#' @param input_dir A filepath to a folder containing one or more handwritten
+#'   documents, scanned and saved as PNG file(s).
+#' @param num_cores An integer number greater than or equal to 1 of cores to use
+#'   for parallel processing.
+#' @param template Optional. A cluster template created with
+#'   [`handwriter::make_clustering_template`]. The default is the cluster
+#'   template `templateK40` included with 'handwriterRF'.
+#' @param output_dir Optional. A filepath to a folder to save the RDS files
+#'   created by [`handwriter::process_batch_dir`] and
+#'   [`handwriter::get_clusters_batch`]. If no folder is supplied, the RDS files
+#'   will be saved to the temporary directory and then deleted before the
+#'   function terminates.
+#'
+#' @return A data frame
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' docs <- system.file(file.path("extdata", "docs"), package = "handwriterRF")
+#' profiles <- get_writer_profiles(docs)
+#'
+#' plot_writer_profiles(profiles)
+#' }
+#'
+get_writer_profiles <- function(input_dir, num_cores = 1, template = templateK40, output_dir = NULL) {
+  if (is.null(output_dir)) {
+    output_dir <- file.path(tempdir(), "writer_profiles")
+    create_dir(output_dir)
+  }
+
+  handwriter::process_batch_dir(
+    input_dir = input_dir,
+    output_dir = file.path(output_dir, "graphs")
+  )
+
+  clusters <- handwriter::get_clusters_batch(
+    template = template,
+    input_dir = file.path(output_dir, "graphs"),
+    output_dir = file.path(output_dir, "clusters"),
+    num_cores = num_cores,
+    save_master_file = FALSE
+  )
+  counts <- handwriter::get_cluster_fill_counts(clusters)
+  profiles <- get_cluster_fill_rates(counts)
+
+  if (output_dir == file.path(tempdir(), "writer_profiles")) {
+    unlink(file.path(tempdir(), "writer_profiles"), recursive = TRUE)
+  }
+
+  return(profiles)
+}
 
 # Internal Functions ------------------------------------------------------
 
@@ -245,8 +302,8 @@ handle_samples_w_same_name <- function(params) {
 
   # samples in two different directories CAN have the same filename
   if (!is.null(params$samples) &&
-    (params$samples$original_path1 != params$samples$original_path2) &&
-    (params$samples$name1 == params$samples$name2)) {
+      (params$samples$original_path1 != params$samples$original_path2) &&
+      (params$samples$name1 == params$samples$name2)) {
     message("Samples have the same file name so they will be renamed 'sample1.png' and 'sample2.png'.")
     params$samples$name1 <- "sample1.png"
     params$samples$name2 <- "sample2.png"
@@ -307,11 +364,6 @@ copy_samples_to_project_dir <- function(params) {
   return(params)
 }
 
-get_writer_profiles <- function(clusters) {
-  counts <- handwriter::get_cluster_fill_counts(clusters)
-  profiles <- get_cluster_fill_rates(counts)
-  return(profiles)
-}
 
 get_slr <- function(params) {
   get_slr_for_single_score <- function(score, densities) {
