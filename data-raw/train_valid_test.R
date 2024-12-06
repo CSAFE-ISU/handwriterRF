@@ -1,5 +1,8 @@
-devtools::load_all()
+install.packages("handwriter")
+devtools::install_github("CSAFE-ISU/handwriterRF")
 
+library(handwriter)
+library(handwriterRF)
 
 # Helper Functions --------------------------------------------------------
 
@@ -41,10 +44,14 @@ make_csafe_sets <- function(rates, prompts = c("pWOZ", "pLND"), num_per_prompt =
   }
 
   drop_columns <- function(df) {
+    df$doc <- paste(df$session, df$prompt, df$rep, sep = "_")
     df <- df %>%
       dplyr::ungroup() %>%
-      dplyr::select(-session, -prompt, -rep)
+      dplyr::select(-tidyselect::any_of(c("session", "prompt", "rep")))
   }
+
+  # drop writer and doc column to prevent error with expand_docnames
+  rates <- rates %>% dplyr::select(-tidyselect::any_of(c("writer", "doc")))
 
   # split writers train, validation, and test sets
   all_writers <- find_writers_with_27_docs(df = rates)
@@ -71,7 +78,6 @@ make_cvl_sets <- function(rates, num_per_writer = 4, use_German_prompt = FALSE,
 
   find_writers_with_5plus_docs <- function(df) {
     # Filter cvl data frame for writers with 5 or more docs
-    df <- expand_cvl_docnames(df)
     writers <- df %>%
       dplyr::group_by(writer) %>%
       dplyr::summarize(n = dplyr::n()) %>%
@@ -80,27 +86,28 @@ make_cvl_sets <- function(rates, num_per_writer = 4, use_German_prompt = FALSE,
     return(writers)
   }
 
-  sample_prompts <- function(df, writers, num_per_writer, use_German_prompt) {
-    df <- expand_cvl_docnames(df = df)
-
+  sample_cvl_prompts <- function(df, set_writers, num_per_writer, use_German_prompt) {
     if (!use_German_prompt) {
       df <- df %>% dplyr::filter(prompt != "6-cropped")
     }
 
     df <- df %>%
-      dplyr::filter(writer %in% writers) %>%
+      dplyr::filter(writer %in% set_writers) %>%
       dplyr::group_by(writer) %>%
       dplyr::slice_sample(n = num_per_writer)
 
     return(df)
   }
 
-  drop_prompt_column <- function(df) {
+  drop_cvl_prompt_column <- function(df) {
     df <- df %>%
       dplyr::ungroup() %>%
       dplyr::select(-prompt)
     return(df)
   }
+
+  rates <- expand_cvl_docnames(df = rates)
+  rates$writer <- paste0("c", rates$writer)
 
   all_writers <- find_writers_with_5plus_docs(df = rates)
   writers <- split_writers(
@@ -109,14 +116,14 @@ make_cvl_sets <- function(rates, num_per_writer = 4, use_German_prompt = FALSE,
     num_validation_writers = num_validation_writers
   )
   docs <- lapply(writers, function(w) {
-    sample_prompts(
+    sample_cvl_prompts(
       df = rates,
-      writers = w,
+      set_writers = w,
       num_per_writer = num_per_writer,
       use_German_prompt = use_German_prompt
     )
   })
-  docs <- lapply(docs, drop_prompt_column)
+  docs <- lapply(docs, drop_cvl_prompt_column)
 
   return(docs)
 }
@@ -145,54 +152,53 @@ split_writers <- function(all_writers, num_train_writers, num_validation_writers
 
 set.seed(100)
 
+# If you need cluster assignments CVL data
+handwriter::get_clusters_batch(input_dir = "path/to/cvl/graphs/dir",
+                               output_dir = "path/to/cvl/clusters/dir",
+                               template = "path/to/template.rds",
+                               writer_indices = c(1,4),
+                               doc_indices = c(6,6),
+                               num_cores = 4)
+
 # Create data frames of csafe and cvl cluster fill rates
-# csafe <- load_cluster_fill_rates(clusters_dir = "/Users/stephanie/Documents/handwriting_datasets/CSAFE_Handwriting_Database/clusters")
-# saveRDS(csafe, "data-raw/csafe_cfr.rds")
-#
-# cvl <- load_cluster_fill_rates("/Users/stephanie/Documents/handwriting_datasets/CVL/clusters")
-# saveRDS(cvl, "data-raw/cvl_cfr.rds")
+csafe <- load_cluster_fill_rates(clusters_dir = "/Users/stephanie/Documents/handwriting_datasets/CSAFE_Handwriting_Database/300dpi/clusters")
+cvl <- load_cluster_fill_rates("/Users/stephanie/Documents/handwriting_datasets/CVL/300dpi/clusters")
 
-# Load cluster fill rates
-csafe <- readRDS("data-raw/csafe_cfr.rds")
-cvl <- readRDS("data-raw/cvl_cfr.rds")
-
-# Make sets
+# Make sets. Feel free to change num_train_writers and num_validation_writers.
+# Writers not assigned to either of these sets will be placed in the test set.
 csafe <- make_csafe_sets(
-  rates = csafe, prompts = c("pWOZ", "pLND"), num_per_prompt = 2,
-  num_train_writers = 100, num_validation_writers = 150
+  rates = csafe,
+  prompts = c("pWOZ", "pLND"),
+  num_per_prompt = 2,
+  num_train_writers = 100,
+  num_validation_writers = 150
 )
-saveRDS(csafe, "data-raw/csafe_sets.rds")
-
 cvl <- make_cvl_sets(
-  rates = cvl, num_per_writer = 4, use_German_prompt = FALSE,
-  num_train_writers = 100, num_validation_writers = 150
+  rates = cvl,
+  num_per_writer = 4,
+  use_German_prompt = FALSE,
+  num_train_writers = 100,
+  num_validation_writers = 150
 )
-saveRDS(cvl, "data-raw/cvl_sets.rds")
-
-# csafe <- readRDS("data-raw/csafe_sets.rds")
-# cvl <- readRDS("data-raw/cvl_sets.rds")
 
 # Train random forest
 train <- rbind(csafe$train, cvl$train)
-saveRDS(train, "data-raw/train.rds")
-usethis::use_data(train, overwrite = TRUE)
 
-random_forest <- train_rf(train, ntrees = 200, distance_measures = c("abs", "euc"))
-saveRDS(random_forest, "data-raw/random_forest.rds")
-usethis::use_data(random_forest, overwrite = TRUE)
+# Choose distance measures
+rf <- train_rf(train,
+               ntrees = 200,
+               distance_measures = c("abs", "euc"))
 
-# Get similarity scores on validation set
+
+# Get similarity scores on validation set. Note: there will be many times more
+# 'different writer' scores compared to 'same writer' scores.
 validation <- rbind(csafe$validation, cvl$validation)
-saveRDS(validation, "data-raw/validation.rds")
-usethis::use_data(validation, overwrite = TRUE)
-
-ref_scores <- get_ref_scores(rforest = random_forest, df = validation)
-saveRDS(ref_scores, "data-raw/ref_scores.rds")
-usethis::use_data(ref_scores, overwrite = TRUE)
+rscores <- get_ref_scores(rforest = rf, df = validation)
 
 # Test set
 test <- rbind(csafe$test, cvl$test)
-saveRDS(test, "data-raw/test.rds")
-usethis::use_data(test, overwrite = TRUE)
 
-plot_scores(scores = ref_scores)
+results <- compare_writer_profiles(writer_profiles = test,
+                                   score_only = FALSE,
+                                   rforest = rf,
+                                   reference_scores = rscores)

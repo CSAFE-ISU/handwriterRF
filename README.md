@@ -53,8 +53,8 @@ Compare 2 of these samples. In this case, both samples are from writer
 30.
 
 ``` r
-sample1 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
-sample2 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r02.png"), package = "handwriterRF")
+sample1 <- system.file(file.path("extdata", "docs", "w0005_s01_pLND_r03.png"), package = "handwriterRF")
+sample2 <- system.file(file.path("extdata", "docs", "w0005_s02_pWOZ_r02.png"), package = "handwriterRF")
 slr <- calculate_slr(sample1, sample2)
 ```
 
@@ -84,8 +84,8 @@ the data frame fits on this page.
 slr
 ```
 
-                docname1  writer1           docname2  writer2 score     slr
-    1 w0030_s01_pWOZ_r01 unknown1 w0030_s01_pWOZ_r02 unknown2 0.955 135.159
+                docname1  writer1           docname2  writer2 score      slr
+    1 w0005_s01_pLND_r03 unknown1 w0005_s02_pWOZ_r02 unknown2 0.635 1.482318
 
 ### Interpret the Score-base Likelihood Ratio
 
@@ -95,4 +95,4 @@ View a verbal interpretation of the score-based likelihood ratio.
 interpret_slr(slr)
 ```
 
-    [1] "A score-based likelihood ratio of 135.2 means the likelihood of observing a similarity score of 0.955 if the documents were written by the same person is 135.2 times greater than the likelihood of observing this score if the documents were written by different writers."
+    [1] "A score-based likelihood ratio of 1.5 means the likelihood of observing a similarity score of 0.635 if the documents were written by the same person is 1.5 times greater than the likelihood of observing this score if the documents were written by different writers."
