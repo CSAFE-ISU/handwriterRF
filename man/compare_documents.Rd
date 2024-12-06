@@ -52,20 +52,20 @@ as a comparison method.
 \examples{
 \donttest{
 # Compare two documents from the same writer with a similarity score
-s1 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r01.png"),
+s1 <- system.file(file.path("extdata", "docs", "w0005_s01_pLND_r03.png"),
   package = "handwriterRF"
 )
-s2 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r02.png"),
+s2 <- system.file(file.path("extdata", "docs", "w0005_s02_pWOZ_r02.png"),
   package = "handwriterRF"
 )
 compare_documents(s1, s2, score_only = TRUE)
 
 # Compare two documents from the same writer with a score-based
 # likelihood ratio
-s1 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r01.png"),
+s1 <- system.file(file.path("extdata", "docs", "w0005_s01_pLND_r03.png"),
   package = "handwriterRF"
 )
-s2 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r02.png"),
+s2 <- system.file(file.path("extdata", "docs", "w0005_s02_pWOZ_r02.png"),
   package = "handwriterRF"
 )
 compare_documents(s1, s2, score_only = FALSE)

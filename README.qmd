@@ -41,8 +41,8 @@ library(handwriterRF)
 
 The package includes 4 example handwriting samples from the [CSAFE Handwriting Database](https://forensicstats.org/handwritingdatabase/). Compare 2 of these samples. In this case, both samples are from writer 30.
 ```{r calculate1, message=FALSE}
-sample1 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
-sample2 <- system.file(file.path("extdata", "docs", "w0030_s01_pWOZ_r02.png"), package = "handwriterRF")
+sample1 <- system.file(file.path("extdata", "docs", "w0005_s01_pLND_r03.png"), package = "handwriterRF")
+sample2 <- system.file(file.path("extdata", "docs", "w0005_s02_pWOZ_r02.png"), package = "handwriterRF")
 slr <- calculate_slr(sample1, sample2)
 ```
 
