@@ -1,26 +1,31 @@
 ---
-title: "SLRs from Random Forests Tutorial"
-output: rmarkdown::html_vignette
+title: "An Introduction to the SLR Model"
+output: 
+  rmarkdown::html_vignette:
+    toc: true         # Enable Table of Contents
+    toc_depth: 2      # Set the depth of the TOC (adjust as needed)
+    number_sections: true
+    css: "styles.css"
 vignette: >
-  %\VignetteIndexEntry{slrs-from-random-forests-tutorial}
+  %\VignetteIndexEntry{an-introduction-to-the-slr-model}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r knitr, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.width = 7, 
+  fig.height = 5
 )
 ```
 
-```{r setup}
-library(handwriterRF)
-```
+## Introduction
 
 The `handwriterRF` package implements the statistical method described by Madeline Johnson and Danica Ommen (2021) (<doi:10.1002/sam.11566>). This tutorial summarizes the method introduced in the paper and explains how to use `handwriterRF` to compare handwriting samples. The method employs a random forest to produce a score-based likelihood ratio (SLR), quantifying the strength of evidence that two handwritten documents were written by the same writer or different writers.
 
-## The Data
+## Handwriting Data
 
 We use handwriting samples from the [CSAFE Handwriting Database](https://data.csafe.iastate.edu/HandwritingDatabase/) and the [CVL Handwriting Database](https://cvl.tuwien.ac.at/research/cvl-databases/an-off-line-database-for-writer-retrieval-writer-identification-and-word-spotting/). These databases contain paragraph-length handwriting samples. We randomly selected two Wizard of Oz prompts and two London Letter prompts from CSAFE writers, and four prompts from CVL writers. These samples were randomly split into three sets: training, validation, and testing.
 
@@ -34,16 +39,21 @@ We estimated the writer profiles for all handwriting samples using the `get_writ
 4. Calculate the proportion of graphs assigned to each cluster with `get_cluster_fill_rates()`. The cluster fill rates serve as an estimate of the writer profile for the sample.
 
 The `train` data frame contains the estimated writer profiles for train set. Let's visualize the writer profiles for two writers from `train`: 
-```{r}
+
+```{r profiles-facet}
+library(handwriterRF)
+
 wps <- train %>% dplyr::filter(writer == "w0004" | writer == "w0015")
 
 plot_writer_profiles(wps, color_by = "writer", facets = "writer")
 ```
+
 Each writer has four documents in `train`. We see that for each writer, the profiles are not exactly the same, but many of the spikes and valleys occur in the same clusters. We can plot all the writer profiles on the same axes to better compare the two writers.
 
-```{r}
+```{r profiles-combined}
 plot_writer_profiles(wps, color_by = "writer")
 ```
+
 In this plot the spikes and valleys are not all aligned. In cluster 37, writer w0004 has a small spike while w0015 has a valley. In cluster 27, writer w0015 has a taller spike that writer w0004. Intuitively, we see similarities and differences between the writer profiles in the plot. But we employ a statistical method to formally evaluate the similarities between writer profiles.
 
 ## Constucting Reference Similarity Scores with a Random Forest
@@ -60,7 +70,7 @@ Next, we calculate the distances between each pair of writer profiles in `valida
 
 To visualize the reference similarity scores, we plot the rates of scores assigned to different bins (rather than frequencies), as the data often contains far more "different writer" pairs than "same writer" pairs. This gives us a clearer view of the distribution of reference scores.
 
-```{r, dpi=300}
+```{r ref-scores}
 plot_scores(ref_scores)
 ```
 
@@ -68,7 +78,7 @@ plot_scores(ref_scores)
 
 The `test` data frame contains writer profiles from writers not in `train` or `validation`. Let’s compare two writer profiles in the `test` set using the trained random forest and reference similarity scores. We’ll use the first two samples from writer `w0005` as an example. First, we plot the writer profiles:
 
-```{r}
+```{r example-profiles}
 test_samples <- test[test$writer == "w0005",][1:2,]
 
 plot_writer_profiles(test_samples)
@@ -78,14 +88,14 @@ plot_writer_profiles(test_samples)
 
 We can compute the similarity score between these two test samples using the `compare_writer_profiles()` function. This score is derived using the same procedure as for the validation set: we calculate the distance between the two profiles, then compute the proportion of random forest decision trees that predict "same writer."
 
-```{r}
+```{r example-score}
 score <- compare_writer_profiles(test_samples)
 score
 ```
 
 Let's visually see how the similarity score `r score$score` compares to our same writer and different writers similarity scores.
 
-```{r}
+```{r plot-score}
 plot_scores(ref_scores, obs_score = score$score)
 ```
 
@@ -99,7 +109,7 @@ $P_2: \text{the handwriting samples were written by different writers}$
 
 The SLR is the ratio of the likelihood of observing the similarity score under $P_1$ to the likelihood under $P_2$. To calculate the SLR, we use `compare_writer_profiles()` with the `score_only = FALSE` argument. This function applies kernel density estimation to fit probability density functions (PDFs) to the reference scores for same writer and different writer pairs. The SLR is the ratio of the height of the same writer PDF at the observed similarity score to the height of the different writer PDF at the same score. An SLR greater than 1 suggests the samples were likely written by the same writer, while an SLR less than 1 suggests the samples were likely written by different writers.
 
-```{r}
+```{r slr}
 slr <- compare_writer_profiles(test_samples, score_only = FALSE)
 slr
 ```

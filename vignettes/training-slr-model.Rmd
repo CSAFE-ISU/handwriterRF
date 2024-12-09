@@ -1,6 +1,11 @@
 ---
-title: "Make New Random Forests and Reference Scores"
-output: rmarkdown::html_vignette
+title: "Training an SLR Model"
+output: 
+  rmarkdown::html_vignette:
+    toc: true         # Enable Table of Contents
+    toc_depth: 2      # Set the depth of the TOC (adjust as needed)
+    number_sections: true
+    css: "styles.css"
 vignette: >
   %\VignetteIndexEntry{train-model}
   %\VignetteEngine{knitr::rmarkdown}
@@ -8,10 +13,12 @@ vignette: >
 ---
   
 ```{r, include = FALSE}
-  knitr::opts_chunk$set(
+knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
-  )
+  comment = "#>",
+  fig.width = 7, 
+  fig.height = 5
+)
 ```
   
 HandwriterRF has a pre-trained random forest and set of reference similarity scores that you may use with the functions `compare_documents()` and `compare_writer_profiles()`. This tutorial shows you how to train your own random forest and create your own set of reference scores.

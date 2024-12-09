@@ -115,16 +115,8 @@ plot_scores <- function(scores, obs_score = NULL, n_bins = 50) {
         angle = 90,
         vjust = -1,
         hjust = 0.5
-      ) + # add text
-      ggplot2::labs(title = "The observed similarity score compared to reference similarity scores", x = "Score", y = "Rate")
-  } else {
-    p <- p +
-      ggplot2::labs(title = "Reference similarity scores", x = "Score", y = "Rate")
+      )
   }
-  p <- p +
-    ggplot2::theme(legend.position = "bottom",
-                   legend.text = ggplot2::element_text(size = 6),
-                   legend.title = ggplot2::element_text(size = 8))
 
   return(p)
 }
