@@ -7,7 +7,7 @@ output:
     number_sections: true
     css: "styles.css"
 vignette: >
-  %\VignetteIndexEntry{train-model}
+  %\VignetteIndexEntry{training-slr-model}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -33,12 +33,11 @@ The [CSAFE Handwriting Database](https://data.csafe.iastate.edu/HandwritingDatab
 
 ### Estimate Writer Profiles
 
-Place handwriting samples that you will use to train a random forest in a folder. The first step is to estimate a writer profile from each handwriting sample. We do this with `get_writer_profiles()`. Behind the scenes, `get_writer_profiles()` performs the following steps for each sample:
+Place handwriting samples that you will use to train a random forest in a folder. The first step is to estimate a writer profile from each handwriting sample. We do this with `handwriter::get_writer_profiles()`. Behind the scenes, `handwriter::get_writer_profiles()` performs the following steps for each sample:
 
 1.  Splits the handwriting into component shapes, called *graphs*, with `handwriter::processDocument()`.
-2.  The graphs are sorted into clusters of similar shapes using a cluster template created with `handwriter::make_clustering_template()`. By default, `get_writer_profiles()` uses the cluster template `templateK40` included with handwriterRF. You may create your own cluster template if you prefer.
-3.  The number of graphs assigned to each cluster in the template are counted with `handwriter::get_cluster_fill_counts()`.
-4.  The proportion of graphs assigned to each cluster is calculated with `get_cluster_fill_rates()`. The cluster fill rates serve as an estimate of a writer profile for the writer of the document.
+2.  The graphs are sorted into clusters of similar shapes using a cluster template created with `handwriter::make_clustering_template()`. By default, `handwriter::get_writer_profiles()` uses the cluster template `templateK40` included with handwriterRF. You may create your own cluster template if you prefer.
+3.  The proportion of graphs assigned to each cluster is calculated with `handwriter::get_cluster_fill_rates()`. The cluster fill rates serve as an estimate of a writer profile for the writer of the document.
 
 Load handwriterRF.
 
@@ -49,8 +48,9 @@ library(handwriterRF)
 Calculate writer profiles for the training samples with `templateK40`. The output is a data frame.
 
 ```{r profiles, eval=FALSE}
-profiles <- get_writer_profiles(
+profiles <- handwriter::get_writer_profiles(
   input_dir = "path/to/training/samples/folder",
+  measure = "rates",
   num_cores = 1,
   template = templateK40,
   output_dir = "path/to/output/folder"
@@ -107,8 +107,9 @@ If `compare_documents()` and `compare_writer_profiles()` only return the similar
 Refer to the sections above to obtain suitable training samples and estimate writer profiles.
 
 ```{r ref-profiles, eval=FALSE}
-ref_profiles <- get_writer_profiles(
+ref_profiles <- handwriter::get_writer_profiles(
   input_dir = "path/to/ref/samples/folder",
+  measure = "rates",
   num_cores = 1,
   template = templateK40,
   output_dir = "path/to/output/folder"

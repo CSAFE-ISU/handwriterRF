@@ -38,7 +38,7 @@ A random forest
 }
 \description{
 Train a random forest with \pkg{ranger} from a data frame of writer profiles
-estimated with \code{\link{get_cluster_fill_rates}}. `train_rf` calculates
+estimated with \code{\link{get_cluster_fill_rates}}. \code{train_rf} calculates
 the distance between all pairs of writer profiles using one or more distance
 measures. Currently, the available distance measures are absolute, Manhattan,
 Euclidean, maximum, and cosine.

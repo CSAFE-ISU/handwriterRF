@@ -10,8 +10,7 @@ load_cluster_fill_rates <- function(clusters_dir) {
   files <- list.files(clusters_dir, full.names = TRUE)
   dfs <- lapply(files, readRDS)
   clusters <- do.call(rbind, dfs)
-  counts <- handwriter::get_cluster_fill_counts(clusters)
-  rates <- get_cluster_fill_rates(counts)
+  rates <- handwriter::get_cluster_fill_rates(clusters)
   return(rates)
 }
 

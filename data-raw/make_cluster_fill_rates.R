@@ -101,7 +101,7 @@ all_clusters <- rbind(LND, WOZ, PHR)
 
 cfc <- get_combined_cfc(all_clusters)
 
-cfr <- get_cluster_fill_rates(cfc = cfc)
+cfr <- handwriter::get_cluster_fill_rates(cfc = cfc)
 
 usethis::use_data(cfc, overwrite = TRUE)
 usethis::use_data(cfr, overwrite = TRUE)

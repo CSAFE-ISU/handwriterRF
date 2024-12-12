@@ -31,12 +31,11 @@ We use handwriting samples from the [CSAFE Handwriting Database](https://data.cs
 
 ## Writer Profiles
 
-We estimated the writer profiles for all handwriting samples using the `get_writer_profiles()` function and the `templateK40` cluster template from `handwriterRF`. Behind the scenes, `get_writer_profiles()` performs the following steps on each handwriting sample:
+We estimated the writer profiles for all handwriting samples using the `handwriter::get_writer_profiles()` function and the `templateK40` cluster template from `handwriterRF`. Behind the scenes, `get_writer_profiles()` performs the following steps on each handwriting sample:
 
 1. Split the handwriting into component shapes called *graphs* with `handwriter::process_batch_dir()`. 
 2. Sort the graphs into *clusters* with similar shapes using a cluster template and `handwriter::get_clusters_batch()`. 
-3. Calculate the number of graphs assigned to each cluster with `handwriter::get_cluster_fill_counts()`.
-4. Calculate the proportion of graphs assigned to each cluster with `get_cluster_fill_rates()`. The cluster fill rates serve as an estimate of the writer profile for the sample.
+3. Calculate the proportion of graphs assigned to each cluster with `get_cluster_fill_rates()`. The cluster fill rates serve as an estimate of the writer profile for the sample.
 
 The `train` data frame contains the estimated writer profiles for train set. Let's visualize the writer profiles for two writers from `train`: 
 
@@ -45,13 +44,13 @@ library(handwriterRF)
 
 wps <- train %>% dplyr::filter(writer == "w0004" | writer == "w0015")
 
-plot_writer_profiles(wps, color_by = "writer", facets = "writer")
+handwriter::plot_writer_profiles(wps, color_by = "writer", facets = "writer")
 ```
 
 Each writer has four documents in `train`. We see that for each writer, the profiles are not exactly the same, but many of the spikes and valleys occur in the same clusters. We can plot all the writer profiles on the same axes to better compare the two writers.
 
 ```{r profiles-combined}
-plot_writer_profiles(wps, color_by = "writer")
+handwriter::plot_writer_profiles(wps, color_by = "writer")
 ```
 
 In this plot the spikes and valleys are not all aligned. In cluster 37, writer w0004 has a small spike while w0015 has a valley. In cluster 27, writer w0015 has a taller spike that writer w0004. Intuitively, we see similarities and differences between the writer profiles in the plot. But we employ a statistical method to formally evaluate the similarities between writer profiles.
@@ -81,7 +80,7 @@ The `test` data frame contains writer profiles from writers not in `train` or `v
 ```{r example-profiles}
 test_samples <- test[test$writer == "w0005",][1:2,]
 
-plot_writer_profiles(test_samples)
+handwriter::plot_writer_profiles(test_samples)
 ```
 
 ### Similarity Score

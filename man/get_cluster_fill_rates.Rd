@@ -14,8 +14,8 @@ get_cluster_fill_rates(df)
 A data frame of cluster fill rates.
 }
 \description{
-Calculate cluster fill rates from a data frame of cluster fill counts created
-with \code{\link[handwriter]{get_cluster_fill_counts}}.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+\code{get_cluster_fill_rates} is deprecated. Use \code{\link[handwriter]{get_cluster_fill_rates}} instead.
 }
 \examples{
 rates <- get_cluster_fill_rates(df = cfc)
