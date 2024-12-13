@@ -138,6 +138,51 @@ interpret_slr <- function(df) {
   return(x)
 }
 
+#' Get Rates of Misleading Evidence for SLRs
+#'
+#' Calculate the rates of misleading evidence for score-based likelihood ratios
+#' (SLRs) when the ground truth is known.
+#'
+#' @param df A data frame of SLRs from [`compare_writer_profiles`] with
+#'   `score_only = FALSE`.
+#' @param threshold A number greater than zero that serves as a decision
+#'   threshold. If the ground truth for two documents is that they came from the
+#'   same writer and the SLR is less than the decision threshold, this is
+#'   misleading evidence that incorrectly supports the defense (false negative).
+#'   If the ground truth for two documents is that they came from different
+#'   writers and the SLR is greater than the decision threshold, this is
+#'   misleading evidence that incorrectly supports the prosecution (false
+#'   positive).
+#'
+#' @return A list
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' comparisons <- compare_writer_profiles(test, score_only = FALSE)
+#' get_rates_of_misleading_slrs(comparisons)
+#' }
+#'
+get_rates_of_misleading_slrs <- function(df, threshold = 1) {
+  # Use across to prevent "no visible binding for global variable"
+  known_matches <- df |>
+    dplyr::filter(dplyr::across(c("ground_truth")) == "same writer")
+  known_non_matches <- df |>
+    dplyr::filter(dplyr::across(c("ground_truth")) == "different writer")
+
+  # Use across to prevent "no visible binding for global variable"
+  fn <- known_matches |>
+    dplyr::filter(dplyr::across(c("slr")) < threshold)
+  fp <- known_non_matches |>
+    dplyr::filter(dplyr::across(c("slr")) > threshold)
+
+  defense <- nrow(fn) / nrow(known_matches)
+  prosecution <- nrow(fp) / nrow(known_non_matches)
+
+  return(list("incorrectly_favors_defense" = defense, "incorrectly_favors_prosecution" = prosecution))
+
+}
+
 
 # Internal Functions ------------------------------------------------------
 
