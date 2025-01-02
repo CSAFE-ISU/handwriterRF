@@ -5,7 +5,6 @@ output:
     toc: true         # Enable Table of Contents
     toc_depth: 2      # Set the depth of the TOC (adjust as needed)
     number_sections: true
-    css: "styles.css"
 vignette: >
   %\VignetteIndexEntry{training-slr-model}
   %\VignetteEngine{knitr::rmarkdown}
