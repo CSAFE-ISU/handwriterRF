@@ -40,7 +40,8 @@ We estimated the writer profiles for all handwriting samples using the `handwrit
 The `train` data frame contains the estimated writer profiles for train set. Let's visualize the writer profiles for two writers from `train`: 
 
 ```{r profiles-facet}
-library(handwriterRF)
+library(dplyr)
+library(handwriter)
 
 wps <- train %>% dplyr::filter(writer == "w0004" | writer == "w0015")
 
@@ -70,6 +71,8 @@ Next, we calculate the distances between each pair of writer profiles in `valida
 To visualize the reference similarity scores, we plot the rates of scores assigned to different bins (rather than frequencies), as the data often contains far more "different writer" pairs than "same writer" pairs. This gives us a clearer view of the distribution of reference scores.
 
 ```{r ref-scores}
+library(handwriterRF)
+
 plot_scores(ref_scores)
 ```
 
