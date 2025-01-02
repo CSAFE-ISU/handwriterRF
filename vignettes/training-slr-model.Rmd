@@ -42,6 +42,7 @@ Place handwriting samples that you will use to train a random forest in a folder
 Load handwriterRF.
 
 ```{r setup}
+library(handwriter)
 library(handwriterRF)
 ```
 

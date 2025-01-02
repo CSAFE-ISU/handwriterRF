@@ -181,6 +181,10 @@ compare_writer_profiles <- function(
     slr = NULL
   )
 
+  if (!is_rates_df(params$writer_profiles)) {
+    stop("Writer profiles must be a rates data frame created by get_writer_profiles() with measure = 'rates'.")
+  }
+
   params <- handle_null_values(params)
 
   message("Calculating distance between samples...")
@@ -271,6 +275,26 @@ check_dir_contents <- function(params, dir_name) {
     if (length(setdiff(actual_files, expected_files)) > 0) {
       stop("project_dir contains one or more helper files from documents other than sample1 and sample2.")
     }
+  }
+}
+
+#' Is a Data Frame a Rates Data Frame
+#'
+#' Check if a data frame is a rates data frame.
+#'
+#' @param df A data frame
+#'
+#' @returns TRUE or FALSE
+#'
+#' @noRd
+is_rates_df <- function(df) {
+  clusters <- get_cluster_cols(df)
+  # Use all.equal to test for "near equality" of row sums. Because of rounding
+  # errors, row sums might not be equal to one.
+  if (ncol(clusters) > 0 && all.equal(rowSums(clusters), rep(1, nrow(clusters)))) {
+    return(TRUE)
+  } else {
+    return(FALSE)
   }
 }
 

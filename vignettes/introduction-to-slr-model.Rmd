@@ -42,6 +42,7 @@ The `train` data frame contains the estimated writer profiles for train set. Let
 ```{r profiles-facet}
 library(dplyr)
 library(handwriter)
+library(handwriterRF)
 
 wps <- train %>% dplyr::filter(writer == "w0004" | writer == "w0015")
 
@@ -71,8 +72,6 @@ Next, we calculate the distances between each pair of writer profiles in `valida
 To visualize the reference similarity scores, we plot the rates of scores assigned to different bins (rather than frequencies), as the data often contains far more "different writer" pairs than "same writer" pairs. This gives us a clearer view of the distribution of reference scores.
 
 ```{r ref-scores}
-library(handwriterRF)
-
 plot_scores(ref_scores)
 ```
 
