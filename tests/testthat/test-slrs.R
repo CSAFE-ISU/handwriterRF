@@ -1,8 +1,6 @@
 testthat::test_that("Calculate SLR works on w0030 samples", {
-  # handwriter::get_clusters_batch() in 3.2.1.9000 makes writer and doc indices
-  # optional. calculate_slr() doesn't provide writer or doc indices so
-  # 3.2.1.9000+ is required.
-  testthat::skip_if_not_installed('handwriter', minimum_version = '3.2.1.9000')
+  # get_writer_profiles() was added in handwriter 3.2.3.9000
+  testthat::skip_if_not_installed('handwriter', minimum_version = '3.2.3.9000')
 
   # make sure tempdir > comparison doesn't exist. If a previous test fails, this
   # folder might still be hanging around.
@@ -19,10 +17,8 @@ testthat::test_that("Calculate SLR works on w0030 samples", {
 })
 
 testthat::test_that("Calculate SLR works on w0030 versus w0238 samples", {
-  # handwriter::get_clusters_batch() in 3.2.1.9000 makes writer and doc indices
-  # optional. calculate_slr() doesn't provide writer or doc indices so
-  # 3.2.1.9000+ is required.
-  testthat::skip_if_not_installed('handwriter', minimum_version = '3.2.1.9000')
+  # get_writer_profiles() was added in handwriter 3.2.3.9000
+  testthat::skip_if_not_installed('handwriter', minimum_version = '3.2.3.9000')
 
   # make sure tempdir > comparison doesn't exist. If a previous test fails, this
   # folder might still be hanging around.
@@ -39,10 +35,8 @@ testthat::test_that("Calculate SLR works on w0030 versus w0238 samples", {
 })
 
 testthat::test_that("Calculate SLR works on w0030 samples in project directory", {
-  # handwriter::get_cluster_fill_counts() in 3.2.1.9000 makes writer and doc
-  # columns optional in the input data frame. calculate_slr() doesn't provide
-  # writer or doc so 3.2.1.9000+ is required.
-  testthat::skip_if_not_installed('handwriter', minimum_version = '3.2.1.9000')
+  # get_writer_profiles() was added in handwriter 3.2.3.9000
+  testthat::skip_if_not_installed('handwriter', minimum_version = '3.2.3.9000')
 
   # make sure tempdir > comparison doesn't exist. If a previous test fails, this
   # folder might still be hanging around.
@@ -79,10 +73,8 @@ test_that("Calculate SLRs throws error if samples are the same file in the same 
 })
 
 test_that("Calculate SLRs works if samples in different folders have the same file name", {
-  # handwriter::get_clusters_batch() in 3.2.1.9000 makes writer and doc indices
-  # optional. calculate_slr() doesn't provide writer or doc indices so
-  # 3.2.1.9000+ is required.
-  testthat::skip_if_not_installed('handwriter', minimum_version = '3.2.1.9000')
+  # get_writer_profiles() was added in handwriter 3.2.3.9000
+  testthat::skip_if_not_installed('handwriter', minimum_version = '3.2.3.9000')
 
   # make sure tempdir > comparison doesn't exist. If a previous test fails, this
   # folder might still be hanging around.

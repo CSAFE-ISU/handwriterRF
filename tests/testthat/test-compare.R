@@ -1,5 +1,6 @@
 test_that("Compare documents works when score_only is TRUE", {
-  testthat::skip_if_not_installed('handwriter', minimum_version = '3.2.1.9000')
+  # get_writer_profiles() was added in handwriter 3.2.3.9000
+  testthat::skip_if_not_installed('handwriter', minimum_version = '3.2.3.9000')
 
   actual <- compare_documents(
     sample1 = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r01.png"),
