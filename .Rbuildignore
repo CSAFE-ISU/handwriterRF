@@ -10,8 +10,8 @@
 
 # Folders
 ^data-raw$
+^experiments$
 ^plots$
 ^README_files$
-^real_world_tests$
 ^vignettes_failing_github_rmdcheck$
 ^\.github$

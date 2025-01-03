@@ -1,4 +1,5 @@
 devtools::load_all()
+library(ggplot2)
 
 
 false_positive_rate <- function(df) {
@@ -27,6 +28,7 @@ false_negative_rate <- function(df) {
 
 calculate_errors <- function(project_dir, writer, test_df) {
   profiles <- suppressMessages(get_writer_profiles(input_dir = file.path(project_dir, "docs"),
+                                                   measure = "rates",
                                                    num_cores = 4,
                                                    output_dir = project_dir))
   profiles$writer <- writer
