@@ -2,6 +2,7 @@
 
 devtools::load_all()
 library(handwriter)
+library(ggplot2)
 
 false_positive_rate <- function(df) {
   n <- sum(df$ground_truth == "different writer")
