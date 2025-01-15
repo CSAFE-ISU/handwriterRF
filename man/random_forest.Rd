@@ -7,15 +7,9 @@
 \format{
 A list with the following components:
 \describe{
-#' \item{rf}{A random forest created with \pkg{ranger} with settings:
+\item{rf}{A random forest created with \pkg{ranger} with settings:
 importance = 'permutation', scale.permutation.importance = TRUE, and num.trees = 200.}
-\item{dists}{The data frame used to train the random forest. The data frame has
-2,400 rows. Each row contains the absolute and Euclidean distances between the
-cluster fill rates of two handwriting samples. The class is recorded in the match column.
-If both handwriting samples are
-from the same writer, the class is same. If the handwriting samples are from
-different writers, the class is different. There are 1,200 same distances and
-1,200 different distances in the data frame.}
+\item{distance_measures}{A vector of the distance measures used to train the random forest: c('abs', 'euc')}
 }
 }
 \usage{
@@ -23,14 +17,14 @@ random_forest
 }
 \description{
 A list that contains a trained random forest created with \pkg{ranger} and
-the data frame of distances used to train the random forest.
+the dataframe of distances used to train the random forest.
 }
 \examples{
 # view the random forest
 random_forest$rf
 
-# view the distances data frame
-random_forest$dists
+# view the distance measures used to train the random forest
+random_forest$distance_measures
 
 }
 \keyword{datasets}

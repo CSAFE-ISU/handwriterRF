@@ -30,7 +30,7 @@ If a random forest is not supplied, \code{random_forest} will be used.}
 \item{project_dir}{Optional. A folder in which to save helper files and a CSV
 file with the results. If no project directory is supplied. Helper files
 will be saved to tempdir() > comparison but deleted before the function
-terminates. A CSV file with the results will not be saved, but a data frame
+terminates. A CSV file with the results will not be saved, but a dataframe
 of the results will be returned.}
 
 \item{reference_scores}{Optional. A list of same writer and different writer
@@ -42,7 +42,7 @@ If reference scores are supplied, \code{score_only} will automatically be set to
 FALSE.}
 }
 \value{
-A data frame
+A dataframe
 }
 \description{
 Compare two handwritten documents to predict whether they were written by the

@@ -38,10 +38,6 @@ testthat::test_that("Calculate SLR works on w0030 samples in project directory",
   # get_writer_profiles() was added in handwriter 3.2.3.9000
   testthat::skip_if_not_installed('handwriter', minimum_version = '3.2.3.9000')
 
-  # make sure tempdir > comparison doesn't exist. If a previous test fails, this
-  # folder might still be hanging around.
-  delete_tempdir_comparison()
-
   actual <- calculate_slr(
     sample1_path = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r01.png"),
     sample2_path = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r02.png"),

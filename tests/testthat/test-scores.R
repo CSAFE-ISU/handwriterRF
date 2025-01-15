@@ -22,7 +22,9 @@ test_that("Get score works with known writers", {
 test_that("Get reference scores works", {
   actual <- get_ref_scores(
     rforest = random_forest,
-    df = validation
+    df = validation,
+    seed = 100,
+    downsample_diff_pairs = TRUE
   )
 
   expect_equal(actual, ref_scores)

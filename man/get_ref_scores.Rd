@@ -4,21 +4,28 @@
 \alias{get_ref_scores}
 \title{Get Reference Scores}
 \usage{
-get_ref_scores(rforest, df)
+get_ref_scores(rforest, df, seed = NULL, downsample_diff_pairs = FALSE)
 }
 \arguments{
 \item{rforest}{A \pkg{ranger} random forest created with
 \code{\link{train_rf}}.}
 
-\item{df}{A data frame of cluster fill rates created with
+\item{df}{A dataframe of cluster fill rates created with
 \code{\link{get_cluster_fill_rates}} with an added writer ID column.}
+
+\item{seed}{Optional. An integer to set the seed for the random number
+generator to make the results reproducible.}
+
+\item{downsample_diff_pairs}{If TRUE, the different writer pairs are
+down-sampled to equal the number of same writer pairs. If FALSE, all
+different writer pairs are used.}
 }
 \value{
 A list of scores
 }
 \description{
 Create reference scores of same writer and different writer scores from a
-data frame of cluster fill rates.
+dataframe of cluster fill rates.
 }
 \examples{
 \donttest{

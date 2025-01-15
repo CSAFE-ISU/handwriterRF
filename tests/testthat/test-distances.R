@@ -1,5 +1,5 @@
 testthat::test_that("Get distances works for absolute and Euclidean distances", {
-  # Run on a data frame of cluster fill rates from 3 documents
+  # Run on a dataframe of cluster fill rates from 3 documents
   df <- validation[1:3, 1:6]
   actual <- get_distances(df, c("abs", "euc"))
 
@@ -9,7 +9,7 @@ testthat::test_that("Get distances works for absolute and Euclidean distances", 
 })
 
 testthat::test_that("Get distances works for manhattan, Euclidean, maximum, and cosine distances", {
-  # Run on a data frame of cluster fill rates from 3 documents
+  # Run on a dataframe of cluster fill rates from 3 documents
   df <- validation[1:3, ]
   actual <- get_distances(df, c("man", "euc", "max", "cos"))
 
@@ -33,7 +33,7 @@ testthat::test_that("Absolute distance for single cluster works when cluster fil
   testthat::expect_equal(actual, expected)
 })
 
-testthat::test_that("Absolute distance works on data frame with 2 docs", {
+testthat::test_that("Absolute distance works on dataframe with 2 docs", {
   df <- validation[1:2, 1:6]
   actual <- absolute_dist(df)
 
@@ -42,7 +42,7 @@ testthat::test_that("Absolute distance works on data frame with 2 docs", {
   testthat::expect_equal(actual, expected)
 })
 
-testthat::test_that("Absolute distance works on data frame with 3 docs", {
+testthat::test_that("Absolute distance works on dataframe with 3 docs", {
   df <- validation[1:3, 1:6]
   actual <- absolute_dist(df)
 
@@ -51,7 +51,7 @@ testthat::test_that("Absolute distance works on data frame with 3 docs", {
   testthat::expect_equal(actual, expected)
 })
 
-testthat::test_that("Manhattan distance works on data frame with 3 docs", {
+testthat::test_that("Manhattan distance works on dataframe with 3 docs", {
   df <- validation[1:3, ]
   actual <- manhattan_dist(df)
 
@@ -60,7 +60,7 @@ testthat::test_that("Manhattan distance works on data frame with 3 docs", {
   testthat::expect_equal(actual, expected)
 })
 
-testthat::test_that("Euclidean distance works on data frame with 3 docs", {
+testthat::test_that("Euclidean distance works on dataframe with 3 docs", {
   df <- validation[1:3, ]
   actual <- euclidean_dist(df)
 
@@ -69,7 +69,7 @@ testthat::test_that("Euclidean distance works on data frame with 3 docs", {
   testthat::expect_equal(actual, expected)
 })
 
-testthat::test_that("Maximum distance works on data frame with 3 docs", {
+testthat::test_that("Maximum distance works on dataframe with 3 docs", {
   df <- validation[1:3, ]
   actual <- maximum_dist(df)
 
@@ -78,7 +78,7 @@ testthat::test_that("Maximum distance works on data frame with 3 docs", {
   testthat::expect_equal(actual, expected)
 })
 
-testthat::test_that("Cosine distance works on data frame with 3 docs", {
+testthat::test_that("Cosine distance works on dataframe with 3 docs", {
   df <- validation[1:3, ]
   actual <- cosine_dist(df)
 

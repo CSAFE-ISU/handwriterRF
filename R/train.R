@@ -20,7 +20,7 @@
 
 #' Train a Random Forest
 #'
-#' Train a random forest with \pkg{ranger} from a data frame of writer profiles
+#' Train a random forest with \pkg{ranger} from a dataframe of writer profiles
 #' estimated with \code{\link{get_cluster_fill_rates}}. `train_rf` calculates
 #' the distance between all pairs of writer profiles using one or more distance
 #' measures. Currently, the available distance measures are absolute, Manhattan,
@@ -47,7 +47,7 @@
 #' The cosine distance between two n-length vectors of cluster fill rates, a and b, is
 #' \eqn{\sum_{i=1}^n (a_i - b_i)^2 / (\sqrt{\sum_{i=1}^n a_i^2}\sqrt{\sum_{i=1}^n b_i^2})}.
 #'
-#' @param df A data frame of writer profiles created with
+#' @param df A dataframe of writer profiles created with
 #'   \code{\link{get_cluster_fill_rates}}
 #' @param ntrees An integer number of decision trees to use
 #' @param distance_measures A vector of distance measures. Any combination of
@@ -55,8 +55,8 @@
 #' @param output_dir A path to a directory where the random forest will be
 #'   saved.
 #' @param run_number An integer used for both the set.seed function and to
-#'   distinguish between different runs on the same input data frame.
-#' @param downsample Whether to downsample the number of different writer
+#'   distinguish between different runs on the same input dataframe.
+#' @param downsample_diff_pairs Whether to downsample the number of different writer
 #'   distances before training the random forest. If TRUE, the different writer
 #'   distances will be randomly sampled, resulting in the same number of
 #'   different writer and same writer pairs.
@@ -123,9 +123,9 @@ train_rf <- function(df,
 
 #' Downsample Pairs of Different Writers
 #'
-#' @param df A data frame
+#' @param df A dataframe
 #'
-#' @return A data frame
+#' @return A dataframe
 #'
 #' @noRd
 downsample <- function(df) {
@@ -141,9 +141,9 @@ downsample <- function(df) {
 #'
 #' Labels distances as belonging to same or different writers.
 #'
-#' @param dists A data frame of distances
+#' @param dists A dataframe of distances
 #'
-#' @return A data frame
+#' @return A dataframe
 #' @noRd
 label_same_different_writer <- function(dists) {
 

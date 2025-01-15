@@ -15,78 +15,50 @@
 # You should have received a copy of the GNU General Public License along with
 # this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
-#' Cluster Fill Counts for 1200 CSAFE Handwriting Database Samples
+#' A Dataframe of Cluster Fill Counts
 #'
-#' A dataset containing cluster fill counts for for 1,200 handwriting samples
-#' from the CSAFE Handwriting Database. The documents were split into graphs
-#' with \code{\link[handwriter]{process_batch_dir}}. The graphs were grouped into clusters
-#' with \code{\link[handwriter]{get_clusters_batch}}. The cluster fill counts were
-#' calculated with \code{\link[handwriter]{get_cluster_fill_counts}}.
+#' The cfc dataframe contains cluster fill counts for two documents from the
+#' CSAFE Handwriting Database: w0238_s01_pWOZ_r02.rds and
+#' w0238_s01_pWOZ_r03.rds.
 #'
-#' @format A data frame with 1200 rows and 43 variables:
+#' The documents were split into graphs with
+#' \code{\link[handwriter]{process_batch_dir}}. The graphs were grouped into
+#' clusters with \code{\link[handwriter]{get_clusters_batch}} and the cluster
+#' template \code{\link[handwriter]{templateK40}}. The number of graphs in each
+#' cluster, the cluster fill counts, were counted with
+#' \code{\link[handwriter]{get_cluster_fill_counts}}. The dataframe cfc has a
+#' column for each cluster in \code{\link[handwriter]{templateK40}} that has at
+#' least one graph from w0238_s01_pWOZ_r02.rds or w0238_s01_pWOZ_r03.rds
+#' assigned to it. Empty clusters do not have columns in cfc, so cfc only has 12
+#' cluster columns instead of 40.
+#'
+#' @format A dataframe with 2 rows and 15 variables:
 #' \describe{
-#'   \item{docname}{The file name of the handwriting sample. The file
-#'   name includes the writer ID, the writing session, prompt, and
-#'   repetition number of the handwriting sample. There are 1,200
-#'   handwriting samples.}
-#'   \item{writer}{Writer ID. There are 100 distinct writer ID's. Each
-#'   writer has 12 documents.}
-#'   \item{doc}{A document code that records the writing session, prompt,
-#'   and repetition number of the handwriting sample. There are 12 distinct
-#'   document codes. Each writer has a writing sample for each of the 12 document
-#'   codes.}
-#'   \item{1}{The number of graphs in cluster 1}
-#'   \item{2}{The number of graphs in cluster 2}
-#'   \item{3}{The number of graphs in cluster 3}
-#'   \item{4}{The number of graphs in cluster 4}
-#'   \item{5}{The number of graphs in cluster 5}
-#'   \item{6}{The number of graphs in cluster 6}
-#'   \item{7}{The number of graphs in cluster 7}
-#'   \item{8}{The number of graphs in cluster 8}
-#'   \item{9}{The number of graphs in cluster 9}
-#'   \item{10}{The number of graphs in cluster 10}
-#'   \item{11}{The number of graphs in cluster 11}
-#'   \item{12}{The number of graphs in cluster 12}
-#'   \item{13}{The number of graphs in cluster 13}
-#'   \item{14}{The number of graphs in cluster 14}
-#'   \item{15}{The number of graphs in cluster 15}
-#'   \item{16}{The number of graphs in cluster 16}
-#'   \item{17}{The number of graphs in cluster 17}
-#'   \item{18}{The number of graphs in cluster 18}
-#'   \item{19}{The number of graphs in cluster 19}
-#'   \item{20}{The number of graphs in cluster 20}
-#'   \item{21}{The number of graphs in cluster 21}
-#'   \item{22}{The number of graphs in cluster 22}
-#'   \item{23}{The number of graphs in cluster 23}
-#'   \item{24}{The number of graphs in cluster 24}
-#'   \item{25}{The number of graphs in cluster 25}
-#'   \item{26}{The number of graphs in cluster 26}
-#'   \item{27}{The number of graphs in cluster 27}
-#'   \item{28}{The number of graphs in cluster 28}
-#'   \item{29}{The number of graphs in cluster 29}
-#'   \item{30}{The number of graphs in cluster 30}
-#'   \item{31}{The number of graphs in cluster 31}
-#'   \item{32}{The number of graphs in cluster 32}
-#'   \item{33}{The number of graphs in cluster 33}
-#'   \item{34}{The number of graphs in cluster 34}
-#'   \item{35}{The number of graphs in cluster 35}
-#'   \item{36}{The number of graphs in cluster 36}
-#'   \item{37}{The number of graphs in cluster 37}
-#'   \item{38}{The number of graphs in cluster 38}
-#'   \item{39}{The number of graphs in cluster 39}
-#'   \item{40}{The number of graphs in cluster 40}
+#'   \item{docname}{The file name of the handwriting sample.}
+#'   \item{writer}{Writer ID.}
+#'   \item{doc}{The name of the handwriting prompt.}
+#'   \item{3}{The number of graphs in cluster 3.}
+#'   \item{10}{The number of graphs in cluster 10.}
+#'   \item{12}{The number of graphs in cluster 12.}
+#'   \item{15}{The number of graphs in cluster 15.}
+#'   \item{16}{The number of graphs in cluster 16.}
+#'   \item{17}{The number of graphs in cluster 17.}
+#'   \item{19}{The number of graphs in cluster 19.}
+#'   \item{20}{The number of graphs in cluster 20.}
+#'   \item{23}{The number of graphs in cluster 23.}
+#'   \item{25}{The number of graphs in cluster 25.}
+#'   \item{27}{The number of graphs in cluster 27.}
+#'   \item{29}{The number of graphs in cluster 29.}
 #' }
 #' @source <https://forensicstats.org/handwritingdatabase/>
 #'
 #' @md
 "cfc"
 
-
 #' A \pkg{ranger} Random Forest and Data Frame of Distances
 #'
 #' A list that contains a trained random forest created with \pkg{ranger} and
-#' the data frame of distances used to train the random forest.
+#' the dataframe of distances used to train the random forest.
 #'
 #' @format A list with the following components:
 #' \describe{
@@ -108,10 +80,10 @@
 
 #' Reference Similarity Scores
 #'
-#' A list containing two data frames. The same_writer data frame contains
-#' similarity scores from same writer pairs. The diff_writer data frame contains
+#' A list containing two dataframes. The same_writer dataframe contains
+#' similarity scores from same writer pairs. The diff_writer dataframe contains
 #' similarity scores from different writer pairs. The similarity scores are
-#' calculated from the validation data frame with the following steps:
+#' calculated from the validation dataframe with the following steps:
 #' \enumerate{
 #'     \item The absolute and Euclidean distances are calculated between pairs of writer profiles.
 #'     \item `random_forest` uses the distances between the pair to predict the class of the pair
@@ -122,12 +94,12 @@
 #'
 #' @format A list with the following components:
 #' \describe{
-#' \item{same_writer}{A data frame of 1,800 same writer similarity scores. The columns docname1
+#' \item{same_writer}{A dataframe of 1,800 same writer similarity scores. The columns docname1
 #' and writer1 record the file name and the writer ID of the first handwriting sample. The columns
 #' docname2 and writer2 record the file name and writer ID of the second handwriting sample. The match
 #' column records the class, which is same, of the pairs of handwriting samples. The similarity scores
 #' between the pairs of handwriting samples are in the score column.}
-#' \item{diff_writer}{A data frame of 717,600 different writer similarity scores. The columns docname1
+#' \item{diff_writer}{A dataframe of 717,600 different writer similarity scores. The columns docname1
 #' and writer1 record the file name and the writer ID of the first handwriting sample. The columns
 #' docname2 and writer2 record the file name and writer ID of the second handwriting sample. The match
 #' column records the class, which is different, of the pairs of handwriting samples. The similarity scores
@@ -164,9 +136,6 @@
 #' \item{wcd}{The within cluster
 #'   distances, the distance between each graph and the nearest cluster center, on the final iteration of the K-means algorithm.}
 #' }
-#' \item{iters}{The maximum number of iterations for the K-means
-#'   algorithm.}
-#'   }
 #'
 #' @examples
 #' handwriter::plot_cluster_centers(templateK40)
@@ -181,7 +150,7 @@
 #' Writers from the CSAFE Handwriting Database and the CVL Handwriting Database
 #' were randomly assigned to train, validation, and test sets.
 #'
-#' The test data frame contains cluster fill rates for 332 handwritten documents
+#' The test dataframe contains cluster fill rates for 332 handwritten documents
 #' from the CSAFE Handwriting Database and the CVL Handwriting Database. The
 #' documents are from 83 writers. The CSAFE Handwriting Database has nine
 #' repetitions of each prompt. Two London Letter prompts and two Wizard of Oz
@@ -196,11 +165,12 @@
 #' \code{\link[handwriter]{get_cluster_fill_counts}}. Finally,
 #' \code{\link{get_cluster_fill_rates}} calculated the cluster fill rates.
 #'
-#' @format A data frame with 332 rows and 43 variables:
+#' @format A dataframe with 332 rows and 43 variables:
 #' \describe{
 #'   \item{docname}{The file name of the handwriting sample.}
 #'   \item{writer}{Writer ID. There are 83 distinct writer ID's. Each
-#'   writer has four documents in the data frame.}
+#'   writer has four documents in the dataframe.}
+#'   \item{doc}{The name of the handwriting prompt.}
 #'   \item{total_graphs}{The total number of graphs in the document.}
 #'   \item{cluster1}{The proportion of graphs in cluster 1}
 #'   \item{cluster2}{The proportion of graphs in cluster 2}
@@ -255,7 +225,7 @@
 #' Writers from the CSAFE Handwriting Database and the CVL Handwriting Database
 #' were randomly assigned to train, validation, and test sets.
 #'
-#' The train data frame contains cluster fill rates for 800 handwritten
+#' The train dataframe contains cluster fill rates for 800 handwritten
 #' documents from the CSAFE Handwriting Database and the CVL Handwriting
 #' Database. The documents are from 200 writers. The CSAFE Handwriting Database
 #' has nine repetitions of each prompt. Two London Letter prompts and two Wizard
@@ -270,11 +240,12 @@
 #' \code{\link[handwriter]{get_cluster_fill_counts}}. Finally,
 #' \code{\link{get_cluster_fill_rates}} calculated the cluster fill rates.
 #'
-#' @format A data frame with 800 rows and 43 variables:
+#' @format A dataframe with 800 rows and 43 variables:
 #' \describe{
 #'   \item{docname}{The file name of the handwriting sample.}
 #'   \item{writer}{Writer ID. There are 200 distinct writer ID's. Each
-#'   writer has 4 documents in the data frame.}
+#'   writer has 4 documents in the dataframe.}
+#'   \item{doc}{The name of the handwriting prompt.}
 #'   \item{total_graphs}{The total number of graphs in the document.}
 #'   \item{cluster1}{The proportion of graphs in cluster 1}
 #'   \item{cluster2}{The proportion of graphs in cluster 2}
@@ -329,7 +300,7 @@
 #' Writers from the CSAFE Handwriting Database and the CVL Handwriting Database
 #' were randomly assigned to train, validation, and test sets.
 #'
-#' The validation data frame contains cluster fill rates for 1,200 handwritten
+#' The validation dataframe contains cluster fill rates for 1,200 handwritten
 #' documents from the CSAFE Handwriting Database and the CVL Handwriting
 #' Database. The documents are from 300 writers. The CSAFE Handwriting Database
 #' has nine repetitions of each prompt. Two London Letter prompts and two Wizard
@@ -344,11 +315,12 @@
 #' \code{\link[handwriter]{get_cluster_fill_counts}}. Finally,
 #' \code{\link{get_cluster_fill_rates}} calculated the cluster fill rates.
 #'
-#' @format A data frame with 1,200 rows and 43 variables:
+#' @format A dataframe with 1,200 rows and 43 variables:
 #' \describe{
 #'   \item{docname}{The file name of the handwriting sample.}
 #'   \item{writer}{Writer ID. There are 300 distinct writer ID's. Each
-#'   writer has 4 documents in the data frame.}
+#'   writer has 4 documents in the dataframe.}
+#'   \item{doc}{The name of the handwriting prompt.}
 #'   \item{total_graphs}{The total number of graphs in the document.}
 #'   \item{cluster1}{The proportion of graphs in cluster 1}
 #'   \item{cluster2}{The proportion of graphs in cluster 2}

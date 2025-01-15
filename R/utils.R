@@ -39,13 +39,13 @@ create_dir <- function(folder) {
 #' repetition columns by extracting these items from the document file names.
 #' The original document name column will be kept.
 #'
-#' @param df A data frame of containing at least one column of document names
+#' @param df A dataframe of containing at least one column of document names
 #'   from the CSAFE Handwriting Database.
 #' @param docname_col The name of the column containing document names.
 #' @param suffix A character string to add to the end of the new columns. Use ""
 #'   for no suffix.
 #'
-#' @return A data frame with new columns: writer, session, prompt, and
+#' @return A dataframe with new columns: writer, session, prompt, and
 #'   repetition.
 #'
 #' @noRd

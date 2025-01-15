@@ -22,15 +22,15 @@
 #' Get Reference Scores
 #'
 #' Create reference scores of same writer and different writer scores from a
-#' data frame of cluster fill rates.
+#' dataframe of cluster fill rates.
 #'
 #' @param rforest A \pkg{ranger} random forest created with
 #'   \code{\link{train_rf}}.
-#' @param df A data frame of cluster fill rates created with
+#' @param df A dataframe of cluster fill rates created with
 #'   \code{\link{get_cluster_fill_rates}} with an added writer ID column.
 #' @param seed Optional. An integer to set the seed for the random number
 #'   generator to make the results reproducible.
-#' @param downsample_diff_pair If TRUE, the different writer pairs are
+#' @param downsample_diff_pairs If TRUE, the different writer pairs are
 #'   down-sampled to equal the number of same writer pairs. If FALSE, all
 #'   different writer pairs are used.
 #'
@@ -76,13 +76,13 @@ get_ref_scores <- function(rforest, df, seed = NULL, downsample_diff_pairs = FAL
 #' between two handwriting samples as described in Madeline Johnson and Danica
 #' Ommen (2021) <doi:10.1002/sam.11566>.
 #'
-#' @param d A data frame of distance(s) between two handwriting samples,
+#' @param d A dataframe of distance(s) between two handwriting samples,
 #'   calculated with \code{\link{get_distances}}. The distance(s) needs to be
 #'   the distance(s) used to train the random forest.
 #' @param rforest A \pkg{ranger} random forest created with
 #'   \code{\link{train_rf}}.
 #'
-#' @return A data frame
+#' @return A dataframe
 #'
 #' @noRd
 get_score <- function(d, rforest) {

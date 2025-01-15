@@ -7,7 +7,7 @@
 plot_scores(scores, obs_score = NULL, n_bins = 50)
 }
 \arguments{
-\item{scores}{A data frame of scores calculated with
+\item{scores}{A dataframe of scores calculated with
 \code{\link[=get_ref_scores]{get_ref_scores()}}}
 
 \item{obs_score}{Optional. A similarity score calculated with

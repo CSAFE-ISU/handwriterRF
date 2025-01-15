@@ -36,7 +36,7 @@
 #' @param project_dir Optional. A folder in which to save helper files and a CSV
 #'   file with the results. If no project directory is supplied. Helper files
 #'   will be saved to tempdir() > comparison but deleted before the function
-#'   terminates. A CSV file with the results will not be saved, but a data frame
+#'   terminates. A CSV file with the results will not be saved, but a dataframe
 #'   of the results will be returned.
 #' @param reference_scores Optional. A list of same writer and different writer
 #'   similarity scores used for reference to calculate a score-based likelihood
@@ -46,7 +46,7 @@
 #'   If reference scores are supplied, `score_only` will automatically be set to
 #'   FALSE.
 #'
-#' @return A data frame
+#' @return A dataframe
 #' @export
 #'
 #' @examples
@@ -140,7 +140,7 @@ compare_documents <- function(sample1,
 #' they were written by the same person. Use either a similarity score or a
 #' score-based likelihood ratio as a comparison method.
 #'
-#' @param writer_profiles A data frame of writer profiles or cluster fill rates
+#' @param writer_profiles A dataframe of writer profiles or cluster fill rates
 #'   calculated with [get_cluster_fill_rates]
 #' @param score_only TRUE returns only the similarity score. FALSE returns the
 #'   similarity score and a score-based likelihood ratio for that score,
@@ -155,7 +155,7 @@ compare_documents <- function(sample1,
 #'   If reference scores are supplied, `score_only` will automatically be set to
 #'   FALSE.
 #'
-#' @return A data frame
+#' @return A dataframe
 #' @export
 #'
 #' @examples
@@ -181,7 +181,7 @@ compare_writer_profiles <- function(
   )
 
   if (!is_rates_df(params$writer_profiles)) {
-    stop("Writer profiles must be a rates data frame created by get_writer_profiles() with measure = 'rates'.")
+    stop("Writer profiles must be a rates dataframe created by get_writer_profiles() with measure = 'rates'.")
   }
 
   params <- handle_null_values(params)
@@ -278,9 +278,9 @@ check_dir_contents <- function(params, dir_name) {
 
 #' Is a Data Frame a Rates Data Frame
 #'
-#' Check if a data frame is a rates data frame.
+#' Check if a dataframe is a rates dataframe.
 #'
-#' @param df A data frame
+#' @param df A dataframe
 #'
 #' @returns TRUE or FALSE
 #'

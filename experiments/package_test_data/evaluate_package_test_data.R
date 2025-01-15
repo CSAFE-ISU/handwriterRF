@@ -120,24 +120,22 @@ get_errors <- function(df, type = "slr") {
   if (type == "slr") {
     errors <- list()
 
-    errors$factor_prompt <- as.character(unique(df$factor_prompt))
+    KM_df <- get_known_matches(df)
+    KNM_df <- get_known_nonmatches(df)
+    errors$KM <- nrow(km_df)
+    errors$KNM <- nrow(knm_df)
 
-    km <- get_known_matches(df)
-    knm <- get_known_nonmatches(df)
-    errors$num_km <- nrow(km)
-    errors$num_knm <- nrow(knm)
-
-    errors$fn <- km %>%
+    errors$FN_df <- KM_df %>%
       dplyr::filter(slr < 1)
-    errors$fp <- knm %>%
+    errors$FP_df <- KNM_df %>%
       dplyr::filter(slr > 1)
-    errors$num_fn <- nrow(errors$fn)
-    errors$num_fp <- nrow(errors$fp)
+    errors$FN <- nrow(errors$FN_df)
+    errors$FP <- nrow(errors$FP_df)
 
-    errors$FNR <- errors$num_fn / errors$num_km
-    errors$FPR <- errors$num_fp / errors$num_knm
+    errors$FNR <- errors$FN / errors$KM
+    errors$FPR <- errors$FP / errors$KNM
 
-    errors$error <- (errors$num_fn + errors$num_fp) / (errors$num_km + errors$num_knm)
+    errors$error <- (errors$FN + errors$FP) / (errors$KM + errors$KNM)
 
   }
   return(errors)
@@ -150,10 +148,10 @@ errors_by_factor <- function(slrs_df, factor_name = "database", pivot = "longer"
   names(dfs) <- levels(slrs_df[,paste0("factor_", factor_name)])
 
   df <- data.frame(factors = names(dfs),
-                   "num_KM" = sapply(dfs, function(x) x$num_km),
-                   "num_KNM" = sapply(dfs, function(x) x$num_knm),
-                   "num_FN" = sapply(dfs, function(x) x$num_fn),
-                   "num_FP" = sapply(dfs, function(x) x$num_fp),
+                   "KM" = sapply(dfs, function(x) x$KM),
+                   "KNM" = sapply(dfs, function(x) x$KNM),
+                   "FN" = sapply(dfs, function(x) x$FN),
+                   "FP" = sapply(dfs, function(x) x$FP),
                    "FNR" = sapply(dfs, function(x) round(x$FNR, 4)),
                    "FPR" = sapply(dfs, function(x) round(x$FPR, 4)))
 
@@ -171,31 +169,13 @@ errors_by_factor <- function(slrs_df, factor_name = "database", pivot = "longer"
   return(df)
 }
 
-plot_fpr_fnr <- function(df) {
-  p <- df %>% ggplot(aes(x = factors, y = rate, fill = type)) +
-    geom_col(position = "dodge") +
-    geom_text(aes(label = rate),
-              vjust = -1,
-              colour = "black",
-              position = position_dodge(.9)) +
-    geom_text(aes(label = ifelse(is.na(rate), "No data", ""), y = 0.25),
-              vjust = -1,
-              col = "black",
-              position = position_dodge(.9)) +
-    labs(fill = "Error", y = "Rate") +
-    ylim(0,100) +
-    theme_bw() +
-    theme(axis.title.x = element_blank())
-  return(p)
-}
-
 plot_fp_total_obs <- function(df) {
   p <- df %>%
     dplyr::filter(type == "FPR") %>%
     ggplot(aes(x = factors, y = round(100*rate,2), fill = type)) +
     geom_col(position = "dodge", fill = "#C8102E") +
     coord_flip() +
-    geom_text(aes(label = paste0(scales::percent(rate), " (", scales::comma(num_FP), " out of ", scales::comma(num_KNM), " KNM pairs.)")),
+    geom_text(aes(label = paste0(scales::percent(rate), " (", scales::comma(FP), " out of ", scales::comma(KNM), " KNM pairs.)")),
               hjust = 0,
               position = position_nudge(y = 5),
               colour = "black") +
@@ -212,7 +192,7 @@ plot_fn_total_obs <- function(df) {
     ggplot(aes(x = factors, y = round(100*rate,2), fill = type)) +
     geom_col(position = "dodge", fill = "#00843D") +
     coord_flip() +
-    geom_text(aes(label = paste0(scales::percent(rate), " (", scales::comma(num_FN), " out of ", scales::comma(num_KM), " KM pairs.)")),
+    geom_text(aes(label = paste0(scales::percent(rate), " (", scales::comma(FN), " out of ", scales::comma(KM), " KM pairs.)")),
               hjust = 0,
               position = position_nudge(y = 5),
               colour = "black") +
@@ -228,22 +208,17 @@ plot_fn_total_obs <- function(df) {
 }
 
 
-# SLRS for All Test Sets --------------------------------------------------
 
-# all_tests <- rbind(test$csafe_lnd, test$csafe_phr, test$csafe_woz, test$cvl_1_2_3_4, test$cvl_6, test$cvl_7_8)
-# all_tests <- all_tests %>% dplyr::distinct()
-# slrs_all_test_sets <- compare_writer_profiles(all_tests, score_only = FALSE)
-# slrs_all_test_sets <- add_factor(slrs_all_test_sets)
-# slrs_all_test_sets <- add_factor(slrs_all_test_sets)
-# slrs_all_test_sets <- add_prediction_label(slrs_all_test_sets)
-# saveRDS(slrs_all_test_sets, "experiments/package_test_data/slrs_all_test_sets.rds")
+# SLRs for Test -----------------------------------------------------------
+
+slrs <- compare_writer_profiles(test, score_only = FALSE)
+slrs <- add_factor(slrs)
+saveRDS(slrs, "experiments/package_test_data/slrs_for_test.rds")
 
 
 # All Samples -------------------------------------------------------------
 
-slrs <- readRDS("experiments/package_test_data/slrs_all_test_sets.rds")
-# slrs <- add_factor(slrs)
-# saveRDS(slrs, "experiments/package_test_data/slrs_all_test_sets.rds")
+slrs <- readRDS("experiments/package_test_data/slrs_for_test.rds")
 length <- errors_by_factor(slrs, "length")
 
 
@@ -262,23 +237,7 @@ prompt_match <- errors_by_factor(slrs_long, "prompt_match")
 
 # Plots -------------------------------------------------------------------
 
-plot_fpr_fnr(length)
-ggsave("experiments/package_test_data/plots/factor_length.png", width = 6, height = 4)
-
-plot_fpr_fnr(db)
-ggsave("experiments/package_test_data/plots/factor_database.png", width = 6, height = 4)
-
-plot_fpr_fnr(language)
-ggsave("experiments/package_test_data/plots/factor_language.png", width = 6, height = 4)
-
-plot_fpr_fnr(prompt_in_train)
-ggsave("experiments/package_test_data/plots/factor_prompt_in_train.png", width = 6, height = 4)
-
-plot_fpr_fnr(prompt_match)
-ggsave("experiments/package_test_data/plots/factor_prompt_match.png", width = 6, height = 4)
-
-
-# fpr
+# False Positive Rates
 plot_fp_total_obs(length)
 ggsave("experiments/package_test_data/plots/fpr_by_factors/factor_length_fpr_horiz.png", width = 6, height = 3)
 
@@ -294,7 +253,7 @@ ggsave("experiments/package_test_data/plots/fpr_by_factors/factor_prompt_in_trai
 plot_fp_total_obs(prompt_match)
 ggsave("experiments/package_test_data/plots/fpr_by_factors/factor_prompt_match_fpr_horiz.png", width = 6, height = 3)
 
-# fnr
+# False Negative Rates
 plot_fn_total_obs(length)
 ggsave("experiments/package_test_data/plots/fnr_by_factors/factor_length_fnr_horiz.png", width = 6, height = 3)
 
@@ -309,57 +268,3 @@ ggsave("experiments/package_test_data/plots/fnr_by_factors/factor_prompt_in_trai
 
 plot_fn_total_obs(prompt_match)
 ggsave("experiments/package_test_data/plots/fnr_by_factors/factor_prompt_match_fnr_horiz.png", width = 6, height = 3)
-
-# # Split FNRs into groups
-# FNR_cvl_1234 <- df %>%
-#   dplyr::filter(prompt1 %in% c("1", "2", "3", "4"), prompt2 %in% c("1", "2", "3", "4"))
-#
-# FNR_cvl_678 <- df %>%
-#   dplyr::filter(prompt1 %in% c("6", "7", "8"), prompt2 %in% c("6", "7", "8"))
-#
-# FNR_csafe <- df %>%
-#   dplyr::filter(prompt1 %in% c("pLND", "pPHR", "pWOZ"), prompt2 %in% c("pLND", "pPHR", "pWOZ"))
-#
-# p <- df %>%
-#   ggplot2::ggplot(aes(x = prompt2, y = prompt1, fill = FPR)) +
-#   geom_tile() +
-#   geom_text(aes(label = FPR), size = 3) +
-#   scale_fill_gradient2("Probability ", low = "grey90", midpoint = 0, high = "steelblue") +
-#   ylab("Prompt 1") +
-#   xlab("Prompt 2") +
-#   theme_bw() +
-#   labs(title = "False Positive Rates")
-# ggsave("experiments/package_test_data/plots/FPR_by_prompt_pairs.png", width = 5.25)
-#
-# FNR_cvl_1234 %>%
-#   ggplot2::ggplot(aes(x = prompt2, y = prompt1, fill = FNR)) +
-#   geom_tile() +
-#   geom_text(aes(label = FNR), size = 3) +
-#   scale_fill_gradient2("Probability ", low = "grey90", midpoint = 0, high = "steelblue", na.value = "gray90") +
-#   ylab("Prompt 1") +
-#   xlab("Prompt 2") +
-#   theme_bw() +
-#   labs(title = "False Negative Rates")
-# ggsave("experiments/package_test_data/plots/FNR_cvl_1234_by_prompt_pairs.png", width = 5.25)
-#
-# FNR_cvl_678 %>%
-#   ggplot2::ggplot(aes(x = prompt2, y = prompt1, fill = FNR)) +
-#   geom_tile() +
-#   geom_text(aes(label = FNR), size = 3) +
-#   scale_fill_gradient2("Probability ", low = "grey90", midpoint = 0, high = "steelblue", na.value = "gray90") +
-#   ylab("Prompt 1") +
-#   xlab("Prompt 2") +
-#   theme_bw() +
-#   labs(title = "False Negative Rates")
-# ggsave("experiments/package_test_data/plots/FNR_cvl_678_by_prompt_pairs.png", width = 5.25)
-#
-# FNR_csafe %>%
-#   ggplot2::ggplot(aes(x = prompt2, y = prompt1, fill = FNR)) +
-#   geom_tile() +
-#   geom_text(aes(label = FNR), size = 3) +
-#   scale_fill_gradient2("Probability ", low = "grey90", midpoint = 0, high = "steelblue", na.value = "gray90") +
-#   ylab("Prompt 1") +
-#   xlab("Prompt 2") +
-#   theme_bw() +
-#   labs(title = "False Negative Rates")
-# ggsave("experiments/package_test_data/plots/FNR_csafe_by_prompt_pairs.png", width = 5.25)

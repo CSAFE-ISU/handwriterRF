@@ -7,7 +7,7 @@
 get_rates_of_misleading_slrs(df, threshold = 1)
 }
 \arguments{
-\item{df}{A data frame of SLRs from \code{\link{compare_writer_profiles}} with
+\item{df}{A dataframe of SLRs from \code{\link{compare_writer_profiles}} with
 \code{score_only = FALSE}.}
 
 \item{threshold}{A number greater than zero that serves as a decision

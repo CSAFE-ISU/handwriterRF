@@ -2,6 +2,18 @@ devtools::load_all()
 source("data-raw/helpers.R")
 
 
+# Make Example Cluster Fill Counts ----------------------------------------
+
+# This dataframe of cluster fill counts is only used for the example for
+# get_cluster_fill_rates().
+ex1 <- system.file("extdata", "clusters", "w0238_s01_pWOZ_r02.rds", package = "handwriterRF")
+ex2 <- system.file("extdata", "clusters", "w0238_s01_pWOZ_r03.rds", package = "handwriterRF")
+c1 <- readRDS(ex1)
+c2 <- readRDS(ex2)
+clusters <- rbind(c1, c2)
+cfc <- handwriter::get_cluster_fill_counts(clusters)
+usethis::use_data(cfc)
+
 #  Make Train, Validation, and Test Sets ----------------------------------
 
 # clusters_dir <- "/Users/stephanie/Documents/handwriting_datasets/CSAFE_handwriting_database/clusters"

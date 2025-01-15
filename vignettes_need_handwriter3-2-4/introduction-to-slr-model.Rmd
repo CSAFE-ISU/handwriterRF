@@ -36,7 +36,7 @@ We estimated the writer profiles for all handwriting samples using the `handwrit
 2. Sort the graphs into *clusters* with similar shapes using a cluster template and `handwriter::get_clusters_batch()`. 
 3. Calculate the proportion of graphs assigned to each cluster with `get_cluster_fill_rates()`. The cluster fill rates serve as an estimate of the writer profile for the sample.
 
-The `train` data frame contains the estimated writer profiles for train set. Let's visualize the writer profiles for two writers from `train`: 
+The `train` dataframe contains the estimated writer profiles for train set. Let's visualize the writer profiles for two writers from `train`: 
 
 ```{r profiles-facet}
 library(dplyr)
@@ -76,7 +76,7 @@ plot_scores(ref_scores)
 
 ## Compare Two Test Handwriting Samples
 
-The `test` data frame contains writer profiles from writers not in `train` or `validation`. Let’s compare two writer profiles in the `test` set using the trained random forest and reference similarity scores. We’ll use the first two samples from writer `w0005` as an example. First, we plot the writer profiles:
+The `test` dataframe contains writer profiles from writers not in `train` or `validation`. Let’s compare two writer profiles in the `test` set using the trained random forest and reference similarity scores. We’ll use the first two samples from writer `w0005` as an example. First, we plot the writer profiles:
 
 ```{r example-profiles}
 test_samples <- test[test$writer == "w0005",][1:2,]

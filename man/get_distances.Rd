@@ -7,7 +7,7 @@
 get_distances(df, distance_measures)
 }
 \arguments{
-\item{df}{A data frame of cluster fill rates created with
+\item{df}{A dataframe of cluster fill rates created with
 \code{\link{get_cluster_fill_rates}} and an added column that contains a writer ID.}
 
 \item{distance_measures}{A vector of distance measures. Use 'abs' to
@@ -17,7 +17,7 @@ for the Euclidean distance, 'max' for the maximum absolute distance, and
 combination of these five distance measures.}
 }
 \value{
-A data frame of distances
+A dataframe of distances
 }
 \description{
 Calculate distances using between all pairs of cluster fill rates in a data

@@ -45,7 +45,7 @@ library(handwriter)
 library(handwriterRF)
 ```
 
-Calculate writer profiles for the training samples with `templateK40`. The output is a data frame.
+Calculate writer profiles for the training samples with `templateK40`. The output is a dataframe.
 
 ```{r profiles, eval=FALSE}
 profiles <- handwriter::get_writer_profiles(

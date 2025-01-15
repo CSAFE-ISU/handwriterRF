@@ -69,7 +69,7 @@ sample2 <- "path/to/your_sample2.png"
 slr <- calculate_slr(sample1, sample2)
 ```
 
-The result is a data frame:
+The result is a dataframe:
 
 - *docname1* is the file name of the first sample.
 - *writer1* is “unknown1”.
@@ -79,8 +79,8 @@ The result is a data frame:
 - *slr* is a score-based likelihood ratio that quantifies the strength
   of evidence in favor of same writer or different writer.
 
-Display the slr data frame. We hide the file path columns here so that
-the data frame fits on this page.
+Display the slr dataframe. We hide the file path columns here so that
+the dataframe fits on this page.
 
 ``` r
 slr

@@ -6,7 +6,7 @@
 
 * Created function `compare_writer_profiles()` to make experiments faster on large numbers of documents compared to `compare_documents()`. `compare_writer_profiles()` calculates either a similarity score or score-based likelihood ratio for every pair of documents.    
 
-* Created new data frames of writer profiles `train`, `validation`, and `test`. Created a new `random_forest` from `train`. Created `ref_scores`, a list of same writer and different writer similarity scores, from `validation`. 
+* Created new dataframes of writer profiles `train`, `validation`, and `test`. Created a new `random_forest` from `train`. Created `ref_scores`, a list of same writer and different writer similarity scores, from `validation`. 
 
 ## Minor improvements and bug fixes
 

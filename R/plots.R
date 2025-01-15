@@ -33,7 +33,7 @@
 #' which show the frequency of scores, don't handle this class imbalance well.
 #' Instead, the rate of scores is plotted.
 #'
-#' @param scores A data frame of scores calculated with
+#' @param scores A dataframe of scores calculated with
 #'   [get_ref_scores()]
 #' @param obs_score Optional. A similarity score calculated with
 #'   [calculate_slr()]

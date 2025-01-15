@@ -10,11 +10,11 @@ train_rf(
   distance_measures,
   output_dir = NULL,
   run_number = 1,
-  downsample = TRUE
+  downsample_diff_pairs = TRUE
 )
 }
 \arguments{
-\item{df}{A data frame of writer profiles created with
+\item{df}{A dataframe of writer profiles created with
 \code{\link{get_cluster_fill_rates}}}
 
 \item{ntrees}{An integer number of decision trees to use}
@@ -26,9 +26,9 @@ train_rf(
 saved.}
 
 \item{run_number}{An integer used for both the set.seed function and to
-distinguish between different runs on the same input data frame.}
+distinguish between different runs on the same input dataframe.}
 
-\item{downsample}{Whether to downsample the number of different writer
+\item{downsample_diff_pairs}{Whether to downsample the number of different writer
 distances before training the random forest. If TRUE, the different writer
 distances will be randomly sampled, resulting in the same number of
 different writer and same writer pairs.}
@@ -37,7 +37,7 @@ different writer and same writer pairs.}
 A random forest
 }
 \description{
-Train a random forest with \pkg{ranger} from a data frame of writer profiles
+Train a random forest with \pkg{ranger} from a dataframe of writer profiles
 estimated with \code{\link{get_cluster_fill_rates}}. \code{train_rf} calculates
 the distance between all pairs of writer profiles using one or more distance
 measures. Currently, the available distance measures are absolute, Manhattan,

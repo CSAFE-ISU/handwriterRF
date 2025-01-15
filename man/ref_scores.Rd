@@ -7,12 +7,12 @@
 \format{
 A list with the following components:
 \describe{
-\item{same_writer}{A data frame of 1,800 same writer similarity scores. The columns docname1
+\item{same_writer}{A dataframe of 1,800 same writer similarity scores. The columns docname1
 and writer1 record the file name and the writer ID of the first handwriting sample. The columns
 docname2 and writer2 record the file name and writer ID of the second handwriting sample. The match
 column records the class, which is same, of the pairs of handwriting samples. The similarity scores
 between the pairs of handwriting samples are in the score column.}
-\item{diff_writer}{A data frame of 717,600 different writer similarity scores. The columns docname1
+\item{diff_writer}{A dataframe of 717,600 different writer similarity scores. The columns docname1
 and writer1 record the file name and the writer ID of the first handwriting sample. The columns
 docname2 and writer2 record the file name and writer ID of the second handwriting sample. The match
 column records the class, which is different, of the pairs of handwriting samples. The similarity scores
@@ -23,10 +23,10 @@ between the pairs of handwriting samples are in the score column.}
 ref_scores
 }
 \description{
-A list containing two data frames. The same_writer data frame contains
-similarity scores from same writer pairs. The diff_writer data frame contains
+A list containing two dataframes. The same_writer dataframe contains
+similarity scores from same writer pairs. The diff_writer dataframe contains
 similarity scores from different writer pairs. The similarity scores are
-calculated from the validation data frame with the following steps:
+calculated from the validation dataframe with the following steps:
 \enumerate{
 \item The absolute and Euclidean distances are calculated between pairs of writer profiles.
 \item \code{random_forest} uses the distances between the pair to predict the class of the pair

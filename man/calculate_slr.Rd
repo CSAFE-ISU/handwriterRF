@@ -22,7 +22,7 @@ file format.}
 \item{rforest}{Optional. A random forest trained with \pkg{ranger}. If no
 random forest is specified, \code{random_forest} will be used.}
 
-\item{reference_scores}{Optional. A data frame of reference similarity
+\item{reference_scores}{Optional. A dataframe of reference similarity
 scores. If reference scores is not specified, \code{ref_scores} will be used.}
 
 \item{project_dir}{A path to a directory where helper files will be saved. If
@@ -30,7 +30,7 @@ no project directory is specified, the helper files will be saved to
 tempdir() and deleted before the function terminates.}
 }
 \value{
-A data frame
+A dataframe
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}} \code{calculate_slr} has been superseded in

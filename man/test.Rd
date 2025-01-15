@@ -5,11 +5,12 @@
 \alias{test}
 \title{A Test Set of Cluster Fill Rates}
 \format{
-A data frame with 332 rows and 43 variables:
+A dataframe with 332 rows and 43 variables:
 \describe{
 \item{docname}{The file name of the handwriting sample.}
 \item{writer}{Writer ID. There are 83 distinct writer ID's. Each
-writer has four documents in the data frame.}
+writer has four documents in the dataframe.}
+\item{doc}{The name of the handwriting prompt.}
 \item{total_graphs}{The total number of graphs in the document.}
 \item{cluster1}{The proportion of graphs in cluster 1}
 \item{cluster2}{The proportion of graphs in cluster 2}
@@ -65,7 +66,7 @@ Writers from the CSAFE Handwriting Database and the CVL Handwriting Database
 were randomly assigned to train, validation, and test sets.
 }
 \details{
-The test data frame contains cluster fill rates for 332 handwritten documents
+The test dataframe contains cluster fill rates for 332 handwritten documents
 from the CSAFE Handwriting Database and the CVL Handwriting Database. The
 documents are from 83 writers. The CSAFE Handwriting Database has nine
 repetitions of each prompt. Two London Letter prompts and two Wizard of Oz

@@ -46,7 +46,7 @@
 #' The cosine distance between two n-length vectors of cluster fill rates, a and b, is
 #' \eqn{\sum_{i=1}^n (a_i - b_i)^2 / (\sqrt{\sum_{i=1}^n a_i^2}\sqrt{\sum_{i=1}^n b_i^2})}.
 #'
-#' @param df A data frame of cluster fill rates created with
+#' @param df A dataframe of cluster fill rates created with
 #'   \code{\link{get_cluster_fill_rates}} and an added column that contains a writer ID.
 #' @param distance_measures A vector of distance measures. Use 'abs' to
 #'   calculate the absolute difference, 'man' for the Manhattan distance, 'euc'
@@ -54,7 +54,7 @@
 #'   'cos' for the cosine distance. The vector can be a single distance, or any
 #'   combination of these five distance measures.
 #'
-#' @return A data frame of distances
+#' @return A dataframe of distances
 #'
 #' @export
 #'
@@ -91,7 +91,7 @@ get_distances <- function(df, distance_measures) {
     distance_measures <- distance_measures[which(distance_measures != method)]
   }
 
-  # combine data frames
+  # combine dataframes
   dists <- purrr::reduce(dists, dplyr::left_join, by = c(
     "docname1" = "docname1",
     "writer1" = "writer1",
@@ -108,9 +108,9 @@ get_distances <- function(df, distance_measures) {
 #' Calculate the Absolute Distances for a Single Cluster
 #'
 #' Calculate the absolute distances for a single cluster between all pairs of
-#' documents in a data frame.
+#' documents in a dataframe.
 #'
-#' @param df A data frame of cluster will rates created with
+#' @param df A dataframe of cluster will rates created with
 #'   \code{\link{get_cluster_fill_rates}}.
 #' @param k The name of a cluster. E.g., 'cluster1'
 #'
@@ -119,7 +119,7 @@ get_distances <- function(df, distance_measures) {
 #' @noRd
 absolute_dist_for_single_cluster <- function(df, k) {
   # outer throws error if df is a tibble and the cluster k is a zero vector,
-  # so convert df to a data frame.
+  # so convert df to a dataframe.
   df <- as.data.frame(df)
 
   # select cluster k
@@ -138,10 +138,10 @@ absolute_dist_for_single_cluster <- function(df, k) {
 #' Calculate the absolute distances between all pairs of documents in a data
 #' frame.
 #'
-#' @param df A data frame of cluster will rates created with
+#' @param df A dataframe of cluster will rates created with
 #'   \code{\link{get_cluster_fill_rates}}.
 #'
-#' @return A data frame
+#' @return A dataframe
 #'
 #' @noRd
 absolute_dist <- function(df) {
@@ -157,7 +157,7 @@ absolute_dist <- function(df) {
     dist_matrix2df(dists[[i]], docnames, writers, paste0("cluster", i))
   })
 
-  # combine data frames
+  # combine dataframes
   dists <- purrr::reduce(dists, dplyr::left_join, by = c(
     "docname1" = "docname1",
     "writer1" = "writer1",
@@ -173,10 +173,10 @@ absolute_dist <- function(df) {
 #' Calculate the manhattan distances between all pairs of documents in a data
 #' frame.
 #'
-#' @param df A data frame of cluster will rates created with
+#' @param df A dataframe of cluster will rates created with
 #'   \code{\link{get_cluster_fill_rates}}.
 #'
-#' @return A data frame
+#' @return A dataframe
 #'
 #' @noRd
 manhattan_dist <- function(df) {
@@ -202,10 +202,10 @@ manhattan_dist <- function(df) {
 #' Calculate the Euclidean distances between all pairs of documents in a data
 #' frame.
 #'
-#' @param df A data frame of cluster will rates created with
+#' @param df A dataframe of cluster will rates created with
 #'   \code{\link{get_cluster_fill_rates}}.
 #'
-#' @return A data frame
+#' @return A dataframe
 #'
 #' @noRd
 euclidean_dist <- function(df) {
@@ -231,10 +231,10 @@ euclidean_dist <- function(df) {
 #' Calculate the maximum distances between all pairs of documents in a data
 #' frame.
 #'
-#' @param df A data frame of cluster will rates created with
+#' @param df A dataframe of cluster will rates created with
 #'   \code{\link{get_cluster_fill_rates}}.
 #'
-#' @return A data frame
+#' @return A dataframe
 #'
 #' @noRd
 maximum_dist <- function(df) {
@@ -260,10 +260,10 @@ maximum_dist <- function(df) {
 #' Calculate the cosine distances between all pairs of documents in a data
 #' frame.
 #'
-#' @param df A data frame of cluster will rates created with
+#' @param df A dataframe of cluster will rates created with
 #'   \code{\link{get_cluster_fill_rates}}.
 #'
-#' @return A data frame
+#' @return A dataframe
 #'
 #' @noRd
 cosine_dist <- function(df) {
@@ -286,13 +286,13 @@ cosine_dist <- function(df) {
 
 #' Select the Cluster Columns
 #'
-#' For a data frame created with \code{\link{get_cluster_fill_rates}}, create
-#' a data frame that consists solely of the cluster columns.
+#' For a dataframe created with \code{\link{get_cluster_fill_rates}}, create
+#' a dataframe that consists solely of the cluster columns.
 #'
-#' @param df A data frame of cluster will rates created with
+#' @param df A dataframe of cluster will rates created with
 #'   \code{\link{get_cluster_fill_rates}}.
 #'
-#' @return A data frame
+#' @return A dataframe
 #'
 #' @noRd
 get_cluster_cols <- function(df) {
@@ -305,7 +305,7 @@ get_cluster_cols <- function(df) {
 
 #' Convert a Matrix of Distances to a Data Frame
 #'
-#' Convert a matrix of distances to a data frame with five columns: docname1, writer1,
+#' Convert a matrix of distances to a dataframe with five columns: docname1, writer1,
 #' docname2, writer2, and <dist_col_label>.
 #'
 #' @param m A matrix of distances
@@ -313,9 +313,9 @@ get_cluster_cols <- function(df) {
 #'   of the distance matrix.
 #' @param writers A vector of writer IDs.
 #' @param dist_col_label A character string to name the distance column in the
-#'   returned data frame.
+#'   returned dataframe.
 #'
-#' @return A data frame
+#' @return A dataframe
 #'
 #' @noRd
 dist_matrix2df <- function(m, docnames, writers, dist_col_label) {
@@ -325,7 +325,7 @@ dist_matrix2df <- function(m, docnames, writers, dist_col_label) {
   # itself. We don't want to use these distances in our distributions.
   diag(m) <- NA
 
-  # format data frame
+  # format dataframe
   df <- as.data.frame(m)
   colnames(df) <- docnames
   df$docname <- docnames

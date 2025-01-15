@@ -66,7 +66,7 @@ histogram_of_fp_writers <- function(errors) {
 
 ## Baseline with Test Set
 
-# The test data frame included with handwriterRF contains 332 paragraph length
+# The test dataframe included with handwriterRF contains 332 paragraph length
 # writing samples from 83 writers. The samples are from the CSAFE Handwriting
 # Database and the CVL Handwriting Database. The samples were scanned at 300 DPI
 # and saved as PNG files. I also created 72 DPI versions of these samples. The
@@ -89,7 +89,7 @@ fnr <- false_negative_rate(df = baseline300)
 
 ### 72 DPI Resolution Version of Test Set
 
-# I downsampled the 332 documents in the `test` data frame using Photoshop. Then
+# I downsampled the 332 documents in the `test` dataframe using Photoshop. Then
 # I ran `get_writer_profiles()` and `compare_documents()` on these samples using
 # the `random_forest` and `ref_scores` included with handwriterRF. The random
 # forest and reference scores were both created from 300 dpi training samples.

@@ -12,7 +12,7 @@ compare_writer_profiles(
 )
 }
 \arguments{
-\item{writer_profiles}{A data frame of writer profiles or cluster fill rates
+\item{writer_profiles}{A dataframe of writer profiles or cluster fill rates
 calculated with \link{get_cluster_fill_rates}}
 
 \item{score_only}{TRUE returns only the similarity score. FALSE returns the
@@ -31,7 +31,7 @@ If reference scores are supplied, \code{score_only} will automatically be set to
 FALSE.}
 }
 \value{
-A data frame
+A dataframe
 }
 \description{
 Compare the writer profiles from two handwritten documents to predict whether

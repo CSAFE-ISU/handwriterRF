@@ -43,13 +43,13 @@
 #'   file format.
 #' @param rforest Optional. A random forest trained with \pkg{ranger}. If no
 #'   random forest is specified, `random_forest` will be used.
-#' @param reference_scores Optional. A data frame of reference similarity
+#' @param reference_scores Optional. A dataframe of reference similarity
 #'   scores. If reference scores is not specified, `ref_scores` will be used.
 #' @param project_dir A path to a directory where helper files will be saved. If
 #'   no project directory is specified, the helper files will be saved to
 #'   tempdir() and deleted before the function terminates.
 #'
-#' @return A data frame
+#' @return A dataframe
 #'
 #' @export
 #'
@@ -93,7 +93,7 @@ calculate_slr <- function(sample1_path, sample2_path,
 #'
 #' Verbally interprent an SLR value.
 #'
-#' @param df A data frame created by \code{\link{calculate_slr}}.
+#' @param df A dataframe created by \code{\link{calculate_slr}}.
 #'
 #' @return A string
 #'
@@ -143,7 +143,7 @@ interpret_slr <- function(df) {
 #' Calculate the rates of misleading evidence for score-based likelihood ratios
 #' (SLRs) when the ground truth is known.
 #'
-#' @param df A data frame of SLRs from [`compare_writer_profiles`] with
+#' @param df A dataframe of SLRs from [`compare_writer_profiles`] with
 #'   `score_only = FALSE`.
 #' @param threshold A number greater than zero that serves as a decision
 #'   threshold. If the ground truth for two documents is that they came from the

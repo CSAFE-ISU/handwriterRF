@@ -20,24 +20,26 @@
 
 #' Get Cluster Fill Rates
 #'
-#' `r lifecycle::badge('deprecated')`
-#' `get_cluster_fill_rates` is deprecated. Use \code{\link[handwriter]{get_cluster_fill_rates}} instead.
+#' `r lifecycle::badge('deprecated')` `get_cluster_fill_rates` is deprecated.
+#' Use \code{\link[handwriter]{get_cluster_fill_rates}} instead.
 #'
-#' @param df A data frame of cluster fill rates created with
+#' @param df A dataframe of cluster fill rates created with
 #'   \code{\link[handwriter]{get_cluster_fill_counts}}.
 #'
-#' @return A data frame of cluster fill rates.
+#' @return A dataframe of cluster fill rates.
 #'
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' rates <- get_cluster_fill_rates(df = cfc)
+#' }
 #'
 #' @md
 get_cluster_fill_rates <- function(df) {
   lifecycle::deprecate_warn("1.0.3", "get_cluster_fill_rates()", "handwriter::get_cluster_fill_rates()")
 
-  # get label columns. docname is required for input data frames but writer and
+  # get label columns. docname is required for input dataframes but writer and
   # doc are optional.
   label_cols <- df %>%
     dplyr::ungroup() %>%
