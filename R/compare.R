@@ -115,8 +115,7 @@ compare_documents <- function(sample1,
     output_dir = params$project_dir)
 
   message("Calculating distance between samples...")
-  dist_measures <- which_dists(rforest = params$rforest)
-  params$dist <- get_distances(df = profiles, distance_measures = dist_measures)
+  params$dist <- get_distances(df = profiles, distance_measures = params$rforest$distance_measures)
 
   message("Calculating similarity score...")
   params$score <- get_score(d = params$dist, rforest = params$rforest)$score
@@ -188,8 +187,7 @@ compare_writer_profiles <- function(
   params <- handle_null_values(params)
 
   message("Calculating distance between samples...")
-  dist_measures <- which_dists(rforest = params$rforest)
-  params$dist <- get_distances(df = writer_profiles, distance_measures = dist_measures)
+  params$dist <- get_distances(df = writer_profiles, distance_measures = params$rforest$distance_measures)
 
   message("Calculating similarity score...")
   params$score <- get_score(d = params$dist, rforest = params$rforest)$score

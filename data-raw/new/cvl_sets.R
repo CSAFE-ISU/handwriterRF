@@ -21,6 +21,10 @@ test678_prompts <- rp %>%
 rp <- rp %>% dplyr::filter(!(writer %in% test678_writers))
 print(paste("Number of writers in test678_prompts:", length(unique(test678_prompts))))
 print(paste("Number of writers remaining:", length(unique(rp$writer))))
+test6_prompts <- test678_prompts %>%
+  dplyr::filter(doc == 6)
+test78_prompts <- test678_prompts %>%
+  dplyr::filter(doc != 6)
 
 # Drop German prompts
 rp <- rp %>%
@@ -61,25 +65,32 @@ print(paste("Number of writers remaining:", length(unique(rp$writer))))
 cvl_sets <- list()
 cvl_sets$train <- train
 cvl_sets$valid <- valid
-cvl_sets$test <- list("prompts1234" = test1234_prompts, "prompts678" = test678_prompts)
+cvl_sets$test <- list("prompts1234" = test1234_prompts, "prompt6" = test6_prompts, "prompts78" = test78_prompts)
 
 # Checks
 train_writers <- unique(cvl_sets$train$writer)
 valid_writers <- unique(cvl_sets$valid$writer)
 test1234_writers <- unique(cvl_sets$test$prompts1234$writer)
-test678_writers <- unique(cvl_sets$test$prompts678$writer)
+test6_writers <- unique(cvl_sets$test$prompt6$writer)
+test78_writers <- unique(cvl_sets$test$prompts78$writer)
 
 intersect(train_writers, valid_writers)
 intersect(train_writers, test1234_writers)
-intersect(train_writers, test678_writers)
+intersect(train_writers, test6_writers)
+intersect(train_writers, test78_writers)
 intersect(valid_writers, test1234_writers)
-intersect(valid_writers, test678_writers)
-intersect(test1234_writers, test678_writers)
+intersect(valid_writers, test6_writers)
+intersect(valid_writers, test78_writers)
+intersect(test1234_writers, test6_writers)
+intersect(test1234_writers, test78_writers)
+# writers should be same in both sets
+intersect(test6_writers, test78_writers)
 
 unique(cvl_sets$train$doc)
 unique(cvl_sets$valid$doc)
 unique(cvl_sets$test$prompts1234$doc)
-unique(cvl_sets$test$prompts678$doc)
+unique(cvl_sets$test$prompt6$doc)
+unique(cvl_sets$test$prompts78$doc)
 
 # Save
 saveRDS(cvl_sets, "data-raw/new/cvl_sets.rds")

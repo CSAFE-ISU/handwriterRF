@@ -51,6 +51,12 @@ create_dir <- function(folder) {
 #' @noRd
 expand_docnames <- function(df, docname_col = "docname", suffix = "") {
 
+  # Drop writer columns if they already exist. They will be added back in the
+  # next step when the docname columns is separated into multiple columns
+  df <- df %>%
+    dplyr::select(-tidyselect::any_of(c("writer", "writer1", "writer2")))
+
+
   df <- df %>%
     tidyr::separate_wider_delim(tidyselect::all_of(docname_col),
                                 delim = "_",
@@ -65,7 +71,9 @@ expand_docnames <- function(df, docname_col = "docname", suffix = "") {
 
   df <- df %>%
     dplyr::select(
-      tidyselect::all_of(c("docname", "writer", "session", "prompt", "rep")),
+      tidyselect::any_of(c("docname", "writer", "session", "prompt", "rep",
+                           "docname1", "writer1", "prompt1", "rep1",
+                           "docname2", "writer2", "prompt2", "rep2")),
       tidyselect::everything())
 
   return(df)

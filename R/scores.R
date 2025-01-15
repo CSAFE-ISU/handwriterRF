@@ -28,6 +28,11 @@
 #'   \code{\link{train_rf}}.
 #' @param df A data frame of cluster fill rates created with
 #'   \code{\link{get_cluster_fill_rates}} with an added writer ID column.
+#' @param seed Optional. An integer to set the seed for the random number
+#'   generator to make the results reproducible.
+#' @param downsample_diff_pair If TRUE, the different writer pairs are
+#'   down-sampled to equal the number of same writer pairs. If FALSE, all
+#'   different writer pairs are used.
 #'
 #' @return A list of scores
 #'
@@ -38,12 +43,19 @@
 #' get_ref_scores(rforest = random_forest, df = validation)
 #' }
 #'
-get_ref_scores <- function(rforest, df) {
+get_ref_scores <- function(rforest, df, seed = NULL, downsample_diff_pairs = FALSE) {
 
-  dist_measures <- which_dists(rforest = rforest)
-  d <- get_distances(df = df, distance_measures = dist_measures)
+  if (!is.null(seed)) {
+    set.seed(seed)
+  }
+
+  d <- get_distances(df = df, distance_measures = rforest$distance_measures)
 
   scores_df <- get_score(d = d, rforest = rforest)
+
+  if (downsample_diff_pairs) {
+    scores_df <- downsample(scores_df)
+  }
 
   # split into same and different writers to make it easier on the next step
   scores <- list()

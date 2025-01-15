@@ -1,14 +1,14 @@
-install.packages("handwriter")
-devtools::install_github("CSAFE-ISU/handwriterRF")
+devtools::load_all()
 
-library(handwriter)
-library(handwriterRF)
 
 # Helper Functions --------------------------------------------------------
 
 load_cluster_fill_rates <- function(clusters_dir) {
-  files <- list.files(clusters_dir, full.names = TRUE)
-  dfs <- lapply(files, readRDS)
+  writer_folders <- list.files(clusters_dir, full.names = TRUE)
+  files <- lapply(writer_folders, function(w) list.files(w, full.names = TRUE))
+
+
+
   clusters <- do.call(rbind, dfs)
   rates <- handwriter::get_cluster_fill_rates(clusters)
   return(rates)
@@ -151,16 +151,8 @@ split_writers <- function(all_writers, num_train_writers, num_validation_writers
 
 set.seed(100)
 
-# If you need cluster assignments CVL data
-handwriter::get_clusters_batch(input_dir = "path/to/cvl/graphs/dir",
-                               output_dir = "path/to/cvl/clusters/dir",
-                               template = "path/to/template.rds",
-                               writer_indices = c(1,4),
-                               doc_indices = c(6,6),
-                               num_cores = 4)
-
 # Create data frames of csafe and cvl cluster fill rates
-csafe <- load_cluster_fill_rates(clusters_dir = "/Users/stephanie/Documents/handwriting_datasets/CSAFE_Handwriting_Database/300dpi/clusters")
+csafe <- load_cluster_fill_rates(clusters_dir = "/Users/stephanie/Documents/handwriting_datasets/CSAFE_Handwriting_Database/clusters")
 cvl <- load_cluster_fill_rates("/Users/stephanie/Documents/handwriting_datasets/CVL/300dpi/clusters")
 
 # Make sets. Feel free to change num_train_writers and num_validation_writers.

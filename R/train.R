@@ -78,7 +78,7 @@ train_rf <- function(df,
                      distance_measures,
                      output_dir = NULL,
                      run_number = 1,
-                     downsample = TRUE) {
+                     downsample_diff_pairs = TRUE) {
 
   set.seed(run_number)
 
@@ -95,8 +95,8 @@ train_rf <- function(df,
 
   dists <- label_same_different_writer(dists)
 
-  if (downsample) {
-    dists <- downsample_diff_pairs(dists)
+  if (downsample_diff_pairs) {
+    dists <- downsample(dists)
   }
 
   # train and save random forest
@@ -111,7 +111,7 @@ train_rf <- function(df,
   )
 
   # add distances to list
-  rforest$dists <- dists
+  rforest$distance_measures <- distance_measures
 
   saveRDS(rforest, file.path(output_dir, paste0("rf", run_number, ".rds")))
 
@@ -121,14 +121,14 @@ train_rf <- function(df,
 
 # Internal Functions ------------------------------------------------------
 
-#' Downsample Pairs of Different Writer Distances
+#' Downsample Pairs of Different Writers
 #'
-#' @param df A data frame of distances
+#' @param df A data frame
 #'
 #' @return A data frame
 #'
 #' @noRd
-downsample_diff_pairs <- function(df) {
+downsample <- function(df) {
   n <- sum(df$match == "same")
   df <- df %>%
     dplyr::group_by(match) %>%
@@ -156,28 +156,4 @@ label_same_different_writer <- function(dists) {
   dists <- dists %>% dplyr::select(-tidyselect::all_of(c("writer1", "writer2")))
 
   return(dists)
-}
-
-
-#' Which Distances were Used in a Random Forest
-#'
-#' @param rforest A \pkg{ranger} random forest created with \code{\link{train_rf}}.
-#'
-#' @return A character vector of distance measures
-#'
-#' @noRd
-which_dists <- function(rforest) {
-  # get the distance measures from the column names of rforest$dist
-  df <- rforest$dists %>%
-    dplyr::ungroup() %>%
-    dplyr::select(dplyr::starts_with("cluster"), dplyr::any_of(c("man", "euc", "max", "cos")))
-  distance_measures <- colnames(df)
-
-  # add 'abs' and delete 'cluster<#>'
-  if (any(startsWith(distance_measures, "cluster"))) {
-    distance_measures <- c("abs", distance_measures)
-    distance_measures <- distance_measures[!startsWith(distance_measures, "cluster")]
-  }
-
-  return(distance_measures)
 }

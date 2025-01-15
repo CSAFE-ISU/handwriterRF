@@ -1,8 +1,7 @@
 devtools::load_all()
 
-main_dir <- "data-raw"
+main_dir <- "data-raw/new"
 
-train <- get_csafe_train_set(df = cfr, train_prompt_codes = "pCMB")
 random_forest <- train_rf(
   df = train,
   ntrees = 200,
