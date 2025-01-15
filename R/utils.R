@@ -51,8 +51,9 @@ create_dir <- function(folder) {
 #' @noRd
 expand_docnames <- function(df, docname_col = "docname", suffix = "") {
 
-  # Drop writer columns if they already exist. They will be added back in the
-  # next step when the docname columns is separated into multiple columns
+  # Drop writer and docname columns if they already exist. They will be added
+  # back in the next step when the docname columns is separated into multiple
+  # columns
   df <- df %>%
     dplyr::select(-tidyselect::any_of(c("writer", "writer1", "writer2")))
 
