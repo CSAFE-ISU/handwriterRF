@@ -122,8 +122,8 @@ get_errors <- function(df, type = "slr") {
 
     KM_df <- get_known_matches(df)
     KNM_df <- get_known_nonmatches(df)
-    errors$KM <- nrow(km_df)
-    errors$KNM <- nrow(knm_df)
+    errors$KM <- nrow(KM_df)
+    errors$KNM <- nrow(KNM_df)
 
     errors$FN_df <- KM_df %>%
       dplyr::filter(slr < 1)
@@ -141,7 +141,7 @@ get_errors <- function(df, type = "slr") {
   return(errors)
 }
 
-errors_by_factor <- function(slrs_df, factor_name = "database", pivot = "longer") {
+get_errors_by_factor <- function(slrs_df, factor_name = "database", pivot = "longer") {
   dfs <- slrs_df %>%
     dplyr::group_by(across(paste0("factor_", factor_name))) %>%
     dplyr::group_map(~ get_errors(.x), .keep = TRUE)
@@ -169,7 +169,7 @@ errors_by_factor <- function(slrs_df, factor_name = "database", pivot = "longer"
   return(df)
 }
 
-plot_fp_total_obs <- function(df) {
+plot_fpr_for_factor <- function(df) {
   p <- df %>%
     dplyr::filter(type == "FPR") %>%
     ggplot(aes(x = factors, y = round(100*rate,2), fill = type)) +
@@ -186,7 +186,7 @@ plot_fp_total_obs <- function(df) {
   return(p)
 }
 
-plot_fn_total_obs <- function(df) {
+plot_fnr_for_factor <- function(df) {
   p <- df %>%
     dplyr::filter(type == "FNR") %>%
     ggplot(aes(x = factors, y = round(100*rate,2), fill = type)) +
@@ -196,7 +196,7 @@ plot_fn_total_obs <- function(df) {
               hjust = 0,
               position = position_nudge(y = 5),
               colour = "black") +
-    geom_text(aes(label = ifelse(is.na(rate), "No ground truth matches available", ""), y = 0.25),
+    geom_text(aes(label = ifelse(is.na(rate), "No known match pairs available", ""), y = 0.25),
               hjust = 0,
               col = "black",
               position = position_dodge(.9)) +
@@ -211,15 +211,15 @@ plot_fn_total_obs <- function(df) {
 
 # SLRs for Test -----------------------------------------------------------
 
-slrs <- compare_writer_profiles(test, score_only = FALSE)
-slrs <- add_factor(slrs)
-saveRDS(slrs, "experiments/package_test_data/slrs_for_test.rds")
+# slrs <- compare_writer_profiles(test, score_only = FALSE)
+# slrs <- add_factor(slrs)
+# saveRDS(slrs, "experiments/package_test_data/slrs_for_test.rds")
 
 
 # All Samples -------------------------------------------------------------
 
 slrs <- readRDS("experiments/package_test_data/slrs_for_test.rds")
-length <- errors_by_factor(slrs, "length")
+length <- get_errors_by_factor(slrs, "length")
 
 
 # Long Samples ------------------------------------------------------------
@@ -227,44 +227,52 @@ length <- errors_by_factor(slrs, "length")
 slrs_long <- slrs %>%
   dplyr::filter(factor_length == "long_long") %>%
   dplyr::mutate(factor_prompt = factor(factor_prompt, levels = unique(factor_prompt)))
+overall_long_errors <- get_errors(slrs_long)
 
-db <- errors_by_factor(slrs_long, "database")
-language <- errors_by_factor(slrs_long, "language")
-prompt_in_train <- errors_by_factor(slrs_long, "prompt_in_train")
-prompt <- errors_by_factor(slrs_long, "prompt")
-prompt_match <- errors_by_factor(slrs_long, "prompt_match")
+
+db <- get_errors_by_factor(slrs_long, "database")
+language <- get_errors_by_factor(slrs_long, "language")
+prompt_in_train <- get_errors_by_factor(slrs_long, "prompt_in_train")
+prompt <- get_errors_by_factor(slrs_long, "prompt")
+prompt_match <- get_errors_by_factor(slrs_long, "prompt_match")
 
 
 # Plots -------------------------------------------------------------------
 
 # False Positive Rates
-plot_fp_total_obs(length)
+plot_fpr_for_factor(length)
 ggsave("experiments/package_test_data/plots/fpr_by_factors/factor_length_fpr_horiz.png", width = 6, height = 3)
 
-plot_fp_total_obs(db)
+plot_fpr_for_factor(db)
 ggsave("experiments/package_test_data/plots/fpr_by_factors/factor_database_fpr_horiz.png", width = 6, height = 3)
 
-plot_fp_total_obs(language)
+plot_fpr_for_factor(language)
 ggsave("experiments/package_test_data/plots/fpr_by_factors/factor_language_fpr_horiz.png", width = 6, height = 3)
 
-plot_fp_total_obs(prompt_in_train)
+plot_fpr_for_factor(prompt_in_train)
 ggsave("experiments/package_test_data/plots/fpr_by_factors/factor_prompt_in_train_fpr_horiz.png", width = 6, height = 3)
 
-plot_fp_total_obs(prompt_match)
+plot_fpr_for_factor(prompt_match)
 ggsave("experiments/package_test_data/plots/fpr_by_factors/factor_prompt_match_fpr_horiz.png", width = 6, height = 3)
 
 # False Negative Rates
-plot_fn_total_obs(length)
+plot_fnr_for_factor(length)
 ggsave("experiments/package_test_data/plots/fnr_by_factors/factor_length_fnr_horiz.png", width = 6, height = 3)
 
-plot_fn_total_obs(db)
+plot_fnr_for_factor(db)
 ggsave("experiments/package_test_data/plots/fnr_by_factors/factor_database_fnr_horiz.png", width = 6, height = 3)
 
-plot_fn_total_obs(language)
+plot_fnr_for_factor(language)
 ggsave("experiments/package_test_data/plots/fnr_by_factors/factor_language_fnr_horiz.png", width = 6, height = 3)
 
-plot_fn_total_obs(prompt_in_train)
+plot_fnr_for_factor(prompt_in_train)
 ggsave("experiments/package_test_data/plots/fnr_by_factors/factor_prompt_in_train_fnr_horiz.png", width = 6, height = 3)
 
-plot_fn_total_obs(prompt_match)
+plot_fnr_for_factor(prompt_match)
 ggsave("experiments/package_test_data/plots/fnr_by_factors/factor_prompt_match_fnr_horiz.png", width = 6, height = 3)
+
+cvl <- test[!(startsWith(test$writer, "w")),]
+cvl %>%
+  dplyr::group_by(doc) %>%
+  dplyr::summarize(n = dplyr::n())
+
