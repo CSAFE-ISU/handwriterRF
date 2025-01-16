@@ -289,7 +289,7 @@ is_rates_df <- function(df) {
   clusters <- get_cluster_cols(df)
   # Use all.equal to test for "near equality" of row sums. Because of rounding
   # errors, row sums might not be equal to one.
-  if (ncol(clusters) > 0 && all.equal(rowSums(clusters), rep(1, nrow(clusters)))) {
+  if (ncol(clusters) > 0 && all.equal(unname(rowSums(clusters)), rep(1, nrow(clusters)))) {
     return(TRUE)
   } else {
     return(FALSE)
