@@ -2,6 +2,8 @@
 ^\.Rproj\.user$
 
 # Files
+^\.github$
+^codecov\.yml$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
 ^LICENSE\.md$
@@ -14,4 +16,6 @@
 ^plots$
 ^README_files$
 ^vignettes_need_handwriter3-2-4$
-^\.github$
+^CRAN-SUBMISSION$
+
+
