@@ -19,7 +19,7 @@ Depends:
     R (>= 2.10)
 Imports: 
     dplyr,
-    handwriter (>= 3.2.3),
+    handwriter (>= 3.2.4),
     lifecycle,
     magrittr,
     purrr,
