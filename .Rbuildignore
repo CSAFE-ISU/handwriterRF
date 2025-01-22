@@ -15,6 +15,7 @@
 ^experiments$
 ^plots$
 ^README_files$
+^revdep$
 ^vignettes_need_handwriter3-2-4$
 ^CRAN-SUBMISSION$
 

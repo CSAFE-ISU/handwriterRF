@@ -34,7 +34,7 @@ We estimated the writer profiles for all handwriting samples using the `handwrit
 
 1. Split the handwriting into component shapes called *graphs* with `handwriter::process_batch_dir()`. 
 2. Sort the graphs into *clusters* with similar shapes using a cluster template and `handwriter::get_clusters_batch()`. 
-3. Calculate the proportion of graphs assigned to each cluster with `get_cluster_fill_rates()`. The cluster fill rates serve as an estimate of the writer profile for the sample.
+3. Calculate the proportion of graphs assigned to each cluster with `handwriter::get_cluster_fill_rates()`. The cluster fill rates serve as an estimate of the writer profile for the sample.
 
 The `train` dataframe contains the estimated writer profiles for train set. Let's visualize the writer profiles for two writers from `train`: 
 
@@ -62,13 +62,15 @@ To compare writer profiles, we construct similarity scores that quantify the sim
 
 ### Training a Random Forest
 
-First, we calculate the distances between all pairs of writer profiles in the `train` set. These pairs are labeled as either *same writer* or *different writers*, based on whether the profiles originate from the same writer. We then train a random forest on these labeled distances using the `ranger` package. The resulting `random_forest` object is trained on the `train` set.
+First, we calculate the distances between all pairs of writer profiles in the `train` set. These pairs are labeled as either *same writer* or *different writers*, based on whether the profiles originate from the same writer. We then train a random forest on these labeled distances using the ranger R package. `random_forest` is the trained random forest.
 
 ### Calculating Reference Similarity Scores
 
-Next, we calculate the distances between each pair of writer profiles in `validation` and label the pairs as same writer or different writers. The writers in `validation` are distinct from those in `train`. For each pair of writer profiles in `validation`, the similarity score is the proportion of decision trees in the random forest that predicted same writer. For example, if the random forest has 200 decision trees, and 160 of the trees predicted same writer, the similarity score is $160/200=0.8$. `ref_scores` contains the same writer and different writer similarity scores from the `validation` samples. We will use these similarity scores for reference to compare test handwriting samples.
+Next, we calculate the distances between each pair of writer profiles in `validation` and label the pairs as same writer or different writers. The writers in `validation` are distinct from those in `train`. For each pair of writer profiles in `validation`, the similarity score is the proportion of decision trees in the random forest that predicted same writer. For example, if the random forest has 200 decision trees, and 160 of the trees predicted same writer, the similarity score is $160/200=0.8$. 
 
-To visualize the reference similarity scores, we plot the rates of scores assigned to different bins (rather than frequencies), as the data often contains far more "different writer" pairs than "same writer" pairs. This gives us a clearer view of the distribution of reference scores.
+`ref_scores` contains the similarity scores for the pairs of `validation` samples. We downsample the the "different writer" similarity scores to equal the number of "same writer" scores following common practice. We use these similarity scores as reference when comparing test handwriting samples.
+
+The function `plot_scores()` visualizes the reference scores.
 
 ```{r ref-scores}
 plot_scores(ref_scores)
@@ -81,19 +83,19 @@ The `test` dataframe contains writer profiles from writers not in `train` or `va
 ```{r example-profiles}
 test_samples <- test[test$writer == "w0005",][1:2,]
 
-plot_writer_profiles(test_samples)
+handwriter::plot_writer_profiles(test_samples)
 ```
 
 ### Similarity Score
 
-We can compute the similarity score between these two test samples using the `compare_writer_profiles()` function. This score is derived using the same procedure as for the validation set: we calculate the distance between the two profiles, then compute the proportion of random forest decision trees that predict "same writer."
+We compute the similarity score between these two test samples with `compare_writer_profiles()`. This score is derived using the same procedure as the validation set: we calculate the distance between the two profiles, then compute the proportion of random forest decision trees that predict "same writer."
 
 ```{r example-score}
 score <- compare_writer_profiles(test_samples)
 score
 ```
 
-Let's visually see how the similarity score `r score$score` compares to our same writer and different writers similarity scores.
+Let's visually see how the similarity score `r score$score` compares to our reference same writer and different writers similarity scores.
 
 ```{r plot-score}
 plot_scores(ref_scores, obs_score = score$score)
