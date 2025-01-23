@@ -1,7 +1,7 @@
 Package: handwriterRF
 Type: Package
 Title: Handwriting Analysis with Random Forests
-Version: 1.0.2.9000
+Version: 1.1.0
 Authors@R: c(person("Iowa State University of Science and Technology on behalf of its Center for Statistics and Applications in Forensic Evidence", role = c("aut", "cph", "fnd")),
           person("Stephanie", "Reinders", role = c("aut", "cre"), email = "reinders.stephanie@gmail.com"))
 Maintainer: Stephanie Reinders <reinders.stephanie@gmail.com>

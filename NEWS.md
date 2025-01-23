@@ -1,4 +1,4 @@
-# handwriterRF (development version)
+# handwriterRF 1.1.0
 
 ## Minor improvements
 
