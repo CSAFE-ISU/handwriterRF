@@ -20,27 +20,35 @@
 
 #' Get Cluster Fill Rates
 #'
-#' Calculate cluster fill rates from a data frame of cluster fill counts created
-#' with \code{\link[handwriter]{get_cluster_fill_counts}}.
+#' `r lifecycle::badge('deprecated')` `get_cluster_fill_rates` is deprecated.
+#' Use \code{\link[handwriter]{get_cluster_fill_rates}} instead.
 #'
-#' @param df A data frame of cluster fill rates created with
+#' @param df A dataframe of cluster fill rates created with
 #'   \code{\link[handwriter]{get_cluster_fill_counts}}.
 #'
-#' @return A data frame of cluster fill rates.
+#' @return A dataframe of cluster fill rates.
 #'
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' rates <- get_cluster_fill_rates(df = cfc)
+#' }
 #'
+#' @md
 get_cluster_fill_rates <- function(df) {
-  # Prevent note "no visible binding for global variable"
-  docname <- writer <- doc <- NULL
+  lifecycle::deprecate_warn("1.0.3", "get_cluster_fill_rates()", "handwriter::get_cluster_fill_rates()")
+
+  # get label columns. docname is required for input dataframes but writer and
+  # doc are optional.
+  label_cols <- df %>%
+    dplyr::ungroup() %>%
+    dplyr::select(tidyselect::any_of(c("docname", "writer", "doc")))
 
   # drop label columns and calculate cluster fill rates: each row sums to 1.
   df_clusters_only <- df %>%
     dplyr::ungroup() %>%
-    dplyr::select(-docname, -writer, -doc)
+    dplyr::select(-tidyselect::any_of(c("docname", "writer", "doc")))
   df_clusters_only <- as.matrix(df_clusters_only)
   total_graphs <- rowSums(df_clusters_only)
   cfr <- diag(1 / total_graphs) %*% df_clusters_only
@@ -65,7 +73,7 @@ get_cluster_fill_rates <- function(df) {
   }
 
   # add label columns and total_graphs column
-  cfr <- cbind(df[, 1], data.frame(total_graphs = total_graphs), cfr)
+  cfr <- cbind(label_cols, data.frame(total_graphs = total_graphs), cfr)
 
   return(cfr)
 }

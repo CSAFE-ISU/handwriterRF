@@ -7,7 +7,8 @@
 calculate_slr(
   sample1_path,
   sample2_path,
-  rforest = random_forest,
+  rforest = NULL,
+  reference_scores = NULL,
   project_dir = NULL
 )
 }
@@ -18,42 +19,57 @@ format.}
 \item{sample2_path}{A file path to a second handwriting sample saved in PNG
 file format.}
 
-\item{rforest}{Optional. A random forest trained with \pkg{ranger}. If
-rforest is not given, the data object random_forest is used.}
+\item{rforest}{Optional. A random forest trained with \pkg{ranger}. If no
+random forest is specified, \code{random_forest} will be used.}
 
-\item{project_dir}{Optional. A path to a directory where helper files will be
-saved. If no project directory is specified, the helper files will be saved
-to tempdir() and deleted before the function terminates.}
+\item{reference_scores}{Optional. A dataframe of reference similarity
+scores. If reference scores is not specified, \code{ref_scores} will be used.}
+
+\item{project_dir}{A path to a directory where helper files will be saved. If
+no project directory is specified, the helper files will be saved to
+tempdir() and deleted before the function terminates.}
 }
 \value{
-A number
+A dataframe
 }
 \description{
-Compares two handwriting samples scanned and saved a PNG images with the
-following steps:
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}} \code{calculate_slr} has been superseded in
+favor of \code{compare_documents()} which offers more functionality.
+}
+\details{
+Compares two handwriting
+samples scanned and saved a PNG images with the following steps:
 \enumerate{
-    \item \code{\link[handwriter]{processDocument}} splits the writing in both samples into component shapes, or graphs.
-    \item \code{\link[handwriter]{get_clusters_batch}} groups the graphs into clusters of similar shapes.
-    \item \code{\link[handwriter]{get_cluster_fill_counts}} counts the number of graphs assigned to each cluster.
-    \item \code{\link{get_cluster_fill_rates}} calculates the proportion of graphs assigned to each cluster. The cluster fill rates serve as a writer profile.
-    \item A similarity score is calculated between the cluster fill rates of the two documents using a random forest trained with \pkg{ranger}.
-    \item The similarity score is compared to reference distributions of same writer and different
-    writer similarity scores. The result is a score-based likelihood ratio that conveys the strength
-    of the evidence in favor of same writer or different writer. For more details, see Madeline
-    Johnson and Danica Ommen (2021) <doi:10.1002/sam.11566>.
+\item \code{\link[handwriter]{processDocument}} splits the writing in both samples into component shapes, or graphs.
+\item \code{\link[handwriter]{get_clusters_batch}} groups the graphs into clusters of similar shapes.
+\item \code{\link[handwriter]{get_cluster_fill_counts}} counts the number of graphs assigned to each cluster.
+\item \code{\link{get_cluster_fill_rates}} calculates the proportion of graphs assigned to each cluster. The cluster fill rates serve as a writer profile.
+\item A similarity score is calculated between the cluster fill rates of the two documents using a random forest trained with \pkg{ranger}.
+\item The similarity score is compared to reference distributions of same writer and different
+writer similarity scores. The result is a score-based likelihood ratio that conveys the strength
+of the evidence in favor of same writer or different writer. For more details, see Madeline
+Johnson and Danica Ommen (2021) \url{doi:10.1002/sam.11566}.
 }
 }
 \examples{
 \donttest{
 # Compare two samples from the same writer
-sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
-sample2 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r02.png"), package = "handwriterRF")
-calculate_slr(sample1, sample2)
+s1 <- system.file(file.path("extdata", "docs", "w0005_s01_pLND_r03.png"),
+  package = "handwriterRF"
+)
+s2 <- system.file(file.path("extdata", "docs", "w0005_s02_pWOZ_r02.png"),
+  package = "handwriterRF"
+)
+calculate_slr(s1, s2)
 
 # Compare samples from two writers
-sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
-sample2 <- system.file(file.path("extdata", "w0238_s01_pWOZ_r02.png"), package = "handwriterRF")
-calculate_slr(sample1, sample2)
+s1 <- system.file(file.path("extdata", "docs", "w0005_s02_pWOZ_r02.png"),
+  package = "handwriterRF"
+)
+s2 <- system.file(file.path("extdata", "docs", "w0238_s01_pWOZ_r02.png"),
+  package = "handwriterRF"
+)
+calculate_slr(s1, s2)
 }
 
 }

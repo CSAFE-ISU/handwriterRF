@@ -20,8 +20,11 @@
 
 #' Calculate a Score-Based Likelihood Ratio
 #'
-#' Compares two handwriting samples scanned and saved a PNG images with the
-#' following steps:
+#' `r lifecycle::badge("superseded")` `calculate_slr` has been superseded in
+#' favor of `compare_documents()` which offers more functionality.
+#'
+#' Compares two handwriting
+#' samples scanned and saved a PNG images with the following steps:
 #' \enumerate{
 #'     \item \code{\link[handwriter]{processDocument}} splits the writing in both samples into component shapes, or graphs.
 #'     \item \code{\link[handwriter]{get_clusters_batch}} groups the graphs into clusters of similar shapes.
@@ -38,142 +41,51 @@
 #'   format.
 #' @param sample2_path A file path to a second handwriting sample saved in PNG
 #'   file format.
-#' @param rforest Optional. A random forest trained with \pkg{ranger}. If
-#'   rforest is not given, the data object random_forest is used.
-#' @param project_dir Optional. A path to a directory where helper files will be
-#'   saved. If no project directory is specified, the helper files will be saved
-#'   to tempdir() and deleted before the function terminates.
+#' @param rforest Optional. A random forest trained with \pkg{ranger}. If no
+#'   random forest is specified, `random_forest` will be used.
+#' @param reference_scores Optional. A dataframe of reference similarity
+#'   scores. If reference scores is not specified, `ref_scores` will be used.
+#' @param project_dir A path to a directory where helper files will be saved. If
+#'   no project directory is specified, the helper files will be saved to
+#'   tempdir() and deleted before the function terminates.
 #'
-#' @return A number
+#' @return A dataframe
 #'
 #' @export
 #'
 #' @examples
 #' \donttest{
 #' # Compare two samples from the same writer
-#' sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
-#' sample2 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r02.png"), package = "handwriterRF")
-#' calculate_slr(sample1, sample2)
+#' s1 <- system.file(file.path("extdata", "docs", "w0005_s01_pLND_r03.png"),
+#'   package = "handwriterRF"
+#' )
+#' s2 <- system.file(file.path("extdata", "docs", "w0005_s02_pWOZ_r02.png"),
+#'   package = "handwriterRF"
+#' )
+#' calculate_slr(s1, s2)
 #'
 #' # Compare samples from two writers
-#' sample1 <- system.file(file.path("extdata", "w0030_s01_pWOZ_r01.png"), package = "handwriterRF")
-#' sample2 <- system.file(file.path("extdata", "w0238_s01_pWOZ_r02.png"), package = "handwriterRF")
-#' calculate_slr(sample1, sample2)
+#' s1 <- system.file(file.path("extdata", "docs", "w0005_s02_pWOZ_r02.png"),
+#'   package = "handwriterRF"
+#' )
+#' s2 <- system.file(file.path("extdata", "docs", "w0238_s01_pWOZ_r02.png"),
+#'   package = "handwriterRF"
+#' )
+#' calculate_slr(s1, s2)
 #' }
 #'
-calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, project_dir = NULL) {
-  copy_samples_to_project_dir <- function(sample1_path, sample2_path, project_dir) {
-    # Copy samples to project_dir > docs
-    message("Copying samples to output directory > docs...\n")
-    create_dir(file.path(project_dir, "docs"))
-
-    # rename samples if file paths are different but file names are the same
-    if (identical(basename(sample1_path), basename(sample2_path))){
-      file.copy(sample1_path, file.path(project_dir, "docs", "sample1.png"))
-      file.copy(sample2_path, file.path(project_dir, "docs", "sample2.png"))
-    } else {
-      file.copy(sample1_path, file.path(project_dir, "docs", basename(sample1_path)))
-      file.copy(sample2_path, file.path(project_dir, "docs", basename(sample2_path)))
-    }
-
-    # get the sample paths in the project directory
-    sample_paths <- list.files(file.path(project_dir, "docs"), full.names = TRUE)
-    return(sample_paths)
-  }
-
-  skip_if_processed <- function(sample_path, project_dir) {
-    # process file if it hasn't already been processed and saved in project_dir
-    # > graph
-    outfile <- gsub(".png", "_proclist.rds", basename(sample_path))
-    outfile_path <- file.path(project_dir, "graphs", outfile)
-    if (!file.exists(outfile_path)) {
-      doc <- handwriter::processDocument(sample_path)
-      saveRDS(doc, outfile_path)
-    }
-    return()
-  }
-
-  process_and_save_samples <- function(sample1_path, sample2_path, project_dir) {
-    # Process samples and save in project_dir > graphs
-    message("Processing samples...")
-
-    create_dir(file.path(project_dir, "graphs"))
-
-    skip_if_processed(sample_path = sample1_path, project_dir = project_dir)
-    skip_if_processed(sample_path = sample2_path, project_dir = project_dir)
-
-    return()
-  }
-
-  # error if sample1_path == sample2_path
-  if (identical(sample1_path, sample2_path)) {
-    stop("sample1_path and sample2_path cannot be identical.")
-  }
-
-  # set output directory as temp directory if NULL
-  if (is.null(project_dir)) {
-    project_dir <- file.path(tempdir(), "comparison")
-  }
-
-  # keep original sample paths so they can be recorded in the data frame at the
-  # end
-  sample1_path_org <- sample1_path
-  sample2_path_org <- sample2_path
-
-  # copy samples
-  sample_paths <- copy_samples_to_project_dir(
-      sample1_path = sample1_path,
-      sample2_path = sample2_path,
-      project_dir = project_dir
-  )
-  sample1_path <- sample_paths[1]
-  sample2_path <- sample_paths[2]
-
-  # process
-  process_and_save_samples(
-    sample1_path = sample1_path,
-    sample2_path = sample2_path,
+#' @md
+calculate_slr <- function(sample1_path, sample2_path,
+                          rforest = NULL, reference_scores = NULL,
+                          project_dir = NULL) {
+  df <- compare_documents(
+    sample1 = sample1_path,
+    sample2 = sample2_path,
+    score_only = FALSE,
+    rforest = rforest,
+    reference_scores = reference_scores,
     project_dir = project_dir
   )
-
-  # cluster
-  clusters <- handwriter::get_clusters_batch(
-    template = templateK40,
-    input_dir = file.path(project_dir, "graphs"),
-    output_dir = file.path(project_dir, "clusters"),
-    writer_indices = c(2, 5),
-    doc_indices = c(7, 18),
-    save_master_file = TRUE
-  )
-  counts <- handwriter::get_cluster_fill_counts(clusters)
-  rates <- get_cluster_fill_rates(counts)
-
-  # distance
-  message("Calculating distance between samples...\n")
-  dist_measures <- which_dists(rforest = rforest)
-  d <- get_distances(df = rates, distance_measures = dist_measures)
-
-  # score
-  message("Calculating similarity score between samples...\n")
-  score <- get_score(rforest = rforest, d = d)
-
-  # SLR
-  message("Calculating SLR for samples...\n")
-  numerator <- eval_density_at_point(den = rforest$densities$same_writer, x = score, type = "numerator")
-  denominator <- eval_density_at_point(den = rforest$densities$diff_writer, x = score, type = "denominator")
-  slr <- numerator / denominator
-  df <- data.frame("sample1_path" = sample1_path_org, "sample2_path" = sample2_path_org,
-                   "docname1" = basename(sample1_path_org), "docname2" = basename(sample2_path_org),
-                   "score" = score, "numerator" = numerator, "denominator" = denominator,
-                   "slr" = slr)
-
-  # delete project folder from temp directory or save SLR to project folder
-  if (project_dir == file.path(tempdir(), "comparison")) {
-    unlink(project_dir, recursive = TRUE)
-  } else {
-    saveRDS(df, file.path(project_dir, "slr.rds"))
-  }
-
   return(df)
 }
 
@@ -181,7 +93,7 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
 #'
 #' Verbally interprent an SLR value.
 #'
-#' @param df A data frame created by \code{\link{calculate_slr}}.
+#' @param df A dataframe created by \code{\link{calculate_slr}}.
 #'
 #' @return A string
 #'
@@ -200,23 +112,98 @@ calculate_slr <- function(sample1_path, sample2_path, rforest = random_forest, p
 #' df <- data.frame("score" = 0, "slr" = 0)
 #' interpret_slr(df)
 #'
-interpret_slr <- function(df){
+interpret_slr <- function(df) {
+  # check for non-numeric values
+  if (!is.numeric(df$slr)) {
+    stop("The slr value is not numeric.")
+  }
+
+  # check for infinite values
+  if (is.infinite(df$slr)) {
+    stop("The slr value cannot be infinite.")
+  }
+
+  # create appropriate message if slr >= 0, return error if slr < 0
   if (df$slr > 1) {
-    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark=","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by the same person is", format(round(df$slr, 1), big.mark=","), "times greater than the likelihood of observing this score if the documents were written by different writers." )
+    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark = ","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by the same person is", format(round(df$slr, 1), big.mark = ","), "times greater than the likelihood of observing this score if the documents were written by different writers.")
   } else if (df$slr > 0 && df$slr < 1) {
-    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark=","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by different people is", format(round(1 / df$slr, 2), nsmall=2, big.mark=","), "times greater than the likelihood of observing this score if the documents were written by the same writer." )
+    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 2), big.mark = ","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by different people is", format(round((1 / df$slr), 2), nsmall = 2, big.mark = ","), "times greater than the likelihood of observing this score if the documents were written by the same writer.")
   } else if (df$slr == 1) {
-    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark=","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by different people is equal to the likelihood of observing the score if the documents were written by the same writer." )
-  } else if (df$slr == 0){
+    x <- paste("A score-based likelihood ratio of", format(round(df$slr, 1), big.mark = ","), "means the likelihood of observing a similarity score of", df$score, "if the documents were written by different people is equal to the likelihood of observing the score if the documents were written by the same writer.")
+  } else if (df$slr == 0) {
     x <- paste("A score-based likelihood ratio of 0 means it is virtually impossible that the documents were written by the same person.")
   } else {
-    stop("The slr value is invalid.")
+    stop("The slr value must be greater than or equal to zero.")
   }
   return(x)
 }
 
+#' Get Rates of Misleading Evidence for SLRs
+#'
+#' Calculate the rates of misleading evidence for score-based likelihood ratios
+#' (SLRs) when the ground truth is known.
+#'
+#' @param df A dataframe of SLRs from [`compare_writer_profiles`] with
+#'   `score_only = FALSE`.
+#' @param threshold A number greater than zero that serves as a decision
+#'   threshold. If the ground truth for two documents is that they came from the
+#'   same writer and the SLR is less than the decision threshold, this is
+#'   misleading evidence that incorrectly supports the defense (false negative).
+#'   If the ground truth for two documents is that they came from different
+#'   writers and the SLR is greater than the decision threshold, this is
+#'   misleading evidence that incorrectly supports the prosecution (false
+#'   positive).
+#'
+#' @return A list
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' comparisons <- compare_writer_profiles(test, score_only = FALSE)
+#' get_rates_of_misleading_slrs(comparisons)
+#' }
+#'
+get_rates_of_misleading_slrs <- function(df, threshold = 1) {
+  # Use across to prevent "no visible binding for global variable"
+  known_matches <- df |>
+    dplyr::filter(dplyr::across(c("ground_truth")) == "same writer")
+  known_non_matches <- df |>
+    dplyr::filter(dplyr::across(c("ground_truth")) == "different writer")
+
+  # Use across to prevent "no visible binding for global variable"
+  fn <- known_matches |>
+    dplyr::filter(dplyr::across(c("slr")) < threshold)
+  fp <- known_non_matches |>
+    dplyr::filter(dplyr::across(c("slr")) > threshold)
+
+  defense <- nrow(fn) / nrow(known_matches)
+  prosecution <- nrow(fp) / nrow(known_non_matches)
+
+  return(list("incorrectly_favors_defense" = defense, "incorrectly_favors_prosecution" = prosecution))
+
+}
+
 
 # Internal Functions ------------------------------------------------------
+
+#' Make Densities
+#'
+#' Create densities of same writer and different writer scores from reference
+#' scores created with get_validation scores().
+#'
+#' @param scores A list of reference scores created with
+#'   \code{\link{get_validation_scores}}.
+#'
+#' @return A list of densities
+#'
+#' @noRd
+make_densities <- function(scores) {
+  pdfs <- list()
+  pdfs$same_writer <- stats::density(scores$same_writer$score, kernel = "gaussian", n = 10000)
+  pdfs$diff_writer <- stats::density(scores$diff_writer$score, kernel = "gaussian", n = 10000)
+
+  return(pdfs)
+}
 
 #' Evaluate Density at a Point
 #'
@@ -240,7 +227,7 @@ interpret_slr <- function(df){
 eval_density_at_point <- function(den, x, type, zero_correction = 1e-10) {
   y <- stats::approx(den$x, den$y, xout = x, n = 10000)$y
 
-  # correct NA
+  # correct NAs
   if (is.na(y) && (type == "numerator")) {
     y <- 0
   }

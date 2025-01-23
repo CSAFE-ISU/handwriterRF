@@ -10,11 +10,11 @@ train_rf(
   distance_measures,
   output_dir = NULL,
   run_number = 1,
-  downsample = TRUE
+  downsample_diff_pairs = TRUE
 )
 }
 \arguments{
-\item{df}{A data frame of cluster fill rates created with
+\item{df}{A dataframe of writer profiles created with
 \code{\link{get_cluster_fill_rates}}}
 
 \item{ntrees}{An integer number of decision trees to use}
@@ -26,9 +26,9 @@ train_rf(
 saved.}
 
 \item{run_number}{An integer used for both the set.seed function and to
-distinguish between different runs on the same input data frame.}
+distinguish between different runs on the same input dataframe.}
 
-\item{downsample}{Whether to downsample the number of different writer
+\item{downsample_diff_pairs}{Whether to downsample the number of different writer
 distances before training the random forest. If TRUE, the different writer
 distances will be randomly sampled, resulting in the same number of
 different writer and same writer pairs.}
@@ -37,14 +37,39 @@ different writer and same writer pairs.}
 A random forest
 }
 \description{
-Train a random forest with \pkg{ranger} from a data frame of cluster fill rates.
+Train a random forest with \pkg{ranger} from a dataframe of writer profiles
+estimated with \code{\link{get_cluster_fill_rates}}. \code{train_rf} calculates
+the distance between all pairs of writer profiles using one or more distance
+measures. Currently, the available distance measures are absolute, Manhattan,
+Euclidean, maximum, and cosine.
+}
+\details{
+The absolute distance between two n-length vectors of cluster fill rates, a
+and b, is a vector of the same length as a and b. It can be calculated as
+abs(a-b) where subtraction is performed element-wise, then the absolute
+value of each element is returned. More specifically, element i of the vector is \eqn{|a_i
+- b_i|} for \eqn{i=1,2,...,n}.
+
+The Manhattan distance between two  n-length vectors of cluster fill rates, a and b, is
+\eqn{\sum_{i=1}^n |a_i - b_i|}. In other words, it is the sum of the absolute
+distance vector.
+
+The Euclidean distance between two  n-length vectors of cluster fill rates, a and b, is
+\eqn{\sqrt{\sum_{i=1}^n (a_i - b_i)^2}}. In other words, it is the sum of the elements of the
+absolute distance vector.
+
+The maximum distance between two n-length vectors of cluster fill rates, a and b, is
+\eqn{\max_{1 \leq i \leq n}{\{|a_i - b_i|\}}}. In other words, it is the sum of the elements of the
+absolute distance vector.
+
+The cosine distance between two n-length vectors of cluster fill rates, a and b, is
+\eqn{\sum_{i=1}^n (a_i - b_i)^2 / (\sqrt{\sum_{i=1}^n a_i^2}\sqrt{\sum_{i=1}^n b_i^2})}.
 }
 \examples{
-train <- get_csafe_train_set(df = cfr, train_prompt_code = 'pCMB')
 rforest <- train_rf(
   df = train,
   ntrees = 200,
-  distance_measures = c('euc'),
+  distance_measures = c("euc"),
   run_number = 1,
   downsample = TRUE
 )

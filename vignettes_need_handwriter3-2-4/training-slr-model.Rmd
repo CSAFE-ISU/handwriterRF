@@ -1,0 +1,179 @@
+---
+title: "Training an SLR Model"
+output: 
+  rmarkdown::html_vignette:
+    toc: true         # Enable Table of Contents
+    toc_depth: 2      # Set the depth of the TOC (adjust as needed)
+    number_sections: true
+vignette: >
+  %\VignetteIndexEntry{training-slr-model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+  
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7, 
+  fig.height = 5
+)
+```
+  
+HandwriterRF has a pre-trained random forest and set of reference similarity scores that are the default for `compare_documents()` and `compare_writer_profiles()`. This tutorial shows you how to train your own random forest and create your own set of reference scores to use with these functions.
+
+## Training Data
+
+You need scanned handwriting samples saved as PNG images for training the random forest and making reference scores. The training set must include at least two samples from each writer so that the random forest can see examples of documents written by the *same writer* and examples of documents written by *different writers*.
+
+The [CSAFE Handwriting Database](https://data.csafe.iastate.edu/HandwritingDatabase/) contains suitable handwriting samples that you may download for free if you don't have your own samples.
+
+## Train a Random Forest
+
+### Estimate Writer Profiles
+
+Place handwriting samples that you will use to train a random forest in a folder. The first step is to estimate a writer profile from each handwriting sample. We do this with `handwriter::get_writer_profiles()`. Behind the scenes, `handwriter::get_writer_profiles()` performs the following steps for each sample:
+
+1.  Splits the handwriting into component shapes, called *graphs*, with `handwriter::processDocument()`.
+2.  The graphs are sorted into clusters of similar shapes using a cluster template created with `handwriter::make_clustering_template()`. By default, `handwriter::get_writer_profiles()` uses the cluster template `templateK40` included with handwriter. You may create your own cluster template if you prefer.
+3.  The proportion of graphs assigned to each cluster is calculated with `handwriter::get_cluster_fill_rates()`. The cluster fill rates serve as an estimate of a writer profile for the writer of the document.
+
+Load handwriter and handwriterRF.
+
+```{r setup}
+library(handwriter)
+library(handwriterRF)
+```
+
+Calculate writer profiles for the training samples with `templateK40`. The output is a dataframe.
+
+```{r profiles, eval=FALSE}
+profiles <- handwriter::get_writer_profiles(
+  input_dir = "path/to/training/samples/folder",
+  measure = "rates",
+  num_cores = 1,
+  template = handwriter::templateK40,
+  output_dir = "path/to/output/folder"
+)
+```
+
+### Train a Random Forest
+Now that we have writer profiles, we can train a random forest. `train_rf()` performs the following steps:
+
+1.  Calculates the distance between each pair of writer profiles. The user chooses which distance measure(s) to use. The available distance measures are absolute, Manhattan, Euclidean, maximum, and cosine. Type `?train_rf` for more information about these measures.
+2.  Groups the distances into two classes - *same writer* and *different writers* - depending upon whether the two samples were from the same writer or two different writers.
+3.  Uses the ranger R package to train a random forest on the distances.
+
+When running `train_rf()` you have a several choices to make:
+
+-   Choose the number of decision trees to use. In our experiments with samples from the CSAFE Handwriting Database and the CVL Handwriting Database, we found that `ntrees = 200` produced good results.
+-   If you want the random forest to be saved in an RDS file, specify an output directory. If you don't use the `output_dir` argument, the random forest will be returned but not saved to your computer.
+-   There will be more *different writer* distances compared to *same writer*. If you want to train the random forest on *balanced classes*, where there are the same number of distances for both classes, set `downsample = TRUE`. This randomly samples the *different writer* distances to equal the number of *same writer* distances.
+
+```{r single-rf, eval=FALSE}
+rf <- train_rf(
+  df = profiles,
+  ntrees = 200,
+  distance_measures = c("abs", "man", "euc", "max", "cos"),
+  output_dir = "path/to/output/folder",
+  downsample = TRUE
+)
+```
+
+If you would like to train a series of random forests with `lapply` or a for loop, use the run number and output directory arguments. The run number is added to the file name when the random forest is saved, so that subsequent random forests are not saved over the previous ones.
+
+```{r multiple-rfs, eval=FALSE}
+for (i in 1:10) {
+  rf <- train_rf(
+    df = profiles,
+    ntrees = 200,
+    distance_measures = c("abs", "man"),
+    output_dir = "path/to/output/folder",
+    run_number = i,
+    downsample = TRUE
+  )
+}
+
+```
+
+## Create a Reference Set of Similarity Scores
+
+The functions `compare_documents()` and `compare_writer_profiles()` either return a similarity score or a score-based likelihood. Both express how similar or not two handwriting samples are to each other.
+
+The score-based likelihood ratio (SLR) builds upon the observed similarity score by comparing it to reference *same writer* and *different writer* similarity scores. The SLR is the ratio of the likelihood of observing the similarity score if the samples where written by the same writer to the likelihood of observing the similarity score if the samples where written by the different writers.
+
+If `compare_documents()` and `compare_writer_profiles()` only return the similarity score, reference scores are not used. But if these functions calculate an SLR they need reference scores. HandwriterRF includes a set of reference score as `ref_scores` for use with these functions, but you can also create your own set of reference scores.
+
+Refer to the sections above to obtain suitable training samples and estimate writer profiles.
+
+```{r ref-profiles, eval=FALSE}
+ref_profiles <- handwriter::get_writer_profiles(
+  input_dir = "path/to/ref/samples/folder",
+  measure = "rates",
+  num_cores = 1,
+  template = templateK40,
+  output_dir = "path/to/output/folder"
+)
+
+rscores <- get_ref_scores(rforest = rf,
+                          df = ref_profiles)
+```
+
+We can plot the built-in reference scores. The plot is similar to a histogram. All similarity scores are greater than or equal to zero and less than or equal to one. `plot_scores` divides the interval from 0 to 1 into `n_bins`, and calculates the proportion of scores in bin. A histogram would show the number of scores in each bin, but because there are many times more *different writers* scores compared to *same writer* the histogram for *different writers* scores dwarfs the *same writer* histogram. Plot the rate instead of the frequency, fixes this problem.
+
+```{r plot, out.width="75%", dpi=300}
+plot_scores(scores = ref_scores)
+```
+
+If we want to see how an observed score compares to the *same writer* and *different writers*  scores, we use `obs_score`.
+
+```{r plot-obs, out.width="75%", dpi=300}
+plot_scores(scores = ref_scores,
+            obs_score = 0.2)
+```
+
+Plot your own reference scores.
+
+```{r plot-own, eval=FALSE}
+plot_scores(scores = rscores,
+            obs_score = 0.2)
+```
+
+## Compare Documents with New Random Forest and Reference Scores
+
+In this section, we will use the new random forest and set of reference scores to compare two handwritten documents. As before, the handwriting samples need to be scanned and saved as PNG files. Do not use samples or writers that were used to create the random forest or the reference scores.
+
+Before using the new random forest and reference scores, use 
+the random forest and reference scores included with handwriterRF. Compare two handwriting samples from the same writer and included with handwriterRF and return a similarity score and score-based likelihood ratio.
+```{r compare, message=FALSE}
+sample1 <- system.file("extdata", "docs", "w0238_s01_pWOZ_r02.png", package = "handwriterRF")
+sample2 <- system.file("extdata", "docs", "w0238_s01_pWOZ_r03.png", package = "handwriterRF")
+
+df <- compare_documents(
+  sample1, 
+  sample2, 
+  score_only = FALSE,
+  project_dir = "~/Desktop/test"
+)
+df
+```
+
+The SLR is greater than one, which means the similarity score is more like the reference *same writer* scores than the *different writers* scores. We can also plot the observed score with the reference scores. 
+
+```{r}
+plot_scores(scores = ref_scores, obs_score = df$score)
+```
+Next, compare the same documents with the new random forest and reference scores and plot the obeserved score.
+
+```{r new-compare, eval=FALSE}
+df_new <- compare_documents(
+  sample1, 
+  sample2, 
+  score_only = FALSE,
+  rforest = rf,
+  reference_scores = rscores
+)
+df_new
+
+plot_scores(scores = rscores, obs_score = df_new$score)
+```

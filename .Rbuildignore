@@ -2,6 +2,10 @@
 ^\.Rproj\.user$
 
 # Files
+^\.github$
+^codecov\.yml$
+^cran-comments\.md$
+^CRAN-SUBMISSION$
 ^LICENSE\.md$
 ^README.qmd$
 ^scratch*
@@ -9,10 +13,10 @@
 # Folders
 ^data-raw$
 ^experiments$
-^docs$
-^altdoc$
-^_quarto$
-^cran-comments\.md$
+^plots$
+^README_files$
+^revdep$
+^vignettes_need_handwriter3-2-4$
 ^CRAN-SUBMISSION$
-^\.github$
-^codecov\.yml$
+
+

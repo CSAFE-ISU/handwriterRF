@@ -7,7 +7,7 @@
 interpret_slr(df)
 }
 \arguments{
-\item{df}{A data frame created by \code{\link{calculate_slr}}.}
+\item{df}{A dataframe created by \code{\link{calculate_slr}}.}
 }
 \value{
 A string
