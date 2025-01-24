@@ -1,7 +1,9 @@
 # handwriterRF
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check MacOS](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check-macos.yaml/badge.svg)](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check-macos.yaml)
+[![R-CMD-check Ubuntu](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check-ubuntu.yaml/badge.svg)](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check-ubuntu.yaml)
+[![R-CMD-check Windows](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check-windows.yaml/badge.svg)](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check-windows.yaml)
 <!-- badges: end -->
 
 HandwriterRF is designed to assist forensic document examiners by
