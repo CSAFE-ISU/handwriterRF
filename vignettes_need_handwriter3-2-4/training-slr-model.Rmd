@@ -68,7 +68,7 @@ When running `train_rf()` you have a several choices to make:
 
 -   Choose the number of decision trees to use. In our experiments with samples from the CSAFE Handwriting Database and the CVL Handwriting Database, we found that `ntrees = 200` produced good results.
 -   If you want the random forest to be saved in an RDS file, specify an output directory. If you don't use the `output_dir` argument, the random forest will be returned but not saved to your computer.
--   There will be more *different writer* distances compared to *same writer*. If you want to train the random forest on *balanced classes*, where there are the same number of distances for both classes, set `downsample = TRUE`. This randomly samples the *different writer* distances to equal the number of *same writer* distances.
+-   There will be more *different writers* distances compared to *same writer*. If you want to train the random forest on *balanced classes*, where there are the same number of distances for both classes, set `downsample_diff_pairs = TRUE`. This randomly samples the *different writers* distances to equal the number of *same writer* distances.
 
 ```{r single-rf, eval=FALSE}
 rf <- train_rf(
@@ -76,7 +76,7 @@ rf <- train_rf(
   ntrees = 200,
   distance_measures = c("abs", "man", "euc", "max", "cos"),
   output_dir = "path/to/output/folder",
-  downsample = TRUE
+  downsample_diff_pairs = TRUE
 )
 ```
 
@@ -100,7 +100,7 @@ for (i in 1:10) {
 
 The functions `compare_documents()` and `compare_writer_profiles()` either return a similarity score or a score-based likelihood. Both express how similar or not two handwriting samples are to each other.
 
-The score-based likelihood ratio (SLR) builds upon the observed similarity score by comparing it to reference *same writer* and *different writer* similarity scores. The SLR is the ratio of the likelihood of observing the similarity score if the samples where written by the same writer to the likelihood of observing the similarity score if the samples where written by the different writers.
+The score-based likelihood ratio (SLR) builds upon the observed similarity score by comparing it to reference *same writer* and *different writers* similarity scores. The SLR is the ratio of the likelihood of observing the similarity score if the samples where written by the same writer to the likelihood of observing the similarity score if the samples where written by the different writers.
 
 If `compare_documents()` and `compare_writer_profiles()` only return the similarity score, reference scores are not used. But if these functions calculate an SLR they need reference scores. HandwriterRF includes a set of reference score as `ref_scores` for use with these functions, but you can also create your own set of reference scores.
 
