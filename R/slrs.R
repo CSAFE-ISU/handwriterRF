@@ -165,15 +165,15 @@ interpret_slr <- function(df) {
 #'
 get_rates_of_misleading_slrs <- function(df, threshold = 1) {
   # Use across to prevent "no visible binding for global variable"
-  known_matches <- df |>
+  known_matches <- df %>%
     dplyr::filter(dplyr::across(c("ground_truth")) == "same writer")
-  known_non_matches <- df |>
+  known_non_matches <- df %>%
     dplyr::filter(dplyr::across(c("ground_truth")) == "different writer")
 
   # Use across to prevent "no visible binding for global variable"
-  fn <- known_matches |>
+  fn <- known_matches %>%
     dplyr::filter(dplyr::across(c("slr")) < threshold)
-  fp <- known_non_matches |>
+  fp <- known_non_matches %>%
     dplyr::filter(dplyr::across(c("slr")) > threshold)
 
   defense <- nrow(fn) / nrow(known_matches)
