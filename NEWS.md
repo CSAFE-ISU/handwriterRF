@@ -1,16 +1,21 @@
 # handwriterRF 1.1.0
 
-## Minor improvements
+## New Features and Enhancements
 
-* Introduced `compare_documents()` to compare two handwritten documents using either a similarity score or a score-based likelihood ratio as a comparison method. This new function incorporates the features of `calculate_slr()` and provides additional flexibility: users can now opt to return either just the similarity score or both the similarity score and the score-based likelihood ratio.
+* **Two New Vignettes**:
+  
+  1. **An Introduction to the SLR Model**: This vignette provides an overview of the score-based likelihood ratio (SLR) method used by handwriterRF to compare handwriting samples. It explains how the package uses a pre-trained random forest and a set of reference similarity scores to calculate SLRs.
+  2. **SLR Model Tutorial**: This tutorial demonstrates how to train your own random forest model and generate your own set of reference similarity scores for SLR calculations.
 
-* Introduced `compare_writer_profiles()` to speed up experiments involving large numbers of documents, offering a more efficient alternative to `compare_documents()`. In large-scale experiments where the same document is used in multiple comparisons, `compare_documents()` can be slow because it processes each document every time it is used. `compare_writer_profiles()` addresses this issue by allowing users to process each document only once, even when it is involved in multiple comparisons.
+* **New Function**: `compare_documents()`. The `compare_documents()` function allows users to compare two handwritten documents, either by a similarity score or using the score-based likelihood ratio (SLR) method. This function consolidates the functionality of `calculate_slr()` and offers additional flexibility, allowing users to choose whether to return just the similarity score or both the similarity score and the SLR.
 
-* Introduced new dataframes of writer profiles `train`, `validation`, and `test`. Created a new `random_forest` from `train`. Created `ref_scores`, a list of same writer and different writer similarity scores, from `validation`. 
+* **New Function**: `compare_writer_profiles()`. To optimize large-scale experiments, `compare_writer_profiles()` provides a more efficient alternative to `compare_documents()`. In experiments involving many comparisons with the same document, `compare_documents()` can be slow, as it reprocesses the same document multiple times. `compare_writer_profiles()` solves this by allowing each document to be processed only once, even if it is used in several comparisons.
 
-* Introduced `plot_scores()` to plot histograms of same writer and different writer similarity scores created with `get_ref_scores()` and a dataframe of writer profiles.
+* **New Function**: `plot_scores()`. The `plot_scores()` function allows users to visualize histograms of same-writer and different-writer similarity scores created with get_ref_scores(), providing an easy way to analyze and compare similarity scores from a dataframe of writer profiles.
 
-* The handwriter package now has a function `handwriter::get_cluster_fill_rates()` to calculate cluster fill rates for one or more handwriting samples, `get_cluster_fill_rates()` has been superseded in favor of `handwriter::get_cluster_fill_rates()`.
+* **New Dataframes**: `train`, `validation`, and `test`. These new dataframes store writer profiles for training, validation, and testing purposes. The package creates `random_forest` from the `train` dataframe, and the reference similarity scores, `ref_scores`, from the validation dataframe.
+
+* **Function Update:** `get_cluster_fill_rates()`. The function `get_cluster_fill_rates()` has been introduced in the handwriter R package to calculate cluster fill rates for one or more handwriting samples. This supersedes the previous version of `get_cluster_fill_rates()` included in handwriterRF.
 
 # handwriterRF 1.0.2
 
