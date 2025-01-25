@@ -90,7 +90,7 @@ for (i in 1:10) {
     distance_measures = c("abs", "man"),
     output_dir = "path/to/output/folder",
     run_number = i,
-    downsample = TRUE
+    downsample_diff_pairs = TRUE
   )
 }
 
@@ -111,7 +111,7 @@ ref_profiles <- handwriter::get_writer_profiles(
   input_dir = "path/to/ref/samples/folder",
   measure = "rates",
   num_cores = 1,
-  template = templateK40,
+  template = handwriter::templateK40,
   output_dir = "path/to/output/folder"
 )
 
@@ -119,20 +119,20 @@ rscores <- get_ref_scores(rforest = rf,
                           df = ref_profiles)
 ```
 
-We can plot the built-in reference scores. The plot is similar to a histogram. All similarity scores are greater than or equal to zero and less than or equal to one. `plot_scores` divides the interval from 0 to 1 into `n_bins`, and calculates the proportion of scores in bin. A histogram would show the number of scores in each bin, but because there are many times more *different writers* scores compared to *same writer* the histogram for *different writers* scores dwarfs the *same writer* histogram. Plot the rate instead of the frequency, fixes this problem.
+We can plot the built-in reference scores in a way similar to a histogram. These scores range from 0 to 1, inclusive. The `plot_scores()` function divides this range into bins and calculates the proportion of scores that fall into each bin. Normally, a histogram would show the count of scores in each bin. However, since there are many more different writers scores than same writer scores, the histogram for different writers scores dominates, making the same writer histogram hard to see. To fix this, we plot the proportion (rate) of scores in each bin instead of the raw frequency, which balances the two histograms and makes both more visible.
 
 ```{r plot, out.width="75%", dpi=300}
 plot_scores(scores = ref_scores)
 ```
 
-If we want to see how an observed score compares to the *same writer* and *different writers*  scores, we use `obs_score`.
+If we want to see how an observed score compares to the *same writer* and *different writers*  scores, we use the `obs_score` argument. For example, if the observed score is 0.2, we plot
 
 ```{r plot-obs, out.width="75%", dpi=300}
 plot_scores(scores = ref_scores,
             obs_score = 0.2)
 ```
 
-Plot your own reference scores.
+You can also plot your own reference scores.
 
 ```{r plot-own, eval=FALSE}
 plot_scores(scores = rscores,
@@ -141,10 +141,10 @@ plot_scores(scores = rscores,
 
 ## Compare Documents with New Random Forest and Reference Scores
 
-In this section, we will use the new random forest and set of reference scores to compare two handwritten documents. As before, the handwriting samples need to be scanned and saved as PNG files. Do not use samples or writers that were used to create the random forest or the reference scores.
+In this section, we will use the new random forest and reference scores to compare two handwritten documents. As before, the handwriting samples need to be scanned and saved as PNG files. Do not use samples or writers that were used to create the random forest or the reference scores, as this may bias the results.
 
-Before using the new random forest and reference scores, use 
-the random forest and reference scores included with handwriterRF. Compare two handwriting samples from the same writer and included with handwriterRF and return a similarity score and score-based likelihood ratio.
+First, compare the two documents with the default random forest and reference scores. As an example, we use two handwriting samples included in handwriterRF. The `system.file()` function finds the location of the handwriterRF package on your computer. We use `score_only = FALSE` to return an SLR.
+
 ```{r compare, message=FALSE}
 sample1 <- system.file("extdata", "docs", "w0238_s01_pWOZ_r02.png", package = "handwriterRF")
 sample2 <- system.file("extdata", "docs", "w0238_s01_pWOZ_r03.png", package = "handwriterRF")
@@ -158,11 +158,12 @@ df <- compare_documents(
 df
 ```
 
-The SLR is greater than one, which means the similarity score is more like the reference *same writer* scores than the *different writers* scores. We can also plot the observed score with the reference scores. 
+The SLR is greater than one, which means the similarity score is more like the reference *same writer* scores than the *different writers* scores. We plot the observed score with the reference scores. 
 
 ```{r}
 plot_scores(scores = ref_scores, obs_score = df$score)
 ```
+
 Next, compare the same documents with the new random forest and reference scores and plot the obeserved score.
 
 ```{r new-compare, eval=FALSE}
