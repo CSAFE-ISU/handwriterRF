@@ -19,7 +19,10 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macos-latest,   r: 'release'}
+          - {os: macos-latest, r: 'release'}
+          - {os: macos-latest, r: 'oldrel'}
+          - {os: macos-latest, r: 'oldrel-arm64'}
+          - {os: macos-latest, r: 'oldrel-x86_64'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
