@@ -1,5 +1,8 @@
 # handwriterRF 1.1.1
 
+## Fixes 
+* Fixed the vignette, training-slr-model.Rmd, to save files to the temporary directory instead of the Desktop.
+
 # handwriterRF 1.1.0
 
 ## New Features and Enhancements
