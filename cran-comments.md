@@ -6,8 +6,24 @@ This is a resubmission. In this patch version I have:
 
 ## R CMD check results
 
-0 errors | 0 warnings | 0 notes
+0 errors | 0 warnings | 1 notes
 
+  Maintainer: ‘Stephanie Reinders <reinders.stephanie@gmail.com>’
+  
+  New submission
+  
+  Package was archived on CRAN
+  
+  Possibly misspelled words in DESCRIPTION:
+  Danica (8:171)
+  Ommen (8:178)
+  
+  CRAN repository db overrides:
+    X-CRAN-Comment: Archived on 2025-01-28 for policy violation.
+  
+    Creates and leaves behind '~/Desktop'.
+    
+* Danica Ommen is spelled correctly.
 
 ## revdepcheck results
 
