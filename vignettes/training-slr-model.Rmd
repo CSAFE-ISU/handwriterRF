@@ -152,8 +152,7 @@ sample2 <- system.file("extdata", "docs", "w0238_s01_pWOZ_r03.png", package = "h
 df <- compare_documents(
   sample1, 
   sample2, 
-  score_only = FALSE,
-  project_dir = "~/Desktop/test"
+  score_only = FALSE
 )
 df
 ```
