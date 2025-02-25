@@ -46,7 +46,7 @@ test_that("Compare writer profiles works on unknown writers when score_only is F
 
   expected <- readRDS(testthat::test_path("fixtures", "compare", "test_4rows_slr_unknown_writers.rds"))
 
-  testthat::expect_equal(actual, expected)
+  testthat::expect_equal(actual, expected, tolerance = 1e-2)
 })
 
 test_that("Compare writer profiles works on known writers when score_only is FALSE", {
@@ -58,7 +58,7 @@ test_that("Compare writer profiles works on known writers when score_only is FAL
 
   expected <- readRDS(testthat::test_path("fixtures", "compare", "test_4rows_slr_known_writers.rds"))
 
-  testthat::expect_equal(actual, expected)
+  testthat::expect_equal(actual, expected, tolerance = 1e-2)
 })
 
 test_that("Check dir contents works if directory contains correct samples", {

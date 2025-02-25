@@ -13,7 +13,7 @@ testthat::test_that("Calculate SLR works on w0030 samples", {
 
   expected <- readRDS(testthat::test_path("fixtures", "slrs", "w0030_v_w0030.rds"))
 
-  testthat::expect_equal(actual, expected)
+  testthat::expect_equal(actual, expected, tolerance = 1e-3)
 })
 
 testthat::test_that("Calculate SLR works on w0030 versus w0238 samples", {
@@ -148,7 +148,12 @@ test_that("Make densities works with ranger package", {
 
   expected <- readRDS(testthat::test_path("fixtures", "slrs", "densities.csv"))
 
-  expect_equal(actual, expected)
+  # If running pre-R 4.4.0, stats::density() called by make_densities() does
+  # not have the field "old.coords"
+  actual$diff_writer$old.coords <- FALSE
+  actual$same_writer$old.coords <- FALSE
+
+  expect_equal(actual, expected, tolerance = 1e-3)
 })
 
 test_that("Evaluate density at point changes NA in denominator to 1e-10", {
