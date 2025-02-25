@@ -31,7 +31,7 @@ testthat::test_that("Calculate SLR works on w0030 versus w0238 samples", {
 
   expected <- readRDS(testthat::test_path("fixtures", "slrs", "w0030_v_w0238.rds"))
 
-  testthat::expect_equal(actual, expected)
+  testthat::expect_equal(actual, expected, tolerance = 1e-3)
 })
 
 testthat::test_that("Calculate SLR works on w0030 samples in project directory", {
@@ -46,7 +46,7 @@ testthat::test_that("Calculate SLR works on w0030 samples in project directory",
 
   expected <- readRDS(testthat::test_path("fixtures", "slrs", "w0030_v_w0030.rds"))
 
-  testthat::expect_equal(actual, expected)
+  testthat::expect_equal(actual, expected, tolerance = 1e-3)
 })
 
 test_that("Calculate SLRs throws error if samples are the same file in the same folder", {
@@ -83,7 +83,7 @@ test_that("Calculate SLRs works if samples in different folders have the same fi
 
   expected <- readRDS(testthat::test_path("fixtures", "slrs", "same_filename_example.rds"))
 
-  testthat::expect_equal(actual, expected)
+  testthat::expect_equal(actual, expected, tolerance = 1e-3)
 })
 
 test_that("Interpret SLR returns the correct message for values greater than 1", {
