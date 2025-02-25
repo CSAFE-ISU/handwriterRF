@@ -1,9 +1,7 @@
 # handwriterRF
 
 <!-- badges: start -->
-[![R-CMD-check MacOS](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check-macos.yaml/badge.svg)](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check-macos.yaml)
-[![R-CMD-check Ubuntu](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check-ubuntu.yaml/badge.svg)](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check-ubuntu.yaml)
-[![R-CMD-check Windows](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check-windows.yaml/badge.svg)](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check-windows.yaml)
+[![R-CMD-check](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/CSAFE-ISU/handwriterRF/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/CSAFE-ISU/handwriterRF/graph/badge.svg)](https://app.codecov.io/gh/CSAFE-ISU/handwriterRF)
 <!-- badges: end -->
 
