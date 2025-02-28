@@ -49,9 +49,9 @@
 #'
 #' @param df A dataframe of writer profiles created with
 #'   \code{\link{get_cluster_fill_rates}}
-#' @param ntrees An integer number of decision trees to use
 #' @param distance_measures A vector of distance measures. Any combination of
 #'   'abs', 'euc', 'man', 'max', and 'cos' may be used.
+#' @param ntrees An integer number of decision trees to use
 #' @param output_dir A path to a directory where the random forest will be
 #'   saved.
 #' @param run_number An integer used for both the set.seed function and to
@@ -74,8 +74,8 @@
 #'   downsample = TRUE
 #' )
 train_rf <- function(df,
-                     ntrees,
                      distance_measures,
+                     ntrees = 200,
                      output_dir = NULL,
                      run_number = 1,
                      downsample_diff_pairs = TRUE) {
@@ -107,7 +107,7 @@ train_rf <- function(df,
     data = train_df,
     importance = "permutation",
     scale.permutation.importance = TRUE,
-    num.trees = 200
+    num.trees = ntrees
   )
 
   # add distances to list
