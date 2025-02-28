@@ -4,7 +4,7 @@
 \alias{get_distances}
 \title{Get Distances}
 \usage{
-get_distances(df, distance_measures)
+get_distances(df, distance_measures, df2 = NULL)
 }
 \arguments{
 \item{df}{A dataframe of cluster fill rates created with
@@ -15,15 +15,22 @@ calculate the absolute difference, 'man' for the Manhattan distance, 'euc'
 for the Euclidean distance, 'max' for the maximum absolute distance, and
 'cos' for the cosine distance. The vector can be a single distance, or any
 combination of these five distance measures.}
+
+\item{df2}{Optional. A second dataframe of cluster fill rates. If df2 is not
+supplied, the distance will be calculated between every pair of rows in
+df1. If df2 is supplied, the distance will be calculated between every row
+of df1 and every row of df2. Distances will not be calculated between pairs
+of df1 rows or between pairs of df2 rows.}
 }
 \value{
 A dataframe of distances
 }
 \description{
-Calculate distances using between all pairs of cluster fill rates in a data
-frame using one or more distance measures. The available distance measures
-absolute distance, Manhattan distance, Euclidean distance, maximum distance,
-and cosine distance.
+Calculate distances between (1) all pairs of cluster fill rates in a data
+frame, or (2) all pairs of cluster fill rates between two data frames, using
+one or more distance measures. The available distance measures absolute
+distance, Manhattan distance, Euclidean distance, maximum distance, and
+cosine distance.
 }
 \details{
 The absolute distance between two n-length vectors of cluster fill rates, a
@@ -49,11 +56,16 @@ The cosine distance between two n-length vectors of cluster fill rates, a and b,
 }
 \examples{
 
-rates <- test[1:3, ]
 # calculate maximum and Euclidean distances between the first 3 documents in test.
+rates <- test[1:3, ]
 distances <- get_distances(df = rates, distance_measures = c("max", "euc"))
 
-# calculate maximum and distances between all documents in test.
-distances <- get_distances(df = test, distance_measures = c("man"))
+# calculate maximum and Euclidean distances between the the first 3 documents in test and
+# the next 3 documents in test
+rates2 <- test[4:6, ]
+distances <- get_distances(df = rates, distance_measures = c("max", "euc"), df2 = rates2)
+
+# calculate cosine distances between all documents in test.
+distances <- get_distances(df = test, distance_measures = c("cos"))
 
 }

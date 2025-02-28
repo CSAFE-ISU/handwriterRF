@@ -3,33 +3,73 @@ df <- validation[1:3, 1:6]
 d <- get_distances(df, c("abs", "euc"))
 saveRDS(d, testthat::test_path("fixtures", "distances", "abs_euc.rds"))
 
+df <- validation[1:3, 1:6]
+df2 <- validation[4:6, 1:6]
+d <- get_distances(df = df, distance_measures = c("abs", "euc"), df2 = df2)
+saveRDS(d, testthat::test_path("fixtures", "distances", "abs_euc_2df.rds"))
+
 df <- validation[1:3, ]
 d <- get_distances(df, c("man", "euc", "max", "cos"))
 saveRDS(d, testthat::test_path("fixtures", "distances", "man_euc_max_cos.rds"))
+
+df <- validation[1:3, ]
+df2 <- validation[4:6, ]
+d <- get_distances(df = df, distance_measures = c("man", "euc", "max", "cos"), df2 = df2)
+saveRDS(d, testthat::test_path("fixtures", "distances", "man_euc_max_cos_2df.rds"))
 
 df <- validation[1:2, 1:6]
 d <- absolute_dist(df)
 saveRDS(d, testthat::test_path("fixtures", "distances", "abs_2docs.rds"))
 
+df <- validation[1:2, 1:6]
+df2 <- validation[3:4, 1:6]
+d <- absolute_dist(df = df, df2 = df2)
+saveRDS(d, testthat::test_path("fixtures", "distances", "abs_2df_2docs.rds"))
+
 df <- validation[1:3, 1:6]
 d <- absolute_dist(df)
 saveRDS(d, testthat::test_path("fixtures", "distances", "abs_3docs.rds"))
+
+df <- validation[1:3, 1:6]
+df2 <- validation[4:6, 1:6]
+d <- absolute_dist(df = df, df2 = df2)
+saveRDS(d, testthat::test_path("fixtures", "distances", "abs_2df_3docs.rds"))
 
 df <- validation[1:3, ]
 d <- manhattan_dist(df)
 saveRDS(d, testthat::test_path("fixtures", "distances", "man.rds"))
 
 df <- validation[1:3, ]
+df2 <- validation[4:6, ]
+d <- manhattan_dist(df = df, df2 = df2)
+saveRDS(d, testthat::test_path("fixtures", "distances", "man_2df.rds"))
+
+df <- validation[1:3, ]
 d <- euclidean_dist(df)
 saveRDS(d, testthat::test_path("fixtures", "distances", "euc.rds"))
+
+df <- validation[1:3, ]
+df2 <- validation[4:6, ]
+d <- euclidean_dist(df = df, df2 = df2)
+saveRDS(d, testthat::test_path("fixtures", "distances", "euc_2df.rds"))
 
 df <- validation[1:3, ]
 d <- maximum_dist(df)
 saveRDS(d, testthat::test_path("fixtures", "distances", "max.rds"))
 
 df <- validation[1:3, ]
+df2 <- validation[4:6, ]
+d <- maximum_dist(df = df, df2 = df2)
+saveRDS(d, testthat::test_path("fixtures", "distances", "max_2df.rds"))
+
+df <- validation[1:3, ]
 d <- cosine_dist(df)
 saveRDS(d, testthat::test_path("fixtures", "distances", "cos.rds"))
+
+df <- validation[1:3, ]
+df2 <- validation[4:6, ]
+d <- cosine_dist(df = df, df2 = df2)
+saveRDS(d, testthat::test_path("fixtures", "distances", "cos_2df.rds"))
 
 # Scores ----
 df <- test[1:2, ]
