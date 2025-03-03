@@ -91,7 +91,7 @@ get_distances <- function(df, distance_measures, df2 = NULL) {
   if (is.null(df2)) {
     df2 <- df
   } else if (!("writer" %in% colnames(df2))) {
-    df$writer <- paste0("df2_unknown", 1:nrow(df))
+    df2$writer <- paste0("df2_unknown", 1:nrow(df))
   }
 
   for (method in distance_measures) {
