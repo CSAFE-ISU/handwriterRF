@@ -6,6 +6,7 @@
 \usage{
 compare_writer_profiles(
   writer_profiles,
+  writer_profiles2 = NULL,
   score_only = TRUE,
   rforest = NULL,
   reference_scores = NULL
@@ -14,6 +15,12 @@ compare_writer_profiles(
 \arguments{
 \item{writer_profiles}{A dataframe of writer profiles or cluster fill rates
 calculated with \link{get_cluster_fill_rates}}
+
+\item{writer_profiles2}{Optional. A second dataframe of writer profiles or
+cluster fill rates. If it is not provided, a score or SLR will be
+calculated between every pair of rows in writer_profiles. If
+writer_profiles2 is provided, a score or SLR will be calculated between
+every row of writer_profiles and every row of writer_profiles2.}
 
 \item{score_only}{TRUE returns only the similarity score. FALSE returns the
 similarity score and a score-based likelihood ratio for that score,
@@ -36,7 +43,7 @@ A dataframe
 \description{
 Compare the writer profiles from two handwritten documents to predict whether
 they were written by the same person. Use either a similarity score or a
-score-based likelihood ratio as a comparison method.
+score-based likelihood ratio (SLR) as a comparison method.
 }
 \examples{
 compare_writer_profiles(test[1:2, ], score_only = TRUE)

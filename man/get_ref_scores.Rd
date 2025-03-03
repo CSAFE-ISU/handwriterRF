@@ -4,7 +4,13 @@
 \alias{get_ref_scores}
 \title{Get Reference Scores}
 \usage{
-get_ref_scores(rforest, df, seed = NULL, downsample_diff_pairs = FALSE)
+get_ref_scores(
+  rforest,
+  df,
+  df2 = NULL,
+  seed = NULL,
+  downsample_diff_pairs = FALSE
+)
 }
 \arguments{
 \item{rforest}{A \pkg{ranger} random forest created with
@@ -12,6 +18,11 @@ get_ref_scores(rforest, df, seed = NULL, downsample_diff_pairs = FALSE)
 
 \item{df}{A dataframe of cluster fill rates created with
 \code{\link{get_cluster_fill_rates}} with an added writer ID column.}
+
+\item{df2}{Optional. A second dataframe of cluster fill rates. If df2 is not
+provided, scores will be calculated between every pair of rows in
+df. If df2 is provided, scores will be calculated between all pairs of rows
+from df and df2, rather than within the rows of df or within the rows of df2.}
 
 \item{seed}{Optional. An integer to set the seed for the random number
 generator to make the results reproducible.}

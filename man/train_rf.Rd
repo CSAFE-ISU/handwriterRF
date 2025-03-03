@@ -6,8 +6,9 @@
 \usage{
 train_rf(
   df,
-  ntrees,
   distance_measures,
+  df2 = NULL,
+  ntrees = 200,
   output_dir = NULL,
   run_number = 1,
   downsample_diff_pairs = TRUE
@@ -17,10 +18,15 @@ train_rf(
 \item{df}{A dataframe of writer profiles created with
 \code{\link{get_cluster_fill_rates}}}
 
-\item{ntrees}{An integer number of decision trees to use}
-
 \item{distance_measures}{A vector of distance measures. Any combination of
 'abs', 'euc', 'man', 'max', and 'cos' may be used.}
+
+\item{df2}{Optional. A second dataframe of cluster fill rates. If df2 is not
+provided, the distance will be calculated between every pair of rows in
+df. If df2 is provided, the distance will be calculated between all pairs of rows
+from df and df2, rather than within the rows of df or within the rows of df2.}
+
+\item{ntrees}{An integer number of decision trees to use}
 
 \item{output_dir}{A path to a directory where the random forest will be
 saved.}
@@ -28,7 +34,8 @@ saved.}
 \item{run_number}{An integer used for both the set.seed function and to
 distinguish between different runs on the same input dataframe.}
 
-\item{downsample_diff_pairs}{Whether to downsample the number of different writer
+\item{downsample_diff_pairs}{Whether to downsample the number of different
+writer
 distances before training the random forest. If TRUE, the different writer
 distances will be randomly sampled, resulting in the same number of
 different writer and same writer pairs.}
