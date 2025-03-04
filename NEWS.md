@@ -1,5 +1,12 @@
 # handwriterRF (development version)
 
+## New Features and Enhancements
+
+* Enhanced `compare_writer_profiles()`, `get_distances()`, `get_ref_scores()`, and `train_rf()` functionality:
+  - Now accepts an optional second dataframe of writer profiles
+  - With a single dataframe input: Compares all possible pairs of writer profiles within that dataframe
+  - With two dataframe inputs: Compares each profile from the first dataframe against each profile from the second dataframe (cross-comparison only, no within-dataframe comparisons)
+
 # handwriterRF 1.1.1
 
 ## Fixes 
