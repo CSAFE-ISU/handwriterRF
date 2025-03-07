@@ -37,7 +37,7 @@
 #'   [get_ref_scores()]
 #' @param obs_score Optional. A similarity score calculated with
 #'   [calculate_slr()]
-#' @param n_bins The number of bins
+#' @param ... Other arguments passed on to [ggplot2::geom_histogram()]
 #'
 #' @return A ggplot2 plot of histograms
 #' @export
@@ -51,29 +51,10 @@
 #' plot_scores(scores = ref_scores, obs_score = 0.1)
 #'
 #' @md
-plot_scores <- function(scores, obs_score = NULL, n_bins = 50) {
-  get_bin_rates <- function(scores, group, breaks = seq(0.00, 1, 0.02), labels = seq(0.01, 0.99, 0.02)) {
-    # prevent note: "no visible binding for global variable"
-    Group <- bin <- NULL
-
-    df <- data.frame(Score = scores, Group = group)
-
-    num_same <- nrow(df)
-
-    # split into bins
-    df$bin <- cut(df$Score, breaks = breaks, labels = labels, include.lowest = TRUE)
-
-    # calculate rates for bins
-    df <- df %>%
-      dplyr::group_by(Group, bin) %>%
-      dplyr::summarize(rate = dplyr::n() / num_same) %>%
-      dplyr::mutate(bin = as.numeric(as.character(bin)))
-
-    return(df)
-  }
+plot_scores <- function(scores, obs_score = NULL, ...) {
 
   # prevent note: "no visible binding for global variable"
-  bin <- rate <- Group <- NULL
+  score <- NULL
 
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop(
@@ -82,24 +63,22 @@ plot_scores <- function(scores, obs_score = NULL, n_bins = 50) {
     )
   }
 
-  # Instead of frequency of scores, calculate rate of scores by splitting [0, 1] into 50
-  # intervals of equal width and calculating the rate of scores in each interval.
-  df1 <- get_bin_rates(scores = scores$same_writer$score, group = "same writer")
-  df2 <- get_bin_rates(scores = scores$diff_writer$score, group = "different writers")
-  df <- rbind(df1, df2)
+  # Make scores into a single dataframe
+  scores$same_writer$match <- "same writer"
+  scores$diff_writer$match <- "different writers"
+  df <- rbind(scores$same_writer, scores$diff_writer)
 
-  p <- df %>% ggplot2::ggplot(ggplot2::aes(x = bin, y = rate, fill = Group)) +
-    ggplot2::geom_bar(
-      stat = "identity",
-      position = "identity",
-      alpha = 0.5
+  p <- df %>% ggplot2::ggplot(ggplot2::aes(x = score, fill = match)) +
+    ggplot2::geom_histogram(position = "identity", alpha = 0.5, ...) +
+    ggplot2::scale_fill_manual(
+      values = c("same writer" = "#6BA4B8", "different writers" = "#F68D2E")
     ) +
-    ggplot2::scale_fill_manual(values = c("same writer" = "#6BA4B8", "different writers" = "#F68D2E")) + # Customize colors
+    ggplot2::labs(y = "frequency", fill = "group") +
     ggplot2::theme_bw()
 
   # Optional - add vertical line at score
   if (!is.null(obs_score)) {
-    ymax <- max(df$rate)
+    # ymax <- max(df$rate)
     p <- p +
       ggplot2::geom_vline(
         xintercept = obs_score,
@@ -108,13 +87,13 @@ plot_scores <- function(scores, obs_score = NULL, n_bins = 50) {
       ) + # add vertical line
       ggplot2::annotate("text",
         x = obs_score,
-        y = ymax / 2,
+        y = 0,
         label = paste("observed score", obs_score),
         color = "black",
         size = 3,
         angle = 90,
         vjust = -1,
-        hjust = 0.5
+        hjust = -0.5
       )
   }
 
