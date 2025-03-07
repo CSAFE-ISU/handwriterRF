@@ -4,7 +4,7 @@
 \alias{plot_scores}
 \title{Plot Scores}
 \usage{
-plot_scores(scores, obs_score = NULL, n_bins = 50)
+plot_scores(scores, obs_score = NULL, ...)
 }
 \arguments{
 \item{scores}{A dataframe of scores calculated with
@@ -13,7 +13,7 @@ plot_scores(scores, obs_score = NULL, n_bins = 50)
 \item{obs_score}{Optional. A similarity score calculated with
 \code{\link[=calculate_slr]{calculate_slr()}}}
 
-\item{n_bins}{The number of bins}
+\item{...}{Other arguments passed on to \code{\link[ggplot2:geom_histogram]{ggplot2::geom_histogram()}}}
 }
 \value{
 A ggplot2 plot of histograms
