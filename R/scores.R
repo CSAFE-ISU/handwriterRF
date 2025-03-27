@@ -16,7 +16,6 @@
 # this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-
 # External Functions ------------------------------------------------------
 
 #' Get Reference Scores
@@ -28,6 +27,10 @@
 #'   \code{\link{train_rf}}.
 #' @param df A dataframe of cluster fill rates created with
 #'   \code{\link{get_cluster_fill_rates}} with an added writer ID column.
+#' @param df2 Optional. A second dataframe of cluster fill rates. If df2 is not
+#'   provided, scores will be calculated between every pair of rows in
+#'   df. If df2 is provided, scores will be calculated between all pairs of rows
+#'   from df and df2, rather than within the rows of df or within the rows of df2.
 #' @param seed Optional. An integer to set the seed for the random number
 #'   generator to make the results reproducible.
 #' @param downsample_diff_pairs If TRUE, the different writer pairs are
@@ -43,13 +46,13 @@
 #' get_ref_scores(rforest = random_forest, df = validation)
 #' }
 #'
-get_ref_scores <- function(rforest, df, seed = NULL, downsample_diff_pairs = FALSE) {
+get_ref_scores <- function(rforest, df, df2 = NULL, seed = NULL, downsample_diff_pairs = FALSE) {
 
   if (!is.null(seed)) {
     set.seed(seed)
   }
 
-  d <- get_distances(df = df, distance_measures = rforest$distance_measures)
+  d <- get_distances(df = df, distance_measures = rforest$distance_measures, df2 = df2)
 
   scores_df <- get_score(d = d, rforest = rforest)
 

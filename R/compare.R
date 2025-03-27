@@ -138,10 +138,15 @@ compare_documents <- function(sample1,
 #'
 #' Compare the writer profiles from two handwritten documents to predict whether
 #' they were written by the same person. Use either a similarity score or a
-#' score-based likelihood ratio as a comparison method.
+#' score-based likelihood ratio (SLR) as a comparison method.
 #'
 #' @param writer_profiles A dataframe of writer profiles or cluster fill rates
 #'   calculated with [get_cluster_fill_rates]
+#' @param writer_profiles2 Optional. A second dataframe of writer profiles or
+#'   cluster fill rates. If it is not provided, a score or SLR will be
+#'   calculated between every pair of rows in writer_profiles. If
+#'   writer_profiles2 is provided, a score or SLR will be calculated between
+#'   every row of writer_profiles and every row of writer_profiles2.
 #' @param score_only TRUE returns only the similarity score. FALSE returns the
 #'   similarity score and a score-based likelihood ratio for that score,
 #'   calculated using `reference_scores`.
@@ -166,12 +171,14 @@ compare_documents <- function(sample1,
 #' @md
 compare_writer_profiles <- function(
     writer_profiles,
+    writer_profiles2 = NULL,
     score_only = TRUE,
     rforest = NULL,
     reference_scores = NULL) {
   params <- list(
     samples = NULL,
     writer_profiles = writer_profiles,
+    writer_profiles2 = writer_profiles2,
     score_only = score_only,
     rforest = rforest,
     project_dir = NULL,
@@ -184,10 +191,14 @@ compare_writer_profiles <- function(
     stop("Writer profiles must be a rates dataframe created by get_writer_profiles() with measure = 'rates'.")
   }
 
+  if (!is.null(params$writer_profiles2) && !is_rates_df(params$writer_profiles2)) {
+    stop("Writer profiles must be a rates dataframe created by get_writer_profiles() with measure = 'rates'.")
+  }
+
   params <- handle_null_values(params)
 
   message("Calculating distance between samples...")
-  params$dist <- get_distances(df = writer_profiles, distance_measures = params$rforest$distance_measures)
+  params$dist <- get_distances(df = writer_profiles, distance_measures = params$rforest$distance_measures, df2 = writer_profiles2)
 
   message("Calculating similarity score...")
   params$score <- get_score(d = params$dist, rforest = params$rforest)$score
@@ -205,6 +216,21 @@ compare_writer_profiles <- function(
 
 # Internal Functions ------------------------------------------------------
 
+#' Handle Null Values
+#'
+#' The following rules are applied:
+#' * If reference_scores are supplied and score_only is TRUE, score_only is changed to FALSE
+#' * If project_dir is NULL, the project_dir is set to tempdir() > comparison.
+#' * If rforest is NULL, the default random_forest is used
+#' * If reference_scores is NULL, the default ref_scores are used
+#'
+#' @param params A list of parameters: samples, writer_profiles,
+#'   writer_profiles2, score_only, rforest, project_dir, reference_scores,
+#'   score, slr.
+#'
+#' @returns A list of parameters
+#'
+#' @noRd
 handle_null_values <- function(params) {
   if (!is.null(params$reference_scores) && params$score_only) {
     message("Reference scores were supplied so score_only will be changed to FALSE.")
@@ -226,13 +252,36 @@ handle_null_values <- function(params) {
   return(params)
 }
 
-create_dirs <- function(params, subdirs = NULL) {
+#' Create Directories
+#'
+#' Subfolders clusters, docs, and graphs are created in the project directory.
+#'
+#' @param params A list of parameters: samples, writer_profiles,
+#'   writer_profiles2, score_only, rforest, project_dir, reference_scores,
+#'   score, slr.
+#'
+#' @returns No value returned
+#'
+#' @noRd
+create_dirs <- function(params) {
   create_dir(params$project_dir)
   create_dir(file.path(params$project_dir, "clusters"))
   create_dir(file.path(params$project_dir, "docs"))
   create_dir(file.path(params$project_dir, "graphs"))
 }
 
+#' Handle Samples with Same Name
+#'
+#' If the input samples are in different directories but have the same
+#' filenames, the samples are relabelled as sample1.png and sample2.png.
+#'
+#' @param params A list of parameters: samples, writer_profiles,
+#'   writer_profiles2, score_only, rforest, project_dir, reference_scores,
+#'   score, slr.
+#'
+#' @returns A list of parameters
+#'
+#' @noRd
 handle_samples_w_same_name <- function(params) {
 
   # samples in two different directories CAN have the same filename
@@ -253,6 +302,19 @@ handle_samples_w_same_name <- function(params) {
   return(params)
 }
 
+#' Check Directory Contents
+#'
+#' Check the contents of project_dir > dir_name to ensure that it does not
+#' contain helper files for documents other than sample1 or sample2.
+#'
+#' @param params A list of parameters: samples, writer_profiles,
+#'   writer_profiles2, score_only, rforest, project_dir, reference_scores,
+#'   score, slr.
+#' @param dir_name The name of the subdirectory in project_dir to check.
+#'
+#' @returns A list of parameters
+#'
+#' @noRd
 check_dir_contents <- function(params, dir_name) {
   if (!is.null(params$project_dir) && dir.exists(file.path(params$project_dir, dir_name))) {
     actual_files <- list.files(file.path(params$project_dir, dir_name))
@@ -296,6 +358,18 @@ is_rates_df <- function(df) {
   }
 }
 
+#' Run Checks
+#'
+#' Check the contents of the clusters, docs, and graphs folders in the project
+#' directory.
+#'
+#' @param params A list of parameters: samples, writer_profiles,
+#'   writer_profiles2, score_only, rforest, project_dir, reference_scores,
+#'   score, slr.
+#'
+#' @returns A list of parameters
+#'
+#' @noRd
 run_checks <- function(params) {
 
   check_dir_contents(params, "clusters")
@@ -305,6 +379,17 @@ run_checks <- function(params) {
   return(params)
 }
 
+#' Copy Samples to Project Directory
+#'
+#' Copy the samples to the project directory.
+#'
+#' @param params A list of parameters: samples, writer_profiles,
+#'   writer_profiles2, score_only, rforest, project_dir, reference_scores,
+#'   score, slr.
+#'
+#' @returns A list of parameters
+#'
+#' @noRd
 copy_samples_to_project_dir <- function(params) {
   # Copy samples to project_dir > docs
   message("Copying samples to project directory > docs...\n")
@@ -319,7 +404,18 @@ copy_samples_to_project_dir <- function(params) {
   return(params)
 }
 
-
+#' Get Score-based Likelihood Ratio
+#'
+#' Calculate the score-based likelihood ratio for each score in params$score
+#' using params$rforest and params$reference_scores.
+#'
+#' @param params A list of parameters: samples, writer_profiles,
+#'   writer_profiles2, score_only, rforest, project_dir, reference_scores,
+#'   score, slr.
+#'
+#' @returns A list of parameters
+#'
+#' @noRd
 get_slr <- function(params) {
   get_slr_for_single_score <- function(score, densities) {
     numerator <- eval_density_at_point(den = densities$same_writer, x = score, type = "numerator")
@@ -335,6 +431,18 @@ get_slr <- function(params) {
   return(params)
 }
 
+#' Make Results Dataframe
+#'
+#' Format the comparison results in a dataframe with columns docname1, writer1,
+#' docname2, writer2, ground_truth, score, and optionally slr.
+#'
+#' @param params A list of parameters: samples, writer_profiles,
+#'   writer_profiles2, score_only, rforest, project_dir, reference_scores,
+#'   score, slr.
+#'
+#' @returns A dataframe
+#'
+#' @noRd
 make_results_df <- function(params) {
   df <- params$dist
 
@@ -356,6 +464,17 @@ make_results_df <- function(params) {
   return(df)
 }
 
+#' Cleanup
+#'
+#' Delete the comparison folder and its contents from the tempdir().
+#'
+#' @param params A list of parameters: samples, writer_profiles,
+#'   writer_profiles2, score_only, rforest, project_dir, reference_scores,
+#'   score, slr.
+#'
+#' @returns No return value
+#'
+#' @noRd
 clean_up <- function(params) {
   # Optional. Delete comparison folder and contents in tempdir()
   if (params$project_dir == file.path(tempdir(), "comparison")) {

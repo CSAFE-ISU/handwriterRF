@@ -78,7 +78,6 @@ plot_scores <- function(scores, obs_score = NULL, ...) {
 
   # Optional - add vertical line at score
   if (!is.null(obs_score)) {
-    # ymax <- max(df$rate)
     p <- p +
       ggplot2::geom_vline(
         xintercept = obs_score,

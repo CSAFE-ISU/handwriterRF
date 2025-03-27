@@ -49,14 +49,19 @@
 #'
 #' @param df A dataframe of writer profiles created with
 #'   \code{\link{get_cluster_fill_rates}}
-#' @param ntrees An integer number of decision trees to use
 #' @param distance_measures A vector of distance measures. Any combination of
 #'   'abs', 'euc', 'man', 'max', and 'cos' may be used.
+#' @param df2 Optional. A second dataframe of cluster fill rates. If df2 is not
+#'   provided, the distance will be calculated between every pair of rows in
+#'   df. If df2 is provided, the distance will be calculated between all pairs of rows
+#'   from df and df2, rather than within the rows of df or within the rows of df2.
+#' @param ntrees An integer number of decision trees to use
 #' @param output_dir A path to a directory where the random forest will be
 #'   saved.
 #' @param run_number An integer used for both the set.seed function and to
 #'   distinguish between different runs on the same input dataframe.
-#' @param downsample_diff_pairs Whether to downsample the number of different writer
+#' @param downsample_diff_pairs Whether to downsample the number of different
+#'   writer
 #'   distances before training the random forest. If TRUE, the different writer
 #'   distances will be randomly sampled, resulting in the same number of
 #'   different writer and same writer pairs.
@@ -74,8 +79,9 @@
 #'   downsample = TRUE
 #' )
 train_rf <- function(df,
-                     ntrees,
                      distance_measures,
+                     df2 = NULL,
+                     ntrees = 200,
                      output_dir = NULL,
                      run_number = 1,
                      downsample_diff_pairs = TRUE) {
@@ -91,7 +97,7 @@ train_rf <- function(df,
   create_dir(output_dir)
 
   # get distances between all pairs of documents
-  dists <- get_distances(df = df, distance_measures = distance_measures)
+  dists <- get_distances(df = df, distance_measures = distance_measures, df2 = df2)
 
   dists <- label_same_different_writer(dists)
 
@@ -107,7 +113,7 @@ train_rf <- function(df,
     data = train_df,
     importance = "permutation",
     scale.permutation.importance = TRUE,
-    num.trees = 200
+    num.trees = ntrees
   )
 
   # add distances to list
