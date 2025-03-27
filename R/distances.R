@@ -348,25 +348,6 @@ cosine_dist <- function(df, df2 = NULL) {
   return(df)
 }
 
-#' Select the Cluster Columns
-#'
-#' For a dataframe created with \code{\link{get_cluster_fill_rates}}, create
-#' a dataframe that consists solely of the cluster columns.
-#'
-#' @param df A dataframe of cluster will rates created with
-#'   \code{\link{get_cluster_fill_rates}}.
-#'
-#' @return A dataframe
-#'
-#' @noRd
-get_cluster_cols <- function(df) {
-  # drop all columns except clusters
-  df <- df %>%
-    dplyr::ungroup() %>%
-    dplyr::select(dplyr::starts_with("cluster"))
-  return(df)
-}
-
 #' Convert a Matrix of Distances to a Dataframe
 #'
 #' Convert a matrix of distances to a dataframe with five columns: docname1,
