@@ -63,21 +63,19 @@
                 A --> F[run_checks]
                 A --> G[copy_samples_to_project_dir]
                 A --> H[get_writer_profiles]
-                A --> I[get_distances]
-                A --> J[get_score]
-                A --> K[get_slr]
-                A --> L[make_results_df]
-                A --> M[clean_up]
                 A --> B[compare_writer_profiles]
+                A --> M[clean_up]
                 
-                B --> I
-                B --> J
-                B --> K
-                B --> L
+                B --> C2[handle_null_values]
+                B --> I[get_distances]
+                B --> J[get_score]
+                B --> K[get_slr]
+                B --> L[make_results_df]
                 
                 N[calculate_slr] --> A
                 
                 F --> O[check_dir_contents]
+                F --> P2[is_rates_df]
                 
                 P[get_cluster_fill_rates] --> Q[get_cluster_cols]
                 
@@ -128,7 +126,7 @@
                 class A,B,N,P,AA,AD,AH,AI,AJ main;
                 
                 %% Internal helper functions
-                class C,D,E,F,G,H,I,J,K,L,M,O,Q,R,S,T,U,V,W,X,Y,Z,AB,AC,AE,AF,AG helper;
+                class C,C2,D,E,F,G,H,I,J,K,L,M,O,P2,Q,R,S,T,U,V,W,X,Y,Z,AB,AC,AE,AF,AG helper;
                 
                 %% Visualization functions
                 class AI visualization;
@@ -153,6 +151,16 @@
                     Z
                 end
                 
+                subgraph "Data Preparation Functions"
+                    P
+                    Q
+                    AA
+                    AD
+                    AB
+                    AC
+                    P2
+                end
+                
                 subgraph "Score and SLR Functions"
                     J
                     K
@@ -161,15 +169,6 @@
                     AG
                     AH
                     AJ
-                end
-                
-                subgraph "Data Preparation Functions"
-                    P
-                    Q
-                    AA
-                    AD
-                    AB
-                    AC
                 end
                 
                 subgraph "Visualization Functions"
