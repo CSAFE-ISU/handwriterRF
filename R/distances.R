@@ -182,19 +182,26 @@ absolute_dist_for_single_cluster <- function(df, k, df2 = NULL) {
 #'
 #' @noRd
 absolute_dist <- function(df, df2 = NULL) {
-  data <- split_clusters_and_labels(df = df, df2 = df2)
 
-  if (!identical(colnames(data$df1), colnames(data$df2))) {
+  data1 <- split_clusters_and_labels(df = df)
+
+  if (is.null(df2)) {
+    data2 <- data1
+  } else {
+    data2 <- split_clusters_and_labels(df = df2)
+  }
+
+  if (!identical(colnames(data1$clusters), colnames(data2$clusters))) {
     stop("Both dataframes must have the same column names.")
   }
 
-  dists <- lapply(colnames(data$df1), function(k) {
-    absolute_dist_for_single_cluster(df = data$df1, k = k, df2 = data$df2)
+  dists <- lapply(colnames(data1$clusters), function(k) {
+    absolute_dist_for_single_cluster(df = data1$clusters, k = k, df2 = data2$clusters)
   })
   dists <- lapply(1:length(dists), function(i) {
-    dist_matrix2df(m = dists[[i]], docnames = data$docnames1, writers = data$writers1,
-                   dist_col_label = paste0("cluster", i), docnames2 = data$docnames2,
-                   writers2 = data$writers2)
+    dist_matrix2df(m = dists[[i]], docnames = data1$labels$docname, writers = data1$labels$writer,
+                   dist_col_label = paste0("cluster", i), docnames2 = data2$labels$docname,
+                   writers2 = data2$labels$writer)
   })
 
   # combine dataframes
@@ -226,33 +233,40 @@ absolute_dist <- function(df, df2 = NULL) {
 #'
 #' @noRd
 get_single_dist <- function(df, df2 = NULL, distance_measure = "man") {
-  data <- split_clusters_and_labels(df = df, df2 = df2)
+
+  data1 <- split_clusters_and_labels(df = df)
+
+  if (is.null(df2)) {
+    data2 <- data1
+  } else {
+    data2 <- split_clusters_and_labels(df = df2)
+  }
 
   d <- switch(distance_measure,
               "man" = outer(
-                seq_len(nrow(data$df1)), seq_len(nrow(data$df2)),
+                seq_len(nrow(data1$clusters)), seq_len(nrow(data2$clusters)),
                 function(i, j) {
-                  rowSums(abs(data$df1[i, ] - data$df2[j, ]))
+                  rowSums(abs(data1$clusters[i, ] - data2$clusters[j, ]))
                 }),
               "euc" = outer(
-                seq_len(nrow(data$df1)), seq_len(nrow(data$df2)),
+                seq_len(nrow(data1$clusters)), seq_len(nrow(data2$clusters)),
                 function(i, j) {
-                  sqrt(rowSums((data$df1[i, ] - data$df2[j, ])^2))
+                  sqrt(rowSums((data1$clusters[i, ] - data2$clusters[j, ])^2))
                 }),
               "max" = outer(
-                seq_len(nrow(data$df1)), seq_len(nrow(data$df2)),
+                seq_len(nrow(data1$clusters)), seq_len(nrow(data2$clusters)),
                 function(i, j) {
-                  apply(abs(data$df1[i, ] - data$df2[j, ]), 1, max)
+                  apply(abs(data1$clusters[i, ] - data2$clusters[j, ]), 1, max)
                 }),
               "cos" = outer(
-                seq_len(nrow(data$df1)), seq_len(nrow(data$df2)),
+                seq_len(nrow(data1$clusters)), seq_len(nrow(data2$clusters)),
                 function(i, j) {
-                  (rowSums((data$df1[i, ] - data$df2[j, ])^2)) / (sqrt(rowSums((data$df2[i, ])^2)) * sqrt(rowSums((data$df2[j, ])^2)))
+                  (rowSums((data1$clusters[i, ] - data2$clusters[j, ])^2)) / (sqrt(rowSums((data2$clusters[i, ])^2)) * sqrt(rowSums((data2$clusters[j, ])^2)))
                 })
   )
 
-  df <- dist_matrix2df(m = d, docnames = data$docnames1, writers = data$writers1,
-                       docnames2 = data$docnames2, writers2 = data$writers2,
+  df <- dist_matrix2df(m = d, docnames = data1$labels$docname, writers = data1$labels$writer,
+                       docnames2 = data2$labels$docname, writers2 = data2$labels$writer,
                        dist_col_label = distance_measure)
 
   return(df)
@@ -412,27 +426,4 @@ dist_matrix2df <- function(m, docnames, writers, dist_col_label, docnames2 = NUL
   row.names(df) <- NULL
 
   return(df)
-}
-
-split_clusters_and_labels <- function(df, df2) {
-  # split docnames and clusters
-  docnames1 <- df$docname
-  writers1 <- df$writer
-  df1 <- get_cluster_cols(df)
-
-  # if df2 is null, set it equal to df1 to calculate the distances between all
-  # pairs of rows of df1. Also set docnames2 and writers2 equal to docnames1 and
-  # writers1, respectively.
-  if (is.null(df2)) {
-    df2 = df1
-    docnames2 = docnames1
-    writers2 = writers1
-  } else {
-    docnames2 = df2$docname
-    writers2 = df2$writer
-    df2 <- get_cluster_cols(df2)
-  }
-
-  return(list("docnames1" = docnames1, "writers1" = writers1, "df1" = df1,
-              "docnames2" = docnames2, "writers2" = writers2, "df2" = df2))
 }

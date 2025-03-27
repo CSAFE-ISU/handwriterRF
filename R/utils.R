@@ -134,3 +134,11 @@ get_label_cols <- function(df) {
   return(df)
 }
 
+split_clusters_and_labels <- function(df) {
+
+  clusters <- get_cluster_cols(df)
+  labels <- get_label_cols(df)
+
+  return(list("clusters" = clusters, "labels" = labels))
+}
+
