@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>handwriterRF Package Function Map</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .mermaid {
+            width: 100%;
+            height: 1800px;
+            overflow: visible;
+        }
+        h1 { 
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            overflow: auto;
+            max-height: 90vh;
+            max-width: 100%;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        .zoom-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+        button {
+            margin: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>handwriterRF Package Function Map</h1>
+    
+    <div class="zoom-controls">
+        <button onclick="zoomIn()">Zoom In (+)</button>
+        <button onclick="zoomOut()">Zoom Out (-)</button>
+        <button onclick="resetZoom()">Reset</button>
+    </div>
+    
+    <div class="container" id="diagram-container">
+        <div class="mermaid" id="mermaid-diagram">
+            flowchart TD
+                %% Main external user-facing functions
+                A[compare_documents] --> C[handle_null_values]
+                A --> D[handle_samples_w_same_name]
+                A --> E[create_dirs]
+                A --> F[run_checks]
+                A --> G[copy_samples_to_project_dir]
+                A --> H[get_writer_profiles]
+                A --> I[get_distances]
+                A --> J[get_score]
+                A --> K[get_slr]
+                A --> L[make_results_df]
+                A --> M[clean_up]
+                A --> B[compare_writer_profiles]
+                
+                B --> I
+                B --> J
+                B --> K
+                B --> L
+                
+                N[calculate_slr] --> A
+                
+                F --> O[check_dir_contents]
+                
+                P[get_cluster_fill_rates] --> Q[get_cluster_cols]
+                
+                I --> R[absolute_dist]
+                I --> S[manhattan_dist]
+                I --> T[euclidean_dist]
+                I --> U[maximum_dist]
+                I --> V[cosine_dist]
+                
+                R --> W[absolute_dist_for_single_cluster]
+                R --> X[split_clusters_and_labels]
+                R --> Y[dist_matrix2df]
+                
+                S --> Z[get_single_dist]
+                T --> Z
+                U --> Z
+                V --> Z
+                
+                Z --> X
+                Z --> Y
+                
+                AA[train_rf] --> I
+                AA --> AB[label_same_different_writer]
+                AA --> AC[downsample]
+                
+                AD[get_ref_scores] --> I
+                AD --> J
+                AD --> AC
+                
+                K --> AE[get_slr_for_single_score]
+                K --> AF[make_densities]
+                
+                AF --> AG[eval_density_at_point]
+                
+                AH[interpret_slr]
+                
+                AI[plot_scores]
+                
+                AJ[get_rates_of_misleading_slrs]
+                
+                %% Color coding for different types of functions
+                classDef main fill:#c6dcff,stroke:#333,stroke-width:1px;
+                classDef helper fill:#fff5c6,stroke:#333,stroke-width:1px;
+                classDef utility fill:#d1ffcc,stroke:#333,stroke-width:1px;
+                classDef visualization fill:#ffd8c6,stroke:#333,stroke-width:1px;
+                
+                %% Main user-facing functions
+                class A,B,N,P,AA,AD,AH,AI,AJ main;
+                
+                %% Internal helper functions
+                class C,D,E,F,G,H,I,J,K,L,M,O,Q,R,S,T,U,V,W,X,Y,Z,AB,AC,AE,AF,AG helper;
+                
+                %% Visualization functions
+                class AI visualization;
+                
+                %% Define subgraphs for logical grouping
+                subgraph "Document Comparison Functions"
+                    A
+                    B
+                    N
+                end
+                
+                subgraph "Distance Functions"
+                    I
+                    R
+                    S
+                    T
+                    U
+                    V
+                    W
+                    X
+                    Y
+                    Z
+                end
+                
+                subgraph "Score and SLR Functions"
+                    J
+                    K
+                    AE
+                    AF
+                    AG
+                    AH
+                    AJ
+                end
+                
+                subgraph "Data Preparation Functions"
+                    P
+                    Q
+                    AA
+                    AD
+                    AB
+                    AC
+                end
+                
+                subgraph "Visualization Functions"
+                    AI
+                end
+        </div>
+    </div>
+
+    <script>
+        let scale = 1;
+        const container = document.getElementById('diagram-container');
+        const diagram = document.getElementById('mermaid-diagram');
+        
+        function zoomIn() {
+            scale += 0.1;
+            diagram.style.transform = `scale(${scale})`;
+            diagram.style.transformOrigin = 'top left';
+        }
+        
+        function zoomOut() {
+            if (scale > 0.2) {
+                scale -= 0.1;
+                diagram.style.transform = `scale(${scale})`;
+                diagram.style.transformOrigin = 'top left';
+            }
+        }
+        
+        function resetZoom() {
+            scale = 1;
+            diagram.style.transform = `scale(${scale})`;
+        }
+        
+        mermaid.initialize({ 
+            startOnLoad: true,
+            securityLevel: 'loose',
+            theme: 'default',
+            flowchart: {
+                rankSpacing: 80,
+                nodeSpacing: 50,
+                rankDir: 'TB',
+                curve: 'basis'
+            }
+        });
+        
+        window.addEventListener('load', function() {
+            // Add a slight delay to ensure Mermaid has rendered
+            setTimeout(function() {
+                container.scrollTop = 0;
+                container.scrollLeft = 0;
+            }, 100);
+        });
+    </script>
+</body>
+</html>
