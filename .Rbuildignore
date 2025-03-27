@@ -8,7 +8,7 @@
 ^CRAN-SUBMISSION$
 ^LICENSE\.md$
 ^README.qmd$
-^scratch*
+^scratch$
 
 # Folders
 ^data-raw$
