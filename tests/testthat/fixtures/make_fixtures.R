@@ -114,6 +114,13 @@ actual <- compare_documents(
 )
 saveRDS(actual, testthat::test_path("fixtures", "compare", "w0030_v_w0030_score_only.rds"))
 
+actual <- compare_documents(
+  sample1 = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r01.png"),
+  sample2 = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r02.png"),
+  score_only = FALSE
+)
+saveRDS(actual, testthat::test_path("fixtures", "compare", "w0030_v_w0030_slr.rds"))
+
 
 # Compare Writer Profiles -------------------------------------------------
 

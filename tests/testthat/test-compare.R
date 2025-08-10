@@ -15,6 +15,21 @@ testthat::test_that("Compare documents works when score_only is TRUE", {
   testthat::expect_equal(actual, expected)
 })
 
+testthat::test_that("Compare documents works when score_only is FALSE", {
+  # get_writer_profiles() was added in handwriter 3.2.3.9000
+  testthat::skip_if_not_installed("handwriter", minimum_version = "3.2.3.9000")
+
+  actual <- compare_documents(
+    sample1 = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r01.png"),
+    sample2 = testthat::test_path("fixtures", "samples1", "w0030_s01_pWOZ_r02.png"),
+    score_only = FALSE
+  )
+
+  expected <- readRDS(testthat::test_path("fixtures", "compare", "w0030_v_w0030_slr.rds"))
+
+  testthat::expect_equal(actual, expected)
+})
+
 
 # Compare Writer Profiles -------------------------------------------------
 
@@ -248,3 +263,4 @@ testthat::test_that("Handle NULL values returns message if user supplies referen
     "Reference scores were supplied so score_only will be changed to FALSE."
   )
 })
+

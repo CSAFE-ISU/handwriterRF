@@ -16,3 +16,20 @@ test_that("Expand docnames works", {
 
   expect_identical(actual, expected)
 })
+
+testthat::test_that("Get cluster columns sorts columns", {
+  actual <- colnames(get_cluster_cols(train))
+
+  expected <- paste0("cluster", 1:40)
+
+  testthat::expect_identical(actual, expected)
+})
+
+testthat::test_that("Get label columns return the correct column names", {
+  actual <- colnames(get_label_cols(train))
+
+  expected <- c("docname", "writer", "doc", "total_graphs")
+
+  testthat::expect_identical(actual, expected)
+})
+

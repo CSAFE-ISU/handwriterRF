@@ -1,5 +1,11 @@
 # handwriterRF (development version)
 
+## Fixes
+
+* Fixed train, validation, test, random_forest, and ref_scores data objects so that the cluster columns are sorted numerically. Also fixed `get_cluster_cols()` so that the cluster columns are sorted numerically.
+
+* Fixed bug in `train_rf()` where the number of decision trees was hardcoded. Now, `train_rf()` correctly uses the argument ntrees to set the number of trees.
+
 ## New Features and Enhancements
 
 * Enhanced `compare_writer_profiles()`, `get_distances()`, `get_ref_scores()`, and `train_rf()` functionality:

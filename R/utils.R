@@ -94,3 +94,51 @@ expand_docnames <- function(df, docname_col = "docname", suffix = "") {
 delete_tempdir_comparison <- function() {
   unlink(file.path(tempdir(), "comparison"), recursive = TRUE)
 }
+
+#' Select the Cluster Columns
+#'
+#' For a dataframe created with \code{\link{get_cluster_fill_rates}}, create a
+#' dataframe that consists solely of the cluster columns. The cluster columns
+#' will be sorted numerically.
+#'
+#' @param df A dataframe of cluster will rates created with
+#'   \code{\link{get_cluster_fill_rates}}.
+#'
+#' @return A dataframe
+#'
+#' @noRd
+get_cluster_cols <- function(df) {
+  # drop all columns except clusters
+  df <- df %>%
+    dplyr::ungroup() %>%
+    dplyr::select(tidyselect::num_range("cluster", 1:40))
+  return(df)
+}
+
+#' Select the Label Columns
+#'
+#' For a dataframe created with \code{\link{get_cluster_fill_rates}}, create a
+#' dataframe that consists solely of the label (non-cluster) columns.
+#'
+#' @param df A dataframe of cluster will rates created with
+#'   \code{\link{get_cluster_fill_rates}}.
+#'
+#' @return A dataframe
+#'
+#' @noRd
+get_label_cols <- function(df) {
+  # drop all columns except clusters
+  df <- df %>%
+    dplyr::ungroup() %>%
+    dplyr::select(-tidyselect::num_range("cluster", 1:40))
+  return(df)
+}
+
+split_clusters_and_labels <- function(df) {
+
+  clusters <- get_cluster_cols(df)
+  labels <- get_label_cols(df)
+
+  return(list("clusters" = clusters, "labels" = labels))
+}
+

@@ -87,7 +87,6 @@ compare_documents <- function(sample1,
       name1 = basename(sample1),
       name2 = basename(sample2)
     ),
-    writer_profiles = NULL,
     score_only = score_only,
     rforest = rforest,
     project_dir = project_dir,
@@ -114,19 +113,12 @@ compare_documents <- function(sample1,
     num_cores = 1,
     output_dir = params$project_dir)
 
-  message("Calculating distance between samples...")
-  params$dist <- get_distances(df = profiles, distance_measures = params$rforest$distance_measures)
-
-  message("Calculating similarity score...")
-  params$score <- get_score(d = params$dist, rforest = params$rforest)$score
-
-  # Optional. Calculate SLR
-  if (!score_only) {
-    message("Calculating SLR...")
-    params <- get_slr(params)
-  }
-
-  df <- make_results_df(params)
+  df <- compare_writer_profiles(
+    writer_profiles = profiles,
+    score_only = params$score_only,
+    rforest = params$rforest,
+    reference_scores = params$reference_scores
+  )
 
   clean_up(params)
 
@@ -176,7 +168,6 @@ compare_writer_profiles <- function(
     rforest = NULL,
     reference_scores = NULL) {
   params <- list(
-    samples = NULL,
     writer_profiles = writer_profiles,
     writer_profiles2 = writer_profiles2,
     score_only = score_only,
