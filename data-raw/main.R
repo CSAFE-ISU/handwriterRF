@@ -34,6 +34,14 @@ train <- rbind(csafe_sets$train, cvl_sets$train)
 validation <- rbind(csafe_sets$valid, cvl_sets$valid)
 test <- rbind(csafe_sets$test, cvl_sets$test)
 
+# sort cluster columns
+train <- split_clusters_and_labels(train)
+train <- cbind(train$labels, train$clusters)
+validation <- split_clusters_and_labels(validation)
+validation <- cbind(validation$labels, validation$clusters)
+test <- split_clusters_and_labels(test)
+test <- cbind(test$labels, test$clusters)
+
 usethis::use_data(train, overwrite = TRUE)
 usethis::use_data(validation, overwrite = TRUE)
 usethis::use_data(test, overwrite = TRUE)
