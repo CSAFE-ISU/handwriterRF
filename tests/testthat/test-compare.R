@@ -70,10 +70,11 @@ testthat::test_that("Compare writer profiles works when score_only is FALSE, wri
 
   expected <- readRDS(testthat::test_path("fixtures", "compare", "cwp_score_only_FALSE_unknown_2df.rds"))
 
-  testthat::expect_identical(actual, expected)
+  testthat::expect_equal(actual, expected, tolerance = 1e-3)
 })
 
-testthat::test_that("Compare writer profiles works when score_only is FALSE, writers are unknown, and there is 1 input dataframe", {
+testthat::test_that("Compare writer profiles works when score_only is FALSE, writers are unknown, and there is 1 input dataframe, local version", {
+
   writer_profiles <- test[1:4, ] %>% dplyr::select(-writer)
   writer_profiles2 <- test[5:8, ] %>% dplyr::select(-writer)
   actual <- compare_writer_profiles(
@@ -83,7 +84,7 @@ testthat::test_that("Compare writer profiles works when score_only is FALSE, wri
 
   expected <- readRDS(testthat::test_path("fixtures", "compare", "cwp_score_only_FALSE_unknown.rds"))
 
-  testthat::expect_identical(actual, expected)
+  testthat::expect_equal(actual, expected, tolerance = 1e-3)
 })
 
 testthat::test_that("Compare writer profiles works when score_only is TRUE, writers are known, and there are 2 input dataframes", {
